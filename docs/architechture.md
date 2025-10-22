@@ -1,7 +1,7 @@
 # tango-card Architecture
 
 ## Overview
-本文件定义 tango-card 的统一目录结构与职责划分。所有新代码需要遵循这里的模块边界和命名约定，以保持简单、清晰、低耦合的实现。
+本文件定义 tango-card 的统一目录结构与职责划分。所有新代码需要遵循这里的模块边界和命名约定，以保持简单、清晰、低耦合的实现。各技术栈职责参见 `docs/stack_responsibility.md`。
 
 ## Repository Layout
 ```
@@ -10,7 +10,7 @@
 ├─ assets/               # 静态资源：图标、示例 SVG、演示截图
 ├─ config/               # 环境变量模板与打包配置
 ├─ scripts/              # 自动化脚本（构建、发布、数据迁移）
-├─ src/                  # TypeScript 源码（主进程、渲染进程、领域逻辑）
+├─ src/                  # TypeScript + React + Electron 源码
 ├─ tests/                # 单元 / 集成 / 端到端测试
 ├─ data/                 # 本地持久化数据（Electron userData 下的逻辑挂载点）
 └─ package.json          # 项目依赖与脚本入口
@@ -33,7 +33,7 @@ src/
 ├─ preload/
 │  └─ context_bridge.ts           # 通过 contextBridge 暴露安全 API 给渲染进程
 ├─ renderer_process/
-│  ├─ app_shell.tsx               # React/Vue 根组件，挂载全局状态与路由
+│  ├─ app_shell.tsx               # React 根组件，挂载全局状态与路由
 │  ├─ routing/
 │  │  └─ app_router.tsx           # 定义路由结构（编辑、复习、统计、设置）
 │  ├─ screens/
@@ -49,8 +49,8 @@ src/
 │  │  ├─ use_card_store.ts        # 管理卡片集合的业务状态钩子
 │  │  └─ use_review_cycle.ts      # 控制复习队列与权重计算
 │  ├─ services/
-│  │  ├─ svg_renderer.ts          # 处理 SVG 解析、视口缩放、错误边界
-│  │  ├─ memory_scheduler.ts      # 根据记忆等级计算抽取概率
+│  │  ├─ svg_renderer.ts          # 处理 SVG 解析、视口缩放、错误边界（TypeScript 纯函数）
+│  │  ├─ memory_scheduler.ts      # 根据记忆等级计算抽取概率（TypeScript 纯函数）
 │  │  └─ analytics_builder.ts     # 汇总学习数据供可视化组件使用
 │  ├─ state/
 │  │  ├─ card_store.ts            # 全局状态容器（Zustand/Redux），同步 IPC 数据
@@ -110,11 +110,11 @@ tests/
 ```
 
 ## 模块关系
-- `main_process` 负责应用生命周期、IPC 通信与服务装载，不直接处理业务细节；它调用 `domain` 和 `infrastructure` 中的模块完成持久化与策略计算。
+- `main_process` 使用 Electron API 负责应用生命周期、IPC 通信与服务装载，不直接处理业务细节；它调用 `domain` 和 `infrastructure` 中的模块完成持久化与策略计算。
 - `preload` 暴露受控接口，防止渲染进程直接访问 Node API，符合最小授权原则。
-- `renderer_process` 负责界面交互，所有业务逻辑通过 hooks → services → state 组合实现，并通过 IPC 与主进程同步数据。
-- `domain` 提供纯逻辑模型和策略，保持无框架依赖，确保复用与测试的便利性。
-- `infrastructure` 实现具体的存储、遥测、外部服务适配器，可根据需要替换实现。
+- `renderer_process` 以 React 构建界面交互，使用 hooks → services → state 组合处理业务，组件专注于 UI，逻辑函数保持 TypeScript 纯度，通过 IPC 与主进程同步数据。
+- `domain` 提供纯 TypeScript 逻辑模型和策略，保持无框架依赖，确保复用与测试的便利性。
+- `infrastructure` 实现具体的存储、遥测、外部服务适配器，同样使用 TypeScript 并保持与 Electron API 的隔离，可根据需要替换实现。
 - `shared` 存放跨层复用的常量、错误类型和基础工具，避免重复实现。
 - `tests` 按测试粒度分层，便于针对领域逻辑、集成流程和端到端体验分别验证。
 

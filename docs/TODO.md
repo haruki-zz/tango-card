@@ -1,19 +1,21 @@
 # tango-card TODO
 
+> 技术栈职责、模块边界详见 `docs/stack_responsibility.md` 与 `docs/architechture.md`。
+
 ## MVP 功能
-- [ ] 解析用户输入的 SVG 源码并在 Electron 渲染进程中以窗口自适应方式展示。
-- [ ] 建立单词卡片数据模型（SVG 源、创建时间、标签、记忆等级）。
-- [ ] 实现自动保存单词卡片到本地持久化存储（IndexedDB/SQLite/文件系统待定）。
-- [ ] 提供随机抽取接口，同时支持按照记忆等级权重优先低熟悉度卡片。
-- [ ] 在复习视图中允许用户为卡片设置记忆等级（熟知、不太熟等可配置标签）。
-- [ ] 构建类似 GitHub contribution 的可视化面板显示每日学习进度。
+- [ ] 解析用户输入的 SVG 源码并在 React 渲染层以窗口自适应方式展示（由 Electron 容器托管）。
+- [ ] 建立 TypeScript 单词卡片数据模型（SVG 源、创建时间、标签、记忆等级）。
+- [ ] 实现 Electron 主进程驱动的自动保存流程，将卡片写入本地持久化存储（IndexedDB/SQLite/文件系统待定）。
+- [ ] 提供 TypeScript 服务计算的随机抽取接口，同时支持按照记忆等级权重优先低熟悉度卡片。
+- [ ] 在 React 复习视图中允许用户为卡片设置记忆等级（熟知、不太熟等可配置标签）。
+- [ ] 构建 React 组件实现的 GitHub contribution 风格可视化面板显示每日学习进度。
 
 ## 技术任务
-- [ ] 规划 Electron 主进程与渲染进程通信协议（contextBridge、IPC channel）。
-- [ ] 引入状态管理方案（如 Redux Toolkit 或 Zustand）协调卡片状态与复习队列。
-- [ ] 设计持久化层抽象，支持未来迁移不同存储引擎。
-- [ ] 配置 TypeScript、ESLint、Prettier、Vite（或同类）以获得统一开发体验。
-- [ ] 搭建端到端测试框架（Playwright/Spectron）验证核心用户流程。
+- [ ] 规划 Electron 主进程与 React 渲染进程通信协议（contextBridge、IPC channel）。
+- [ ] 引入 React 友好的状态管理方案（如 Redux Toolkit 或 Zustand）协调卡片状态与复习队列。
+- [ ] 设计 TypeScript 持久化层抽象，支持未来迁移不同存储引擎。
+- [ ] 配置 TypeScript、ESLint、Prettier、Vite（或同类）以获得统一开发体验，并建立 React + Electron 联调脚本。
+- [ ] 搭建端到端测试框架（Playwright + Spectron 或类似）验证核心用户流程。
 
 ## 体验与可用性
 - [ ] 为 SVG 预览增加错误提示与空状态文案。
