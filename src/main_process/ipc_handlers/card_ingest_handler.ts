@@ -1,28 +1,45 @@
 import { ipcMain } from 'electron';
 import { APP_CHANNELS } from '../../shared/constants/app_channels';
 import type { StorageContext } from '../service_bootstrap/storage_bootstrap';
-import { create_card } from '../../domain/card/card_factory';
+import { create_card, update_card } from '../../domain/card/card_factory';
+import type { CardDraft } from '../../domain/card/card_entity';
 
-interface CardIngestPayload {
+interface CardIngestPayload extends CardDraft {
+  readonly card_id?: string;
   readonly svg_source: string;
-  readonly tags?: string[];
 }
 
 export function register_card_ingest_handler(storage_context: StorageContext): void {
   ipcMain.handle(APP_CHANNELS.CARD_INGEST, async (_event, payload: CardIngestPayload) => {
-    const result = create_card({
-      svg_source: payload.svg_source,
-      tags: payload.tags ?? [],
-    });
-
-    if (!result.ok) {
-      throw result.error;
+    if (payload.card_id) {
+      const existing = await storage_context.card_repository.find_card(payload.card_id);
+      if (existing) {
+        const update_result = update_card(existing, payload);
+        if (!update_result.ok) {
+          throw update_result.error;
+        }
+        await storage_context.card_repository.upsert_card(update_result.data);
+        return update_result.data;
+      }
     }
 
-    await storage_context.card_repository.upsert_card(result.data);
-    await storage_context.analytics_tracker.record_card_created(new Date(result.data.created_at));
+    const create_result = create_card({
+      svg_source: payload.svg_source,
+      tags: payload.tags ?? [],
+      memory_level: payload.memory_level,
+      created_at: payload.created_at,
+    });
 
-    return result.data;
+    if (!create_result.ok) {
+      throw create_result.error;
+    }
+
+    await storage_context.card_repository.upsert_card(create_result.data);
+    await storage_context.analytics_tracker.record_card_created(
+      new Date(create_result.data.created_at),
+    );
+
+    return create_result.data;
   });
 
   ipcMain.handle(APP_CHANNELS.CARD_LIST, async () => {
