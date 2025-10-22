@@ -1,23 +1,44 @@
-# Node & dependencies
-node_modules/
+# Ignore everything by default
+/*
 
-# Build outputs
+# Allow essential project configuration
+!.gitignore
+!*.md
+!package.json
+!package-lock.json
+!tsconfig.json
+!tsconfig.node.json
+!env.d.ts
+!vite.config.ts
+!eslint.config.mjs
+!jest.config.cjs
+!.prettierrc.json
+!index.html
+
+# Allow source and documentation directories
+!src/
+!src/**
+!assets/
+!assets/**
+!config/
+!config/**
+!docs/
+!docs/**
+!scripts/
+!scripts/**
+!tests/
+!tests/**
+!data/.gitkeep
+
+# Always ignore generated and environment-specific artifacts
+node_modules/
 dist/
 out/
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# Editor settings
+coverage/
+logs/
+*.log
+*.lock-wip
+.DS_Store
+**/.DS_Store
 .idea/
 .vscode/
-
-# OS files
-.DS_Store
-
-# App data
-data/
-!data/.gitkeep
