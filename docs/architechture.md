@@ -42,12 +42,13 @@ src/
 │  │  ├─ analytics_screen.tsx     # 学习进度热力图与统计数据
 │  │  └─ settings_screen.tsx      # 配置存储策略、显示偏好等
 │  ├─ components/
-│  │  ├─ svg_canvas.tsx           # 可自适应窗口的 SVG 渲染组件
+│  │  ├─ svg_canvas.tsx           # 自适应窗口尺寸的 SVG 渲染组件
 │  │  ├─ memory_level_badge.tsx   # 记忆等级标签展示与交互
 │  │  └─ contribution_heatmap.tsx # GitHub contribution 风格热力图组件
 │  ├─ hooks/
 │  │  ├─ use_card_store.ts        # 管理卡片集合的业务状态钩子
-│  │  └─ use_review_cycle.ts      # 控制复习队列与权重计算
+│  │  ├─ use_review_cycle.ts      # 控制复习队列与权重计算
+│  │  └─ use_element_size.ts      # 监听容器尺寸供 SVG 自适应渲染
 │  ├─ services/
 │  │  ├─ svg_renderer.ts          # 处理 SVG 解析、视口缩放、错误边界（TypeScript 纯函数）
 │  │  ├─ memory_scheduler.ts      # 根据记忆等级计算抽取概率（TypeScript 纯函数）
@@ -61,7 +62,7 @@ src/
 │     └─ svg_sanitizer.ts         # 清理、验证 SVG 源码的工具函数
 ├─ domain/
 │  ├─ card/
-│  │  ├─ card_entity.ts           # 定义卡片领域模型与不变量
+│  │  ├─ card_entity.ts           # 定义卡片领域模型（id、svg_source、created_at、tags、memory_level 等）
 │  │  └─ card_factory.ts          # 构建卡片实例，封装默认值与验证
 │  ├─ review/
 │  │  ├─ review_policy.ts         # 复习策略接口与具体实现（权重算法）

@@ -15,6 +15,10 @@ export function prepare_svg_markup(svg_source: string, options: SvgRenderOptions
   const document_node = parser.parseFromString(sanitized, 'image/svg+xml');
   const svg_element = document_node.documentElement;
 
+  if (!svg_element || svg_element.nodeName === 'parsererror') {
+    return '';
+  }
+
   svg_element.setAttribute('preserveAspectRatio', 'xMidYMid meet');
   svg_element.setAttribute('width', `${options.container_width}`);
   svg_element.setAttribute('height', `${options.container_height}`);

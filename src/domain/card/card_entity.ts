@@ -1,4 +1,4 @@
-import { MemoryLevel, MEMORY_LEVEL_DEFAULT } from '../review/memory_level';
+import { MemoryLevel } from '../review/memory_level';
 
 export interface CardEntity {
   readonly id: string;
@@ -10,10 +10,24 @@ export interface CardEntity {
   readonly last_reviewed_at?: string;
 }
 
-export const CARD_DEFAULT: Omit<CardEntity, 'id' | 'svg_source'> = {
-  created_at: '',
-  tags: [],
-  memory_level: MEMORY_LEVEL_DEFAULT,
-  review_count: 0,
-  last_reviewed_at: undefined
-};
+export interface CardDraft {
+  readonly svg_source: string;
+  readonly tags?: string[];
+  readonly memory_level?: MemoryLevel;
+  readonly created_at?: string;
+}
+
+export function is_card_entity(subject: unknown): subject is CardEntity {
+  if (typeof subject !== 'object' || subject === null) {
+    return false;
+  }
+  const candidate = subject as Partial<CardEntity>;
+  return (
+    typeof candidate.id === 'string' &&
+    typeof candidate.svg_source === 'string' &&
+    typeof candidate.created_at === 'string' &&
+    Array.isArray(candidate.tags) &&
+    typeof candidate.memory_level === 'string' &&
+    typeof candidate.review_count === 'number'
+  );
+}

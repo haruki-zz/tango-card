@@ -1,18 +1,11 @@
 import { create_failure_result, create_success_result, Result } from '../shared/result';
-import type { CardEntity } from './card_entity';
-import { MemoryLevel, MEMORY_LEVEL_DEFAULT } from '../review/memory_level';
+import type { CardDraft, CardEntity } from './card_entity';
+import { MEMORY_LEVEL_DEFAULT } from '../review/memory_level';
 import { create_uuid } from '../../shared/utils/uuid';
 import { create_domain_error } from '../../shared/errors/domain_error';
 import { get_iso_timestamp } from '../../shared/utils/date_utils';
 
-export interface NewCardInput {
-  readonly svg_source: string;
-  readonly tags?: string[];
-  readonly memory_level?: MemoryLevel;
-  readonly created_at?: string;
-}
-
-export function create_card(input: NewCardInput): Result<CardEntity, Error> {
+export function create_card(input: CardDraft): Result<CardEntity, Error> {
   const trimmed_svg = input.svg_source.trim();
   if (!trimmed_svg) {
     return create_failure_result(
@@ -21,7 +14,7 @@ export function create_card(input: NewCardInput): Result<CardEntity, Error> {
   }
 
   const created_at = input.created_at ?? get_iso_timestamp();
-  const tags = Array.isArray(input.tags) ? input.tags.map((tag) => tag.trim()).filter(Boolean) : [];
+  const tags = normalize_tags(input.tags);
   const memory_level = input.memory_level ?? MEMORY_LEVEL_DEFAULT;
 
   const card: CardEntity = {
@@ -35,4 +28,20 @@ export function create_card(input: NewCardInput): Result<CardEntity, Error> {
   };
 
   return create_success_result(card);
+}
+
+function normalize_tags(tags: CardDraft['tags']): string[] {
+  if (!Array.isArray(tags)) {
+    return [];
+  }
+  const seen = new Set<string>();
+  const normalized: string[] = [];
+  tags.forEach((tag) => {
+    const value = tag.trim();
+    if (value && !seen.has(value)) {
+      seen.add(value);
+      normalized.push(value);
+    }
+  });
+  return normalized;
 }
