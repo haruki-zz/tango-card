@@ -8,7 +8,7 @@
 - [x] 实现 Electron 主进程驱动的自动保存流程，将卡片写入本地持久化存储（IndexedDB/SQLite/文件系统待定）。
 - [x] 提供 TypeScript 服务计算的随机抽取接口，同时支持按照记忆等级权重优先低熟悉度卡片。
 - [x] 在 React 复习视图中允许用户为卡片设置记忆等级（熟知、不太熟等可配置标签）。
-- [ ] 构建 React 组件实现的 GitHub contribution 风格可视化面板显示每日学习进度。
+- [x] 构建 React 组件实现的 GitHub contribution 风格可视化面板显示每日学习进度。
 
 ## 技术任务
 - [ ] 规划 Electron 主进程与 React 渲染进程通信协议（contextBridge、IPC channel）。
