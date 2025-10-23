@@ -1,13 +1,6 @@
 import { useCallback, useEffect, useSyncExternalStore } from 'react';
-import type { RendererApi } from '../../preload/context_bridge';
 import { card_store } from '../state/card_store';
-
-function get_renderer_api(): RendererApi {
-  if (typeof window === 'undefined' || !window.tango_api) {
-    throw new Error('Renderer API is unavailable in this environment.');
-  }
-  return window.tango_api;
-}
+import { get_renderer_api } from '../utils/renderer_api';
 
 function useCardStore() {
   const state = useSyncExternalStore(

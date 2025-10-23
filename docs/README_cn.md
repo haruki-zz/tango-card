@@ -7,7 +7,7 @@ tango-card 是一款基于 TypeScript、React 与 Electron 的桌面应用，帮
 - **SVG 渲染**：接收用户粘贴或导入的 SVG 源码，在渲染进程中自适应窗口尺寸展示。
 - **自动保存**：每张卡片包含 SVG 内容、创建时间、标签、记忆等级，并在编辑器中实时自动保存到本地。
   卡片数据在 `src/domain/card` 内定义为 `CardEntity`，并通过 `card_factory.ts` 统一校验与生成，确保字段完整。
-- **智能复习**：基于记忆等级权重的随机抽取队列，优先推送记忆等级低的卡片，支持自定义标记（熟知、不太熟等）。
+- **智能复习**：基于记忆等级权重的随机抽取队列，优先推送记忆等级低的卡片，支持自定义标记（熟知、不太熟等，配置位于 `src/shared/constants/memory_levels.ts`）。
 - **学习进度面板**：提供类似 GitHub contribution 的热力图，直观展示学习频率与趋势。
 
 ## 推荐目录结构
@@ -25,6 +25,7 @@ tango-card 是一款基于 TypeScript、React 与 Electron 的桌面应用，帮
 - 开发模式：`npm run dev`（Electron 主进程 + Vite 驱动的 React 渲染进程热加载）
 - 构建应用：`npm run build`（打包 Electron 并输出到 `dist/`）
 - 执行测试：`npm test`（建议保持 Jest 覆盖率 ≥90%，React 组件可使用 Testing Library）
+- 浏览器预览：直接访问 Vite Dev Server（如 `http://localhost:5173`）时，渲染层会启用内存 Mock 的 Renderer API，便于在缺少 Electron 容器的情况下调试界面；在 Electron 中运行则会连接真实 IPC。
 
 ## 后续工作
 详细任务拆分请参见 `docs/TODO.md`，技术栈分工说明见 `docs/stack_responsibility.md`。欢迎在 issue 中提出新想法或反馈，提交 PR 前请先讨论以确保方向一致。

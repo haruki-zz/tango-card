@@ -58,8 +58,9 @@ src/
 │  │  └─ review_queue_store.ts    # 复习队列状态与调度
 │  ├─ styles/
 │  │  └─ global.css               # 全局样式与主题变量
-│  └─ utils/
-│     └─ svg_sanitizer.ts         # 清理、验证 SVG 源码的工具函数
+ │  └─ utils/
+ │     ├─ renderer_api.ts          # Electron 缺失时提供内存 Mock 的 API 解析器
+ │     └─ svg_sanitizer.ts         # 清理、验证 SVG 源码的工具函数
 ├─ domain/
 │  ├─ card/
 │  │  ├─ card_entity.ts           # 定义卡片领域模型（id、svg_source、created_at、tags、memory_level 等）
@@ -83,7 +84,8 @@ src/
 │     └─ analytics_tracker.ts     # 记录学习行为事件，推动到 analytics_builder
 └─ shared/
    ├─ constants/
-   │  └─ app_channels.ts          # 跨进程通道、事件名称常量
+   │  ├─ app_channels.ts          # 跨进程通道、事件名称常量
+   │  └─ memory_levels.ts         # 记忆等级标签与描述配置
    ├─ errors/
    │  └─ domain_error.ts          # 标准化错误类型
    └─ utils/
@@ -99,6 +101,13 @@ tests/
 │  │  └─ card_factory.spec.ts
 │  ├─ review/
 │  │  └─ review_policy.spec.ts
+│  ├─ renderer/
+│  │  ├─ components/
+│  │  │  └─ memory_level_badge.spec.tsx
+│  │  ├─ screens/
+│  │  │  └─ review_screen.spec.tsx
+│  │  └─ utils/
+│  │     └─ renderer_api.spec.ts
 │  └─ analytics/
 │     └─ activity_snapshot.spec.ts
 ├─ integration/

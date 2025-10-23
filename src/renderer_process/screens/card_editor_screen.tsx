@@ -1,14 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { SvgCanvas } from '../components/svg_canvas';
 import { use_card_store } from '../hooks/use_card_store';
-import type { RendererApi } from '../../preload/context_bridge';
-
-function get_renderer_api(): RendererApi {
-  if (typeof window === 'undefined' || !window.tango_api) {
-    throw new Error('Renderer API is unavailable in this environment.');
-  }
-  return window.tango_api;
-}
+import { get_renderer_api } from '../utils/renderer_api';
 
 type AutoSaveState = 'idle' | 'saving' | 'saved' | 'error';
 

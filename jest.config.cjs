@@ -9,6 +9,7 @@ module.exports = {
     '^@shared/(.*)$': '<rootDir>/src/shared/$1',
     '^@domain/(.*)$': '<rootDir>/src/domain/$1'
   },
+  setupFilesAfterEnv: ['<rootDir>/tests/setup/testing_library.ts'],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',

@@ -1,15 +1,8 @@
 import { useEffect, useState } from 'react';
-import type { RendererApi } from '../../preload/context_bridge';
 import type { ActivitySnapshot } from '../../domain/analytics/activity_snapshot';
 import { ContributionHeatmap } from '../components/contribution_heatmap';
 import { build_heatmap_cells } from '../services/analytics_builder';
-
-function get_renderer_api(): RendererApi {
-  if (typeof window === 'undefined' || !window.tango_api) {
-    throw new Error('Renderer API is unavailable in this environment.');
-  }
-  return window.tango_api;
-}
+import { get_renderer_api } from '../utils/renderer_api';
 
 export function AnalyticsScreen() {
   const [snapshot, set_snapshot] = useState<ActivitySnapshot | null>(null);

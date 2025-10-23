@@ -1,14 +1,8 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { SvgCanvas } from '../components/svg_canvas';
-import { MemoryLevel } from '../../domain/review/memory_level';
 import { MemoryLevelBadge } from '../components/memory_level_badge';
 import { use_review_cycle } from '../hooks/use_review_cycle';
-
-const MEMORY_CONTROLS: Array<{ label: string; level: MemoryLevel }> = [
-  { label: '熟知', level: MemoryLevel.WELL_KNOWN },
-  { label: '不太熟', level: MemoryLevel.SOMEWHAT_FAMILIAR },
-  { label: '需要强化', level: MemoryLevel.NEEDS_REINFORCEMENT },
-];
+import { MEMORY_LEVEL_OPTIONS } from '../../shared/constants/memory_levels';
 
 export function ReviewScreen() {
   const { queue, active_card, load_queue, submit_review } = use_review_cycle();
@@ -39,12 +33,16 @@ export function ReviewScreen() {
         <h2>记忆强度</h2>
         <MemoryLevelBadge level={render_card.memory_level} />
         <p>待复习队列：{queue.length} 张</p>
-        {MEMORY_CONTROLS.map((control) => (
+        {MEMORY_LEVEL_OPTIONS.map((option) => (
           <button
-            key={control.level}
-            onClick={() => submit_review(render_card.id, control.level)}
+            key={option.level}
+            type="button"
+            onClick={() => submit_review(render_card.id, option.level)}
           >
-            标记为「{control.label}」
+            标记为「{option.label}」
+            {option.description ? (
+              <span style={{ display: 'block', fontSize: '0.75rem' }}>{option.description}</span>
+            ) : null}
           </button>
         ))}
       </div>

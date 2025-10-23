@@ -1,14 +1,7 @@
 import { useCallback, useSyncExternalStore } from 'react';
-import type { RendererApi } from '../../preload/context_bridge';
 import type { MemoryLevel } from '../../domain/review/memory_level';
 import { review_queue_store } from '../state/review_queue_store';
-
-function get_renderer_api(): RendererApi {
-  if (typeof window === 'undefined' || !window.tango_api) {
-    throw new Error('Renderer API is unavailable in this environment.');
-  }
-  return window.tango_api;
-}
+import { get_renderer_api } from '../utils/renderer_api';
 
 function useReviewCycle() {
   const state = useSyncExternalStore(

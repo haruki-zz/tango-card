@@ -1,14 +1,9 @@
 import { MemoryLevel } from '../../domain/review/memory_level';
+import { get_memory_level_label } from '../../shared/constants/memory_levels';
 
 interface MemoryLevelBadgeProps {
   readonly level: MemoryLevel;
 }
-
-const MEMORY_LEVEL_LABELS: Record<MemoryLevel, string> = {
-  [MemoryLevel.WELL_KNOWN]: '熟知',
-  [MemoryLevel.SOMEWHAT_FAMILIAR]: '不太熟',
-  [MemoryLevel.NEEDS_REINFORCEMENT]: '需要强化',
-};
 
 export function MemoryLevelBadge({ level }: MemoryLevelBadgeProps) {
   return (
@@ -21,7 +16,7 @@ export function MemoryLevelBadge({ level }: MemoryLevelBadgeProps) {
         fontSize: '0.75rem',
       }}
     >
-      {MEMORY_LEVEL_LABELS[level]}
+      {get_memory_level_label(level)}
     </span>
   );
 }
