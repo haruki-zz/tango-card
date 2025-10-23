@@ -17,14 +17,30 @@ function create_card(id: string, level: MemoryLevel, review_count = 0): CardEnti
 }
 
 describe('WeightedMemoryReviewPolicy', () => {
-  it('prioritises cards with lower memory level', () => {
-    const queue = policy.generate_review_queue([
-      create_card('1', MemoryLevel.WELL_KNOWN),
-      create_card('2', MemoryLevel.NEEDS_REINFORCEMENT),
-      create_card('3', MemoryLevel.SOMEWHAT_FAMILIAR),
-    ]);
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
+  it('selects cards using weighted randomness favouring lower familiarity', () => {
+    const random_spy = jest
+      .spyOn(global.Math, 'random')
+      .mockReturnValueOnce(0.3) // pick NEEDS_REINFORCEMENT first (weight window 2-8)
+      .mockReturnValueOnce(0.6) // pick SOMEWHAT_FAMILIAR second
+      .mockReturnValue(0.0); // remaining picks
+
+    const queue = policy.generate_review_queue(
+      [
+        create_card('1', MemoryLevel.WELL_KNOWN),
+        create_card('2', MemoryLevel.NEEDS_REINFORCEMENT),
+        create_card('3', MemoryLevel.SOMEWHAT_FAMILIAR),
+      ],
+      3,
+    );
+
+    expect(random_spy).toHaveBeenCalled();
+    expect(queue).toHaveLength(3);
     expect(queue[0].id).toBe('2');
+    expect(queue.map((card) => card.id)).toEqual(['2', '3', '1']);
   });
 
   it('increments review count on update', () => {

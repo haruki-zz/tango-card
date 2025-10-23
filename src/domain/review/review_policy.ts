@@ -12,11 +12,12 @@ export interface ReviewPolicy {
 
 export class WeightedMemoryReviewPolicy implements ReviewPolicy {
   generate_review_queue(cards: CardEntity[], size = 10): ReviewCandidate[] {
-    const candidates = cards
-      .map((card) => ({ ...card, weight: this.calculate_weight(card) }))
-      .sort((left, right) => right.weight - left.weight);
+    if (cards.length === 0 || size <= 0) {
+      return [];
+    }
 
-    return candidates.slice(0, size);
+    const candidates = cards.map((card) => ({ ...card, weight: this.calculate_weight(card) }));
+    return this.select_weighted_candidates(candidates, size);
   }
 
   update_memory_level(card: CardEntity, new_level: MemoryLevel): CardEntity {
@@ -31,6 +32,36 @@ export class WeightedMemoryReviewPolicy implements ReviewPolicy {
   private calculate_weight(card: CardEntity): number {
     const base_weight = MEMORY_LEVEL_WEIGHTS[card.memory_level] ?? 1;
     const decay = Math.max(1, card.review_count);
-    return base_weight + 1 / decay;
+    return Math.max(0.001, base_weight + 1 / decay);
+  }
+
+  private select_weighted_candidates(candidates: ReviewCandidate[], size: number): ReviewCandidate[] {
+    const pool = [...candidates];
+    const selection: ReviewCandidate[] = [];
+
+    while (pool.length > 0 && selection.length < size) {
+      const total_weight = pool.reduce((sum, candidate) => sum + candidate.weight, 0);
+      if (total_weight <= 0) {
+        selection.push(...pool.splice(0, size - selection.length));
+        break;
+      }
+
+      const target = Math.random() * total_weight;
+      let accumulated = 0;
+      let chosen_index = 0;
+
+      for (let index = 0; index < pool.length; index += 1) {
+        accumulated += pool[index].weight;
+        if (target <= accumulated) {
+          chosen_index = index;
+          break;
+        }
+      }
+
+      const [chosen] = pool.splice(chosen_index, 1);
+      selection.push(chosen);
+    }
+
+    return selection;
   }
 }

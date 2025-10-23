@@ -65,7 +65,7 @@ src/
 │  │  ├─ card_entity.ts           # 定义卡片领域模型（id、svg_source、created_at、tags、memory_level 等）
 │  │  └─ card_factory.ts          # 构建卡片实例，封装默认值与验证
 │  ├─ review/
-│  │  ├─ review_policy.ts         # 复习策略接口与具体实现（权重算法）
+│  │  ├─ review_policy.ts         # 复习策略接口与具体实现（记忆权重 + 随机抽取）
 │  │  └─ memory_level.ts          # 记忆等级枚举与相关逻辑
 │  ├─ analytics/
 │  │  └─ activity_snapshot.ts     # 学习进度聚合数据模型
