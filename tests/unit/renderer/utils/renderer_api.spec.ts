@@ -35,7 +35,7 @@ describe('renderer_api fallback', () => {
       svg_source: '<svg xmlns="http://www.w3.org/2000/svg"><circle r="5"/></svg>',
     });
 
-    await api.update_review(created.id, MemoryLevel.NEEDS_REINFORCEMENT);
+    await api.update_review({ card_id: created.id, memory_level: MemoryLevel.NEEDS_REINFORCEMENT });
     const snapshot = await api.fetch_analytics_snapshot();
 
     expect(snapshot.total_cards).toBe(1);

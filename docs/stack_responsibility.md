@@ -6,6 +6,7 @@
 - 提供统一的类型系统，覆盖 `src/` 下所有逻辑。
 - 实现领域模型与业务策略（`src/domain`、`src/renderer_process/services`、`src/shared`）。
 - 定义 IPC 通信契约、存储接口与通道常量（`src/main_process/ipc_channels.ts`、`src/infrastructure`）。
+- 维护跨存储引擎的抽象层（`storage_driver.ts`、`storage_engine.ts`），确保持久化实现可插拔。
 - 管理数据持久化、调度与计算逻辑，保证纯函数、可测试。
 - 维护工具函数、错误类型和结果封装，支撑 React 与 Electron 的调用。
 

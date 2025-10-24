@@ -2,19 +2,13 @@ import { ipcMain } from 'electron';
 import { APP_CHANNELS } from '../../shared/constants/app_channels';
 import type { StorageContext } from '../service_bootstrap/storage_bootstrap';
 import { WeightedMemoryReviewPolicy } from '../../domain/review/review_policy';
-import { MemoryLevel } from '../../domain/review/memory_level';
 import type { ReviewSessionRecord } from '../../infrastructure/persistence/storage_driver';
+import type {
+  ReviewQueueRequest,
+  ReviewUpdateRequest,
+} from '../../shared/ipc/contracts';
 
 const review_policy = new WeightedMemoryReviewPolicy();
-
-interface ReviewQueueRequest {
-  readonly size?: number;
-}
-
-interface ReviewUpdatePayload {
-  readonly card_id: string;
-  readonly memory_level: MemoryLevel;
-}
 
 export function register_review_session_handler(storage_context: StorageContext): void {
   ipcMain.handle(APP_CHANNELS.REVIEW_QUEUE, async (_event, payload: ReviewQueueRequest | undefined) => {
@@ -22,7 +16,7 @@ export function register_review_session_handler(storage_context: StorageContext)
     return review_policy.generate_review_queue(cards, payload?.size);
   });
 
-  ipcMain.handle(APP_CHANNELS.REVIEW_UPDATE, async (_event, payload: ReviewUpdatePayload) => {
+  ipcMain.handle(APP_CHANNELS.REVIEW_UPDATE, async (_event, payload: ReviewUpdateRequest) => {
     const card = await storage_context.card_repository.find_card(payload.card_id);
     if (!card) {
       throw new Error(`Card ${payload.card_id} not found.`);

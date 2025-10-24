@@ -1,31 +1,35 @@
-import { useCallback, useEffect, useSyncExternalStore } from 'react';
+import { useCallback, useEffect } from 'react';
 import { card_store } from '../state/card_store';
 import { get_renderer_api } from '../utils/renderer_api';
 
 function useCardStore() {
-  const state = useSyncExternalStore(
-    (listener) => card_store.subscribe(listener),
-    () => card_store.get_state(),
-  );
+  const cards = card_store((state) => state.cards);
+  const is_loading = card_store((state) => state.is_loading);
+  const error_message = card_store((state) => state.error_message);
+  const set_loading = card_store((state) => state.set_loading);
+  const set_cards = card_store((state) => state.set_cards);
+  const set_error = card_store((state) => state.set_error);
 
   const refresh_cards = useCallback(async () => {
     try {
-      card_store.set_loading(true);
+      set_loading(true);
       const cards = await get_renderer_api().list_cards();
-      card_store.set_cards(cards);
+      set_cards(cards);
     } catch (error) {
-      card_store.set_error((error as Error).message);
+      set_error((error as Error).message);
     }
-  }, []);
+  }, [set_cards, set_error, set_loading]);
 
   useEffect(() => {
     refresh_cards().catch(() => {
-      card_store.set_error('Failed to load cards.');
+      set_error('Failed to load cards.');
     });
-  }, [refresh_cards]);
+  }, [refresh_cards, set_error]);
 
   return {
-    ...state,
+    cards,
+    is_loading,
+    error_message,
     refresh_cards,
   };
 }

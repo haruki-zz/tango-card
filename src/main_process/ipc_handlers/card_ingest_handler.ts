@@ -2,15 +2,10 @@ import { ipcMain } from 'electron';
 import { APP_CHANNELS } from '../../shared/constants/app_channels';
 import type { StorageContext } from '../service_bootstrap/storage_bootstrap';
 import { create_card, update_card } from '../../domain/card/card_factory';
-import type { CardDraft } from '../../domain/card/card_entity';
-
-interface CardIngestPayload extends CardDraft {
-  readonly card_id?: string;
-  readonly svg_source: string;
-}
+import type { CardIngestRequest } from '../../shared/ipc/contracts';
 
 export function register_card_ingest_handler(storage_context: StorageContext): void {
-  ipcMain.handle(APP_CHANNELS.CARD_INGEST, async (_event, payload: CardIngestPayload) => {
+  ipcMain.handle(APP_CHANNELS.CARD_INGEST, async (_event, payload: CardIngestRequest) => {
     if (payload.card_id) {
       const existing = await storage_context.card_repository.find_card(payload.card_id);
       if (existing) {

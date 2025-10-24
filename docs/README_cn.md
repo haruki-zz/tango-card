@@ -9,6 +9,7 @@ tango-card 是一款基于 TypeScript、React 与 Electron 的桌面应用，帮
   卡片数据在 `src/domain/card` 内定义为 `CardEntity`，并通过 `card_factory.ts` 统一校验与生成，确保字段完整。
 - **智能复习**：基于记忆等级权重的随机抽取队列，优先推送记忆等级低的卡片，支持自定义标记（熟知、不太熟等，配置位于 `src/shared/constants/memory_levels.ts`）。
 - **学习进度面板**：提供类似 GitHub contribution 的热力图，按周栅格展示每日学习频率，并区分月份标记与强度图例，直观呈现趋势。
+- **状态协调**：渲染层通过 Zustand store 管理卡片列表与复习队列，hooks 统一封装与 IPC 同步逻辑。
 
 ## 推荐目录结构
 ```
@@ -24,8 +25,11 @@ tango-card 是一款基于 TypeScript、React 与 Electron 的桌面应用，帮
 - 安装依赖：`npm install` 或 `pnpm install`
 - 开发模式：`npm run dev`（Electron 主进程 + Vite 驱动的 React 渲染进程热加载）
 - 构建应用：`npm run build`（打包 Electron 并输出到 `dist/`）
+- 类型检查：`npm run typecheck`（同时验证主进程与渲染进程 TypeScript 配置）
 - 执行测试：`npm test`（建议保持 Jest 覆盖率 ≥90%，React 组件可使用 Testing Library）
 - 浏览器预览：直接访问 Vite Dev Server（如 `http://localhost:5173`）时，渲染层会启用内存 Mock 的 Renderer API，便于在缺少 Electron 容器的情况下调试界面；在 Electron 中运行则会连接真实 IPC。
+- 存储引擎：`src/infrastructure/persistence/storage_engine.ts` 建立统一注册表，当前默认启用文件系统引擎（`file`），后续可根据部署场景扩展 SQLite 等实现。
 
 ## 后续工作
-详细任务拆分请参见 `docs/TODO.md`，技术栈分工说明见 `docs/stack_responsibility.md`。欢迎在 issue 中提出新想法或反馈，提交 PR 前请先讨论以确保方向一致。
+ 详细任务拆分请参见 `docs/TODO.md`，技术栈分工说明见 `docs/stack_responsibility.md`。开发工具链与联调脚本说明见 `docs/development_setup.md`。欢迎在 issue 中提出新想法或反馈，提交 PR 前请先讨论以确保方向一致。
+- IPC 通信契约记录于 `docs/ipc_protocol.md`，新增通道需同步完善类型与文档。

@@ -1,6 +1,10 @@
-import type { RendererApi } from '../../preload/context_bridge';
+import type {
+  CardIngestRequest,
+  RendererApi,
+  ReviewQueueRequest,
+  ReviewUpdateRequest,
+} from '../../shared/ipc/contracts';
 import type { CardEntity } from '../../domain/card/card_entity';
-import type { ReviewCandidate } from '../../domain/review/review_policy';
 import { WeightedMemoryReviewPolicy } from '../../domain/review/review_policy';
 import { MEMORY_LEVEL_DEFAULT, MemoryLevel } from '../../domain/review/memory_level';
 import type { ActivitySnapshot, DailyActivityPoint } from '../../domain/analytics/activity_snapshot';
@@ -119,7 +123,7 @@ function calculate_streak(points: DailyActivityPoint[]): number {
 }
 
 const fallback_api: RendererApi = {
-  async ingest_card(payload) {
+  async ingest_card(payload: CardIngestRequest) {
     const sanitized_svg = sanitize_svg(payload.svg_source);
     const tags = normalize_tags(payload.tags);
     const memory_level = payload.memory_level ?? MEMORY_LEVEL_DEFAULT;
@@ -155,24 +159,24 @@ const fallback_api: RendererApi = {
     return Array.from(in_memory_cards.values()).map(clone_card);
   },
 
-  async fetch_review_queue(size) {
+  async fetch_review_queue(request?: ReviewQueueRequest) {
     const cards = Array.from(in_memory_cards.values());
-    return weighted_policy.generate_review_queue(cards, size);
+    return weighted_policy.generate_review_queue(cards, request?.size);
   },
 
-  async update_review(card_id, memory_level) {
-    const card = in_memory_cards.get(card_id);
+  async update_review(payload: ReviewUpdateRequest) {
+    const card = in_memory_cards.get(payload.card_id);
     if (!card) {
-      throw new Error(`Card ${card_id} not found.`);
+      throw new Error(`Card ${payload.card_id} not found.`);
     }
 
-    const updated = weighted_policy.update_memory_level(card, memory_level);
-    in_memory_cards.set(card_id, updated);
+    const updated = weighted_policy.update_memory_level(card, payload.memory_level);
+    in_memory_cards.set(payload.card_id, updated);
 
     review_records.push({
-      card_id,
+      card_id: payload.card_id,
       reviewed_at: updated.last_reviewed_at ?? new Date().toISOString(),
-      memory_level,
+      memory_level: payload.memory_level,
     });
 
     return clone_card(updated);

@@ -14,6 +14,7 @@
     "build": "npm run build:main && npm run build:renderer",
     "build:main": "tsc --project tsconfig.node.json",
     "build:renderer": "vite build",
+    "typecheck": "tsc --project tsconfig.node.json --noEmit && tsc --noEmit",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "format": "prettier --write \"{src,tests,docs}/**/*.{ts,tsx,md}\"",
@@ -40,7 +41,8 @@
   "homepage": "https://github.com/haruki-zz/tango-card#readme",
   "dependencies": {
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

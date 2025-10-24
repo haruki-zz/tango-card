@@ -54,8 +54,8 @@ src/
 │  │  ├─ memory_scheduler.ts      # 根据记忆等级计算抽取概率（TypeScript 纯函数）
 │  │  └─ analytics_builder.ts     # 汇总学习数据供可视化组件使用
 │  ├─ state/
-│  │  ├─ card_store.ts            # 全局状态容器（Zustand/Redux），同步 IPC 数据
-│  │  └─ review_queue_store.ts    # 复习队列状态与调度
+│  │  ├─ card_store.ts            # 基于 Zustand 的卡片集合状态（列表 / 加载 / 错误）
+│  │  └─ review_queue_store.ts    # 基于 Zustand 的复习队列及指针调度
 │  ├─ styles/
 │  │  └─ global.css               # 全局样式与主题变量
 │  └─ utils/
@@ -76,7 +76,10 @@ src/
 │  ├─ persistence/
 │  │  ├─ card_repository.ts       # 卡片持久化接口，供主进程与领域层调用
 │  │  ├─ review_session_repository.ts # 复习记录的持久化
-│  │  └─ storage_driver.ts        # 抽象底层存储驱动接口
+│  │  ├─ storage_driver.ts        # 抽象底层存储驱动接口
+│  │  ├─ storage_engine.ts        # 存储引擎注册表，管理不同驱动的初始化
+│  │  └─ engines/
+│  │     └─ file_storage_engine.ts# 文件系统实现的存储引擎（默认）
 │  ├─ storage_providers/
 │  │  ├─ file_storage_provider.ts # 使用文件系统存储 JSON 数据
 │  │  └─ sqlite_storage_provider.ts# 未来扩展：SQLite 存储实现
@@ -107,8 +110,14 @@ tests/
 │  │  │  └─ memory_level_badge.spec.tsx
 │  │  ├─ screens/
 │  │  │  └─ review_screen.spec.tsx
+│  │  ├─ state/
+│  │  │  ├─ card_store.spec.ts
+│  │  │  └─ review_queue_store.spec.ts
 │  │  └─ utils/
 │  │     └─ renderer_api.spec.ts
+│  ├─ infrastructure/
+│  │  └─ persistence/
+│  │     └─ storage_engine.spec.ts
 │  └─ analytics/
 │     └─ activity_snapshot.spec.ts
 ├─ integration/
@@ -121,12 +130,12 @@ tests/
 ```
 
 ## 模块关系
-- `main_process` 使用 Electron API 负责应用生命周期、IPC 通信与服务装载，不直接处理业务细节；它调用 `domain` 和 `infrastructure` 中的模块完成持久化与策略计算。
+- `main_process` 使用 Electron API 负责应用生命周期、IPC 通信与服务装载，不直接处理业务细节；它调用 `domain` 和 `infrastructure` 中的模块完成持久化与策略计算（具体通道契约见 `docs/ipc_protocol.md`）。
 - `preload` 暴露受控接口，防止渲染进程直接访问 Node API，符合最小授权原则。
 - `renderer_process` 以 React 构建界面交互，使用 hooks → services → state 组合处理业务，组件专注于 UI，逻辑函数保持 TypeScript 纯度，通过 IPC 与主进程同步数据。
 - `domain` 提供纯 TypeScript 逻辑模型和策略，保持无框架依赖，确保复用与测试的便利性。
-- `infrastructure` 实现具体的存储、遥测、外部服务适配器，同样使用 TypeScript 并保持与 Electron API 的隔离，可根据需要替换实现。
+- `infrastructure` 实现具体的存储、遥测、外部服务适配器，同样使用 TypeScript 并保持与 Electron API 的隔离，可根据需要替换实现；`storage_engine.ts` 提供统一注册表，便于后续接入 SQLite 等驱动。
 - `shared` 存放跨层复用的常量、错误类型和基础工具，避免重复实现。
 - `tests` 按测试粒度分层，便于针对领域逻辑、集成流程和端到端体验分别验证。
 
-遵循此结构可以确保模块职责单一、耦合度低，为后续功能迭代提供清晰边界。任何新增文件或目录需符合 snake_case 和 SRP 原则，并在提交前更新本文档。*** End Patch
+遵循此结构可以确保模块职责单一、耦合度低，为后续功能迭代提供清晰边界。任何新增文件或目录需符合 snake_case 和 SRP 原则，并在提交前更新本文档。开发工具链及联调说明参见 `docs/development_setup.md`。
