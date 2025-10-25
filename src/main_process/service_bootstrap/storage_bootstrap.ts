@@ -14,8 +14,9 @@ export interface StorageContext {
 }
 
 export async function bootstrap_storage(): Promise<StorageContext> {
-  const user_data_path = app.getPath('userData');
-  const storage_path = join(user_data_path, 'tango-card');
+  const data_root_override = process.env.TANGO_CARD_DATA_DIR;
+  const user_data_root = data_root_override ?? app.getPath('userData');
+  const storage_path = data_root_override ? user_data_root : join(user_data_root, 'tango-card');
   const storage_driver = await create_storage_driver<FileStorageEngineOptions>({
     type: 'file',
     options: { base_path: storage_path },

@@ -13,6 +13,8 @@
 !eslint.config.mjs
 !jest.config.cjs
 !.prettierrc.json
+!prettier.config.cjs
+!playwright.config.ts
 !index.html
 
 # Allow source and documentation directories

@@ -22,6 +22,13 @@
   3. `npm run dev:electron`：等待主进程编译完成与 Vite 可用后启动 Electron，环境变量 `VITE_DEV_SERVER_URL` 用于渲染层加载。
 - 该模式保证主进程、preload 与 React 渲染层随改动热重载，实现一份命令的协同开发体验。
 
+## 端到端测试（Playwright + Electron）
+- 安装依赖：首次运行前执行 `npx playwright install --with-deps` 以安装所需运行时。
+- 脚本：`npm run test:e2e` 将先构建主进程与渲染进程，再使用 Playwright 启动 Electron 应用并驱动真实 UI 流程。
+- 测试入口位于 `tests/e2e/review_flow.e2e.ts`，默认覆盖卡片创建与复习视图导航，可在此基础上扩展新的场景。
+- 测试运行时会读取环境变量 `TANGO_CARD_DATA_DIR` 将应用数据定向至临时目录，避免污染本地用户数据。
+- 调试建议：在命令中追加 `--debug` 或使用 `PWDEBUG=1` 环境变量观察元素定位与步骤细节。
+
 ## 附加提示
 - 在提交前建议执行 `npm run lint && npm run test`，确保类型、样式与行为均处于健康状态。
 - 如需扩展新的存储或 IPC 通道，请同步更新 `docs/ipc_protocol.md` 与相关配置文件，使工具链对新代码保持一致约束。

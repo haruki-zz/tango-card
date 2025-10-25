@@ -14,12 +14,14 @@
     "build": "npm run build:main && npm run build:renderer",
     "build:main": "tsc --project tsconfig.node.json",
     "build:renderer": "vite build",
+    "preview": "vite preview --outDir dist/renderer --port 4173 --host 127.0.0.1 --strictPort",
     "typecheck": "tsc --project tsconfig.node.json --noEmit && tsc --noEmit",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "format": "prettier --write \"{src,tests,docs}/**/*.{ts,tsx,md}\"",
     "test": "jest",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:e2e": "npm run build && playwright test --project=chromium-ui"
   },
   "repository": {
     "type": "git",
@@ -69,6 +71,7 @@
     "ts-jest": "^29.4.5",
     "typescript": "^5.9.3",
     "vite": "^7.1.11",
-    "wait-on": "^9.0.1"
+    "wait-on": "^9.0.1",
+    "@playwright/test": "^1.49.1"
   }
 }

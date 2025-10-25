@@ -14,8 +14,8 @@
 - [x] 规划 Electron 主进程与 React 渲染进程通信协议（contextBridge、IPC channel）。
 - [x] 引入 React 友好的状态管理方案（如 Redux Toolkit 或 Zustand）协调卡片状态与复习队列。
 - [x] 设计 TypeScript 持久化层抽象，支持未来迁移不同存储引擎。
-- [ ] 配置 TypeScript、ESLint、Prettier、Vite（或同类）以获得统一开发体验，并建立 React + Electron 联调脚本。
-- [ ] 搭建端到端测试框架（Playwright + Spectron 或类似）验证核心用户流程。
+- [x] 配置 TypeScript、ESLint、Prettier、Vite（或同类）以获得统一开发体验，并建立 React + Electron 联调脚本。
+- [x] 搭建端到端测试框架（Playwright + Spectron 或类似）验证核心用户流程。
 
 ## 体验与可用性
 - [ ] 为 SVG 预览增加错误提示与空状态文案。

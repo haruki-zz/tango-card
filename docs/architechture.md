@@ -126,7 +126,7 @@ tests/
 │  └─ ipc/
 │     └─ review_session_handler.integration.ts
 └─ e2e/
-   └─ review_flow.e2e.ts          # Electron 端到端复习流程测试
+   └─ review_flow.e2e.spec.ts     # Playwright 驱动的 Electron 端到端复习流程
 ```
 
 ## 模块关系
