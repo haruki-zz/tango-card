@@ -107,7 +107,8 @@ tests/
 │  ├─ renderer/
 │  │  ├─ components/
 │  │  │  ├─ contribution_heatmap.spec.tsx
-│  │  │  └─ memory_level_badge.spec.tsx
+│  │  │  ├─ memory_level_badge.spec.tsx
+│  │  │  └─ svg_canvas.spec.tsx
 │  │  ├─ screens/
 │  │  │  └─ review_screen.spec.tsx
 │  │  ├─ state/

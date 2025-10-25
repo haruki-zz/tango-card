@@ -1,0 +1,50 @@
+import { render, screen } from '@testing-library/react';
+import { SvgCanvas } from '../../../../src/renderer_process/components/svg_canvas';
+
+jest.mock('../../../../src/renderer_process/hooks/use_element_size', () => {
+  const size = { width: 320, height: 180 };
+  return {
+    __esModule: true,
+    use_element_size: () => ({
+      attach_ref: jest.fn(),
+      size,
+    }),
+    __set_mock_size: (next_size: { width: number; height: number }) => {
+      size.width = next_size.width;
+      size.height = next_size.height;
+    },
+  };
+});
+
+const { __set_mock_size: set_mock_size } = jest.requireMock(
+  '../../../../src/renderer_process/hooks/use_element_size',
+);
+
+describe('SvgCanvas', () => {
+  beforeEach(() => {
+    set_mock_size({ width: 320, height: 180 });
+  });
+
+  it('renders empty state when svg source is blank', () => {
+    render(<SvgCanvas svg_source="   " />);
+    expect(screen.getByText('粘贴 SVG 源码后即可在此查看预览。')).toBeInTheDocument();
+  });
+
+  it('renders an error message when svg cannot be parsed', () => {
+    render(<SvgCanvas svg_source="<svg>" />);
+    expect(screen.getByText('SVG 无法解析，请检查源码。')).toBeInTheDocument();
+  });
+
+  it('renders the svg preview when markup is valid', () => {
+    const valid_svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60"><rect width="120" height="60" fill="#22c55e"/></svg>';
+    const { container } = render(<SvgCanvas svg_source={valid_svg} />);
+    expect(container.querySelector('svg')).not.toBeNull();
+  });
+
+  it('shows initializing message while container size is unknown', () => {
+    set_mock_size({ width: 0, height: 0 });
+    render(<SvgCanvas svg_source="<svg xmlns=\'http://www.w3.org/2000/svg\'></svg>" />);
+    expect(screen.getByText('预览加载中...')).toBeInTheDocument();
+  });
+});

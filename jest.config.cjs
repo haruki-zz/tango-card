@@ -10,6 +10,7 @@ module.exports = {
     '^@domain/(.*)$': '<rootDir>/src/domain/$1'
   },
   setupFilesAfterEnv: ['<rootDir>/tests/setup/testing_library.ts'],
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/tests/e2e/'],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
