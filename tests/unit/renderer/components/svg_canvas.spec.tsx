@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { SvgCanvas } from '../../../../src/renderer_process/components/svg_canvas';
 
 jest.mock('../../../../src/renderer_process/hooks/use_element_size', () => {
@@ -44,7 +44,25 @@ describe('SvgCanvas', () => {
 
   it('shows initializing message while container size is unknown', () => {
     set_mock_size({ width: 0, height: 0 });
-    render(<SvgCanvas svg_source="<svg xmlns=\'http://www.w3.org/2000/svg\'></svg>" />);
+    render(<SvgCanvas svg_source="<svg xmlns='http://www.w3.org/2000/svg'></svg>" />);
     expect(screen.getByText('预览加载中...')).toBeInTheDocument();
+  });
+
+  it('invokes swipe callback when touch gesture is detected', () => {
+    const handle_swipe = jest.fn();
+    const { container } = render(
+      <SvgCanvas
+        svg_source="<svg xmlns='http://www.w3.org/2000/svg'></svg>"
+        on_swipe={handle_swipe}
+      />,
+    );
+    const host = container.querySelector('.svg-canvas');
+    expect(host).not.toBeNull();
+    if (!host) {
+      return;
+    }
+    fireEvent.pointerDown(host, { pointerId: 1, pointerType: 'touch', clientX: 200, clientY: 16 });
+    fireEvent.pointerUp(host, { pointerId: 1, pointerType: 'touch', clientX: 120, clientY: 18 });
+    expect(handle_swipe).toHaveBeenCalledWith('left');
   });
 });
