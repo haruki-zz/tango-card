@@ -10,6 +10,7 @@ export interface ReviewQueueActions {
   set_queue(queue: ReviewCandidate[]): void;
   advance(): void;
   reset(): void;
+  update_card(card_id: string, updater: (card: ReviewCandidate) => ReviewCandidate): void;
 }
 
 export type ReviewQueueStore = ReviewQueueState & ReviewQueueActions;
@@ -28,8 +29,16 @@ export const review_queue_store = create<ReviewQueueStore>((set) => ({
     }),
   advance: () =>
     set((state) => {
-      const next_index = Math.min(state.active_index + 1, Math.max(state.queue.length - 1, 0));
+      if (state.queue.length === 0) {
+        return state;
+      }
+      const next_index = (state.active_index + 1) % state.queue.length;
       return { ...state, active_index: next_index };
     }),
   reset: () => set(INITIAL_STATE),
+  update_card: (card_id: string, updater: (card: ReviewCandidate) => ReviewCandidate) =>
+    set((state) => ({
+      ...state,
+      queue: state.queue.map((card) => (card.id === card_id ? updater(card) : card)),
+    })),
 }));

@@ -21,7 +21,8 @@
     "format": "prettier --write \"{src,tests,docs}/**/*.{ts,tsx,md}\"",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:e2e": "npm run build && playwright test --project=chromium-ui"
+    "test:e2e": "npm run build && playwright test --project=chromium-ui",
+    "release": "npm run typecheck && npm run lint && npm test && npm run build"
   },
   "repository": {
     "type": "git",

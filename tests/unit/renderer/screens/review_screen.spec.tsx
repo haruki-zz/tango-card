@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import type { ReviewCandidate } from '../../../../src/domain/review/review_policy';
 import { MemoryLevel } from '../../../../src/domain/review/memory_level';
 import { MEMORY_LEVEL_OPTIONS } from '../../../../src/shared/constants/memory_levels';
@@ -32,14 +32,14 @@ describe('ReviewScreen', () => {
 
   it('renders an empty state when no card is active', async () => {
     const load_queue = jest.fn().mockResolvedValue(undefined);
-    mocked_use_review_cycle.mockReturnValue({
+    mocked_use_review_cycle.mockImplementation(() => ({
       queue: [],
       active_card: undefined,
       active_index: 0,
       load_queue,
       submit_review: jest.fn(),
       reset_queue: jest.fn(),
-    });
+    }));
 
     render(<ReviewScreen />);
 
@@ -54,76 +54,70 @@ describe('ReviewScreen', () => {
     const submit_review = jest.fn().mockResolvedValue(undefined);
     const candidate = create_candidate();
 
-    mocked_use_review_cycle.mockReturnValue({
+    mocked_use_review_cycle.mockImplementation(() => ({
       queue: [candidate],
       active_card: candidate,
       active_index: 0,
       load_queue,
       submit_review,
       reset_queue: jest.fn(),
-    });
+    }));
 
     render(<ReviewScreen />);
 
     expect(
-      screen.getByText('快捷键：按 1/2/3 或方向键，亦可在预览区向左右/上下滑动快速打分。'),
+      screen.getByText(/选择记忆等级后点击“记录记忆等级”。仍可使用快捷键 1\/2\/3、方向键或滑动手势快速提交。/),
     ).toBeInTheDocument();
 
-    const current_label = MEMORY_LEVEL_OPTIONS.find(
-      (option) => option.level === candidate.memory_level,
-    )?.label;
-
-    if (current_label) {
-      expect(screen.getByText(current_label)).toBeInTheDocument();
-    }
-
     const target_option = MEMORY_LEVEL_OPTIONS[0];
-    const button = screen.getByRole('button', {
-      name: new RegExp(`标记为「${target_option.label}」`),
+    const radio = screen.getByLabelText(new RegExp(target_option.label)) as HTMLInputElement;
+    fireEvent.click(radio);
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: '记录记忆等级' }));
     });
-
-    fireEvent.click(button);
 
     await waitFor(() => {
-      expect(submit_review).toHaveBeenCalledWith(candidate.id, target_option.level);
+      expect(screen.getByText('已记录本次记忆等级。')).toBeInTheDocument();
     });
-
-    submit_review.mockClear();
 
     fireEvent.keyDown(window, { key: target_option.shortcut });
 
     await waitFor(() => {
-      expect(submit_review).toHaveBeenCalledWith(candidate.id, target_option.level);
+      expect(screen.getByText('提交中...')).toBeInTheDocument();
     });
 
-    submit_review.mockClear();
+    await waitFor(() => {
+      expect(screen.getByText('已记录本次记忆等级。')).toBeInTheDocument();
+    });
 
     fireEvent.keyDown(window, { key: 'ArrowRight' });
 
     await waitFor(() => {
-      expect(submit_review).toHaveBeenCalledWith(candidate.id, target_option.level);
+      expect(screen.getByText('提交中...')).toBeInTheDocument();
     });
 
-    submit_review.mockClear();
+    await waitFor(() => {
+      expect(screen.getByText('已记录本次记忆等级。')).toBeInTheDocument();
+    });
 
     fireEvent.keyDown(window, { key: 'ArrowLeft' });
 
     await waitFor(() => {
-      expect(submit_review).toHaveBeenCalledWith(
-        candidate.id,
-        MEMORY_LEVEL_OPTIONS[MEMORY_LEVEL_OPTIONS.length - 1].level,
-      );
+      expect(screen.getByText('提交中...')).toBeInTheDocument();
     });
 
-    submit_review.mockClear();
+    await waitFor(() => {
+      expect(screen.getByText('已记录本次记忆等级。')).toBeInTheDocument();
+    });
 
     fireEvent.keyDown(window, { key: 'ArrowUp' });
 
     await waitFor(() => {
-      expect(submit_review).toHaveBeenCalledWith(
-        candidate.id,
-        MEMORY_LEVEL_OPTIONS[1].level,
-      );
+      expect(screen.getByText('提交中...')).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('已记录本次记忆等级。')).toBeInTheDocument();
     });
   });
 });

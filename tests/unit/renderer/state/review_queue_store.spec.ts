@@ -32,4 +32,14 @@ describe('review_queue_store', () => {
     const state = review_queue_store.getState();
     expect(state.active_index).toBe(0);
   });
+
+  it('updates a card in place when instructed', () => {
+    review_queue_store.getState().set_queue([create_candidate('1')]);
+    review_queue_store.getState().update_card('1', (card) => ({
+      ...card,
+      memory_level: MemoryLevel.NEEDS_REINFORCEMENT,
+    }));
+    const state = review_queue_store.getState();
+    expect(state.queue[0].memory_level).toBe(MemoryLevel.NEEDS_REINFORCEMENT);
+  });
 });

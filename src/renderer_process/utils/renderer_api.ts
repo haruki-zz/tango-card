@@ -193,7 +193,8 @@ const fallback_api: RendererApi = {
     return compute_analytics_snapshot();
   },
 
-  async export_cards(_request: CardExportRequest) {
+  async export_cards(request: CardExportRequest) {
+    void request;
     return {
       status: 'error' as const,
       message: '卡片导出仅支持在 Electron 环境中执行。',

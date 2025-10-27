@@ -108,7 +108,7 @@ function parse_backup_json(source: string): CardBackupPayload {
   let parsed: unknown;
   try {
     parsed = JSON.parse(source);
-  } catch (error) {
+  } catch {
     throw new Error('备份文件不是有效的 JSON。');
   }
 

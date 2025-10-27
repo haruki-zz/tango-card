@@ -5,7 +5,7 @@ tango-card 是一款基于 TypeScript、React 与 Electron 的桌面应用，帮
 
 ## 核心功能规划
 - **SVG 渲染**：接收用户粘贴或导入的 SVG 源码，在渲染进程中自适应窗口尺寸展示，并提供空状态与异常提示。
-- **自动保存**：每张卡片包含 SVG 内容、创建时间、标签、记忆等级，并在编辑器中实时自动保存到本地。
+- **卡片编辑**：每张卡片包含 SVG 内容、创建时间、标签、记忆等级，编辑界面支持手动选择记忆等级与单击保存写入本地。
   卡片数据在 `src/domain/card` 内定义为 `CardEntity`，并通过 `card_factory.ts` 统一校验与生成，确保字段完整。
 - **智能复习**：基于记忆等级权重的随机抽取队列，优先推送记忆等级低的卡片，支持自定义标记（熟知、不太熟等，配置位于 `src/shared/constants/memory_levels.ts`），并提供数字键/方向键与左右、上下滑动操作加速打分。
 - **学习进度面板**：提供类似 GitHub contribution 的热力图，按周栅格展示每日学习频率，可在“综合活动 / 每日新增 / 复习次数”之间切换，并附带记忆等级分布概览，直观呈现趋势。
@@ -29,6 +29,7 @@ tango-card 是一款基于 TypeScript、React 与 Electron 的桌面应用，帮
 - 类型检查：`npm run typecheck`（同时验证主进程与渲染进程 TypeScript 配置）
 - 执行测试：`npm test`（建议保持 Jest 覆盖率 ≥90%，React 组件可使用 Testing Library）
 - 端到端测试：`npm run test:e2e`（Playwright 驱动 Electron 流程，首次运行前执行 `npx playwright install --with-deps`）
+- 发布前自检：`npm run release`（依次执行 typecheck、lint、unit test 与 build）
 - 浏览器预览：直接访问 Vite Dev Server（如 `http://localhost:5173`）时，渲染层会启用内存 Mock 的 Renderer API，便于在缺少 Electron 容器的情况下调试界面；在 Electron 中运行则会连接真实 IPC。
 - 存储引擎：`src/infrastructure/persistence/storage_engine.ts` 建立统一注册表，当前默认启用文件系统引擎（`file`），后续可根据部署场景扩展 SQLite 等实现。
 

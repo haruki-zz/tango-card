@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import type { MemoryLevel } from '../../domain/review/memory_level';
 import { review_queue_store } from '../state/review_queue_store';
 import { get_renderer_api } from '../utils/renderer_api';
+import { MEMORY_LEVEL_WEIGHTS } from '../../domain/review/memory_level';
 
 function useReviewCycle() {
   const queue = review_queue_store((state) => state.queue);
@@ -9,6 +10,7 @@ function useReviewCycle() {
   const set_queue = review_queue_store((state) => state.set_queue);
   const advance = review_queue_store((state) => state.advance);
   const reset = review_queue_store((state) => state.reset);
+  const update_card = review_queue_store((state) => state.update_card);
 
   const load_queue = useCallback(async (size?: number) => {
     const api = get_renderer_api();
@@ -18,9 +20,16 @@ function useReviewCycle() {
 
   const submit_review = useCallback(async (card_id: string, memory_level: MemoryLevel) => {
     const api = get_renderer_api();
-    await api.update_review({ card_id, memory_level });
+    const updated_card = await api.update_review({ card_id, memory_level });
+    update_card(card_id, (existing) => ({
+      ...existing,
+      memory_level: updated_card.memory_level,
+      review_count: updated_card.review_count ?? existing.review_count,
+      last_reviewed_at: updated_card.last_reviewed_at ?? existing.last_reviewed_at,
+      weight: MEMORY_LEVEL_WEIGHTS[updated_card.memory_level] ?? existing.weight,
+    }));
     advance();
-  }, [advance]);
+  }, [advance, update_card]);
 
   const reset_queue = useCallback(() => {
     reset();
