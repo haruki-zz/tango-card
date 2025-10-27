@@ -36,6 +36,14 @@ export class AnalyticsTracker {
     return this.storage_driver.read_activity_snapshot();
   }
 
+  async replace_snapshot(snapshot: ActivitySnapshot): Promise<void> {
+    const normalized: ActivitySnapshot = {
+      ...snapshot,
+      streak_days: this.calculate_streak(snapshot.points),
+    };
+    await this.storage_driver.write_activity_snapshot(normalized);
+  }
+
   private async update_snapshot(
     mutator: (snapshot: ActivitySnapshot) => ActivitySnapshot,
   ): Promise<void> {

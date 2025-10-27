@@ -27,4 +27,8 @@ export class CardRepository {
     }
     await this.storage_driver.write_cards(cards);
   }
+
+  async replace_cards(cards: CardEntity[]): Promise<void> {
+    await this.storage_driver.write_cards(cards);
+  }
 }

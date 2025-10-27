@@ -16,4 +16,8 @@ export class ReviewSessionRepository {
     sessions.push(record);
     await this.storage_driver.write_review_sessions(sessions);
   }
+
+  async replace_sessions(records: ReviewSessionRecord[]): Promise<void> {
+    await this.storage_driver.write_review_sessions(records);
+  }
 }

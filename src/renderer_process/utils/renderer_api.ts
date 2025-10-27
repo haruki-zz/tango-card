@@ -1,5 +1,6 @@
 import type {
   CardIngestRequest,
+  CardExportRequest,
   RendererApi,
   ReviewQueueRequest,
   ReviewUpdateRequest,
@@ -8,6 +9,12 @@ import type { CardEntity } from '../../domain/card/card_entity';
 import { WeightedMemoryReviewPolicy } from '../../domain/review/review_policy';
 import { MEMORY_LEVEL_DEFAULT, MemoryLevel } from '../../domain/review/memory_level';
 import type { ActivitySnapshot, DailyActivityPoint } from '../../domain/analytics/activity_snapshot';
+
+declare global {
+  interface Window {
+    tango_api?: RendererApi;
+  }
+}
 
 interface ReviewRecord {
   readonly card_id: string;
@@ -184,6 +191,20 @@ const fallback_api: RendererApi = {
 
   async fetch_analytics_snapshot() {
     return compute_analytics_snapshot();
+  },
+
+  async export_cards(_request: CardExportRequest) {
+    return {
+      status: 'error' as const,
+      message: '卡片导出仅支持在 Electron 环境中执行。',
+    };
+  },
+
+  async import_cards() {
+    return {
+      status: 'error' as const,
+      message: '卡片导入仅支持在 Electron 环境中执行。',
+    };
   },
 };
 

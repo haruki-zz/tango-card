@@ -9,6 +9,7 @@ tango-card 是一款基于 TypeScript、React 与 Electron 的桌面应用，帮
   卡片数据在 `src/domain/card` 内定义为 `CardEntity`，并通过 `card_factory.ts` 统一校验与生成，确保字段完整。
 - **智能复习**：基于记忆等级权重的随机抽取队列，优先推送记忆等级低的卡片，支持自定义标记（熟知、不太熟等，配置位于 `src/shared/constants/memory_levels.ts`），并提供数字键/方向键与左右、上下滑动操作加速打分。
 - **学习进度面板**：提供类似 GitHub contribution 的热力图，按周栅格展示每日学习频率，可在“综合活动 / 每日新增 / 复习次数”之间切换，并附带记忆等级分布概览，直观呈现趋势。
+- **数据备份**：设置页支持 JSON/ZIP 备份导入/导出，包含卡片、复习记录与学习统计，便于跨设备迁移。
 - **状态协调**：渲染层通过 Zustand store 管理卡片列表与复习队列，hooks 统一封装与 IPC 同步逻辑。
 
 ## 推荐目录结构
