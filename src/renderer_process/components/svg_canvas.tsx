@@ -5,7 +5,7 @@ import { use_element_size } from '../hooks/use_element_size';
 
 interface SvgCanvasProps {
   readonly svg_source: string;
-  readonly on_swipe?: (direction: 'left' | 'right') => void;
+  readonly on_swipe?: (direction: 'left' | 'right' | 'up' | 'down') => void;
 }
 
 type PreviewStatus = 'initializing' | 'empty' | 'error' | 'ready';
@@ -17,6 +17,32 @@ interface SwipeTracker {
 }
 
 const SWIPE_THRESHOLD = 60;
+
+function resolve_pointer_position(event: ReactPointerEvent<HTMLDivElement>): {
+  readonly x: number;
+  readonly y: number;
+} {
+  const native_event = event.nativeEvent as PointerEvent | undefined;
+  const pick = (value: unknown): number | undefined =>
+    typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+  const x =
+    pick(event.clientX) ??
+    pick(native_event?.clientX) ??
+    pick(event.pageX) ??
+    pick(native_event?.pageX) ??
+    pick(event.screenX) ??
+    pick(native_event?.screenX) ??
+    0;
+  const y =
+    pick(event.clientY) ??
+    pick(native_event?.clientY) ??
+    pick(event.pageY) ??
+    pick(native_event?.pageY) ??
+    pick(event.screenY) ??
+    pick(native_event?.screenY) ??
+    0;
+  return { x, y };
+}
 
 export function SvgCanvas({ svg_source, on_swipe }: SvgCanvasProps) {
   const { attach_ref, size } = use_element_size();
@@ -42,10 +68,11 @@ export function SvgCanvas({ svg_source, on_swipe }: SvgCanvasProps) {
   }, [trimmed_source, size.height, size.width]);
 
   const handle_pointer_down = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    const position = resolve_pointer_position(event);
     swipe_tracker.current = {
       pointer_id: event.pointerId,
-      start_x: event.clientX,
-      start_y: event.clientY,
+      start_x: position.x,
+      start_y: position.y,
     };
   }, []);
 
@@ -63,13 +90,17 @@ export function SvgCanvas({ svg_source, on_swipe }: SvgCanvasProps) {
         swipe_tracker.current = null;
         return;
       }
-      const delta_x = event.clientX - swipe_tracker.current.start_x;
-      const delta_y = event.clientY - swipe_tracker.current.start_y;
+      const position = resolve_pointer_position(event);
+      const delta_x = position.x - swipe_tracker.current.start_x;
+      const delta_y = position.y - swipe_tracker.current.start_y;
       swipe_tracker.current = null;
-      if (Math.abs(delta_x) < SWIPE_THRESHOLD || Math.abs(delta_x) <= Math.abs(delta_y)) {
+      const abs_x = Math.abs(delta_x);
+      const abs_y = Math.abs(delta_y);
+      if (abs_x < SWIPE_THRESHOLD && abs_y < SWIPE_THRESHOLD) {
         return;
       }
-      const direction = delta_x > 0 ? 'right' : 'left';
+      const direction =
+        abs_x >= abs_y ? (delta_x > 0 ? 'right' : 'left') : delta_y > 0 ? 'down' : 'up';
       on_swipe(direction);
     },
     [on_swipe],
@@ -79,7 +110,7 @@ export function SvgCanvas({ svg_source, on_swipe }: SvgCanvasProps) {
     <div
       ref={attach_ref}
       className="svg-canvas"
-      style={{ width: '100%', height: '100%' }}
+      style={{ width: '100%', height: '100%', touchAction: 'none' }}
       onPointerDown={handle_pointer_down}
       onPointerCancel={handle_pointer_cancel}
       onPointerUp={handle_pointer_up}

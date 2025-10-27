@@ -12,7 +12,13 @@ export function ReviewScreen() {
   const shortcut_map = useMemo(() => {
     return MEMORY_LEVEL_OPTIONS.reduce<Record<string, typeof MEMORY_LEVEL_OPTIONS[number]>>(
       (accumulator, option) => {
-        accumulator[option.shortcut.toLowerCase()] = option;
+        const register = (value: string) => {
+          accumulator[value.toLowerCase()] = option;
+        };
+        register(option.shortcut);
+        if (option.alt_shortcuts) {
+          option.alt_shortcuts.forEach(register);
+        }
         return accumulator;
       },
       {},
@@ -45,27 +51,30 @@ export function ReviewScreen() {
   }, [render_card, shortcut_map, submit_review]);
 
   const handle_swipe = useCallback(
-    (direction: 'left' | 'right') => {
+    (direction: 'left' | 'right' | 'up' | 'down') => {
       if (!render_card) {
         return;
       }
-      if (direction === 'left') {
-        const target = MEMORY_LEVEL_OPTIONS.find(
-          (option) => option.level === MEMORY_LEVEL_OPTIONS[2].level,
-        );
-        if (target) {
-          submit_review(render_card.id, target.level);
-        }
+      let target_option: (typeof MEMORY_LEVEL_OPTIONS)[number] | undefined;
+      switch (direction) {
+        case 'left':
+          target_option = MEMORY_LEVEL_OPTIONS[MEMORY_LEVEL_OPTIONS.length - 1];
+          break;
+        case 'right':
+          target_option = MEMORY_LEVEL_OPTIONS[0];
+          break;
+        case 'up':
+        case 'down':
+          target_option = MEMORY_LEVEL_OPTIONS[1] ?? MEMORY_LEVEL_OPTIONS[0];
+          break;
+        default:
+          target_option = undefined;
+          break;
+      }
+      if (!target_option) {
         return;
       }
-      if (direction === 'right') {
-        const target = MEMORY_LEVEL_OPTIONS.find(
-          (option) => option.level === MEMORY_LEVEL_OPTIONS[0].level,
-        );
-        if (target) {
-          submit_review(render_card.id, target.level);
-        }
-      }
+      submit_review(render_card.id, target_option.level);
     },
     [render_card, submit_review],
   );
@@ -89,16 +98,19 @@ export function ReviewScreen() {
         <MemoryLevelBadge level={render_card.memory_level} />
         <p>待复习队列：{queue.length} 张</p>
         <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-          快捷键：按 1/2/3 或在预览区向右/左滑动快速打分。
+          快捷键：按 1/2/3 或方向键，亦可在预览区向左右/上下滑动快速打分。
         </p>
         {MEMORY_LEVEL_OPTIONS.map((option) => (
           <button
             key={option.level}
             type="button"
-            aria-keyshortcuts={option.shortcut}
+            aria-keyshortcuts={[option.shortcut, ...(option.alt_shortcuts ?? [])].join(' ')}
             onClick={() => submit_review(render_card.id, option.level)}
           >
-            标记为「{option.label}」<span style={{ fontSize: '0.75rem' }}>（{option.shortcut}）</span>
+            标记为「{option.label}」
+            <span style={{ fontSize: '0.75rem' }}>
+              （{[option.shortcut, ...(option.alt_shortcuts ?? [])].join(' / ')}）
+            </span>
             {option.description ? (
               <span style={{ display: 'block', fontSize: '0.75rem' }}>{option.description}</span>
             ) : null}

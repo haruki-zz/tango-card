@@ -59,14 +59,14 @@ describe('ReviewScreen', () => {
       active_card: candidate,
       active_index: 0,
       load_queue,
-    submit_review,
-    reset_queue: jest.fn(),
-  });
+      submit_review,
+      reset_queue: jest.fn(),
+    });
 
-  render(<ReviewScreen />);
+    render(<ReviewScreen />);
 
     expect(
-      screen.getByText('快捷键：按 1/2/3 或在预览区向右/左滑动快速打分。'),
+      screen.getByText('快捷键：按 1/2/3 或方向键，亦可在预览区向左右/上下滑动快速打分。'),
     ).toBeInTheDocument();
 
     const current_label = MEMORY_LEVEL_OPTIONS.find(
@@ -94,6 +94,36 @@ describe('ReviewScreen', () => {
 
     await waitFor(() => {
       expect(submit_review).toHaveBeenCalledWith(candidate.id, target_option.level);
+    });
+
+    submit_review.mockClear();
+
+    fireEvent.keyDown(window, { key: 'ArrowRight' });
+
+    await waitFor(() => {
+      expect(submit_review).toHaveBeenCalledWith(candidate.id, target_option.level);
+    });
+
+    submit_review.mockClear();
+
+    fireEvent.keyDown(window, { key: 'ArrowLeft' });
+
+    await waitFor(() => {
+      expect(submit_review).toHaveBeenCalledWith(
+        candidate.id,
+        MEMORY_LEVEL_OPTIONS[MEMORY_LEVEL_OPTIONS.length - 1].level,
+      );
+    });
+
+    submit_review.mockClear();
+
+    fireEvent.keyDown(window, { key: 'ArrowUp' });
+
+    await waitFor(() => {
+      expect(submit_review).toHaveBeenCalledWith(
+        candidate.id,
+        MEMORY_LEVEL_OPTIONS[1].level,
+      );
     });
   });
 });
