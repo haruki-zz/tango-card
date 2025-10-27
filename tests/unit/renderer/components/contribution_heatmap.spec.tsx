@@ -4,7 +4,7 @@ import type { HeatmapCell } from '../../../../src/renderer_process/services/anal
 
 describe('ContributionHeatmap', () => {
   it('renders placeholder activity grid when no data is provided', () => {
-    render(<ContributionHeatmap cells={[]} />);
+    render(<ContributionHeatmap cells={[]} metric="total_activity" />);
 
     expect(screen.getByText('最近暂无学习记录，开始一轮复习吧！')).toBeInTheDocument();
     expect(screen.getAllByRole('gridcell').length).toBeGreaterThan(0);
@@ -12,11 +12,11 @@ describe('ContributionHeatmap', () => {
 
   it('exposes activity cells with accessible labels', () => {
     const cells: HeatmapCell[] = [
-      { date: '2024-01-01', score: 2 },
-      { date: '2024-01-05', score: 5 },
+      { date: '2024-01-01', created_cards: 1, reviewed_cards: 1 },
+      { date: '2024-01-05', created_cards: 2, reviewed_cards: 3 },
     ];
 
-    render(<ContributionHeatmap cells={cells} />);
+    render(<ContributionHeatmap cells={cells} metric="total_activity" />);
 
     expect(screen.getByLabelText('2024-01-01：2 次学习活动')).toBeInTheDocument();
     expect(screen.getByLabelText('2024-01-05：5 次学习活动')).toBeInTheDocument();
@@ -24,11 +24,11 @@ describe('ContributionHeatmap', () => {
 
   it('displays month labels to delineate periods', () => {
     const cells: HeatmapCell[] = [
-      { date: '2024-01-29', score: 1 },
-      { date: '2024-02-02', score: 1 },
+      { date: '2024-01-29', created_cards: 0, reviewed_cards: 1 },
+      { date: '2024-02-02', created_cards: 1, reviewed_cards: 0 },
     ];
 
-    render(<ContributionHeatmap cells={cells} />);
+    render(<ContributionHeatmap cells={cells} metric="total_activity" />);
 
     const labels = screen
       .getAllByTestId('month-label')

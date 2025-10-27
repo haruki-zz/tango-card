@@ -1,13 +1,15 @@
 import { Fragment, useMemo } from 'react';
-import type { HeatmapCell } from '../services/analytics_builder';
+import type { HeatmapCell, HeatmapMetric } from '../services/analytics_builder';
+import { resolve_heatmap_value } from '../services/analytics_builder';
 
 interface ContributionHeatmapProps {
   readonly cells: HeatmapCell[];
+  readonly metric: HeatmapMetric;
 }
 
 interface HeatmapDay {
   readonly date: string;
-  readonly score: number;
+  readonly value: number;
   readonly date_object: Date;
 }
 
@@ -35,6 +37,11 @@ const WEEKDAY_LABELS: Array<{ readonly label: string; readonly visible: boolean 
   { label: '', visible: false },
   { label: '周六', visible: true },
 ];
+const METRIC_LABELS: Record<HeatmapMetric, string> = {
+  total_activity: '学习活动',
+  created_cards: '新增卡片',
+  reviewed_cards: '复习次数',
+};
 
 function parse_iso_date(date: string): Date {
   const [year, month, day] = date.split('-').map(Number);
@@ -70,7 +77,7 @@ function add_days(date: Date, amount: number): Date {
   return next;
 }
 
-function build_heatmap_layout(cells: HeatmapCell[]): HeatmapLayout {
+function build_heatmap_layout(cells: HeatmapCell[], metric: HeatmapMetric): HeatmapLayout {
   if (cells.length === 0) {
     const end = end_of_week(new Date());
     const start = start_of_week(add_days(end, -(DEFAULT_WEEK_RANGE * 7 - 1)));
@@ -81,9 +88,10 @@ function build_heatmap_layout(cells: HeatmapCell[]): HeatmapLayout {
   const scores = new Map<string, number>();
   let max_score = 0;
   sorted.forEach((cell) => {
-    scores.set(cell.date, cell.score);
-    if (cell.score > max_score) {
-      max_score = cell.score;
+    const value = resolve_heatmap_value(cell, metric);
+    scores.set(cell.date, value);
+    if (value > max_score) {
+      max_score = value;
     }
   });
 
@@ -120,7 +128,7 @@ function build_layout_from_range(
     const iso = format_iso_date(cursor);
     const score = scores.get(iso) ?? 0;
     const date_object = new Date(cursor);
-    current_week.push({ date: iso, score, date_object });
+    current_week.push({ date: iso, value: score, date_object });
     if (score > max_score) {
       max_score = score;
     }
@@ -146,7 +154,7 @@ function build_layout_from_range(
       const date_object = new Date(filler_cursor);
       current_week.push({
         date: format_iso_date(date_object),
-        score: 0,
+        value: 0,
         date_object,
       });
       filler_cursor = add_days(filler_cursor, 1);
@@ -173,9 +181,10 @@ function resolve_cell_color(score: number, max_score: number): string {
   return COLOR_SCALE[index];
 }
 
-export function ContributionHeatmap({ cells }: ContributionHeatmapProps) {
-  const layout = useMemo(() => build_heatmap_layout(cells), [cells]);
+export function ContributionHeatmap({ cells, metric }: ContributionHeatmapProps) {
+  const layout = useMemo(() => build_heatmap_layout(cells, metric), [cells, metric]);
   const has_activity = layout.max_score > 0;
+  const metric_label = METRIC_LABELS[metric] ?? METRIC_LABELS.total_activity;
 
   if (layout.weeks.length === 0) {
     return <p>目前暂无学习记录。</p>;
@@ -229,13 +238,14 @@ export function ContributionHeatmap({ cells }: ContributionHeatmapProps) {
             </span>
             {layout.weeks.map((week, column_index) => {
               const day = week.days[row_index];
-              const color = resolve_cell_color(day.score, layout.max_score);
+              const color = resolve_cell_color(day.value, layout.max_score);
+              const label_value = day.value;
               return (
                 <span
                   key={`${day.date}-${column_index}`}
                   role="gridcell"
-                  aria-label={`${day.date}：${day.score} 次学习活动`}
-                  title={`${day.date}: ${day.score}`}
+                  aria-label={`${day.date}：${label_value} 次${metric_label}`}
+                  title={`${day.date}: ${label_value}`}
                   style={{
                     width: `${CELL_SIZE}px`,
                     height: `${CELL_SIZE}px`,
@@ -258,7 +268,7 @@ export function ContributionHeatmap({ cells }: ContributionHeatmapProps) {
           color: '#cbd5f5',
         }}
       >
-        <span>学习频率</span>
+        <span>{metric_label}</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           <span>较少</span>
           {COLOR_SCALE.map((color, index) => (
