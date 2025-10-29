@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-本仓库实现 TypeScript + React + Electron 的 tango-card 词汇记忆应用。遵循 `docs/architechture.md` 中的层次：`src/main_process` 负责窗口与 IPC，`src/renderer_process` 使用 React 承担界面与交互，`src/domain` 提供纯业务模型，`src/infrastructure` 管理存储与适配器，`src/shared` 存放跨层常量与工具。状态与复习调度逻辑集中在 `renderer_process/state` 与 `renderer_process/services`，确保 UI 与业务分离；可视化组件位于 `renderer_process/components` 并与 hooks 解耦。`assets/` 保存图标、示例 SVG，`data/` 用于 Electron `userData` 的卡片存储挂载点，`tests/` 按 unit/integration/e2e 分层，更多背景见 `docs/README_cn.md`、`docs/TODO.md` 与 `docs/stack_responsibility.md`。
+本仓库实现 TypeScript + React + Electron 的 tango-card 词汇记忆应用。遵循 `docs/architechture.md` 中的层次：`src/main_process` 负责窗口与 IPC，`src/renderer_process` 使用 React 承担界面与交互，`src/domain` 提供纯业务模型，`src/infrastructure` 管理存储与适配器，`src/shared` 存放跨层常量与工具。状态与复习调度逻辑集中在 `renderer_process/state` 与 `renderer_process/services`，确保 UI 与业务分离；可视化组件位于 `renderer_process/components` 并与 hooks 解耦。创建卡片时需接受“单词 / 平假名读音 / 语境 / 例句”四项输入，通过模板生成统一尺寸的 SVG。`assets/` 保存图标、示例 SVG，`data/` 用于 Electron `userData` 的卡片存储挂载点，`tests/` 按 unit/integration/e2e 分层，更多背景见 `docs/README_cn.md`、`docs/TODO.md` 与 `docs/stack_responsibility.md`。
 
 ## Build, Test, and Development Commands
 运行 `npm install` 初始化依赖。`npm run dev` 启动 Electron + Vite 驱动的 React 渲染进程，并监控 `src` 改动自动刷新；`npm run build` 生成打包产物到 `dist/`，同时静态检查 TypeScript。`npm test` 执行 Jest 套件，`npm run test:coverage` 检查 ≥90% 覆盖率；`npm run lint`、`npm run lint:fix` 与 `npm run format` 需在提交前保持通过。新增脚本时同步更新 `package.json` 与相关文档说明，并在 PR 描述写明使用场景。

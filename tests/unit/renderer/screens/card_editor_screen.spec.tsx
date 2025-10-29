@@ -12,6 +12,11 @@ jest.mock('../../../../src/renderer_process/hooks/use_card_store', () => ({
   use_card_store: jest.fn(),
 }));
 
+jest.mock('../../../../src/shared/templates/card_svg_template', () => ({
+  __esModule: true,
+  render_card_svg: jest.fn().mockReturnValue('<svg>template</svg>'),
+}));
+
 const mocked_get_renderer_api = jest.requireMock(
   '../../../../src/renderer_process/utils/renderer_api',
 ).get_renderer_api as jest.Mock;
@@ -46,8 +51,10 @@ describe('CardEditorScreen', () => {
 
     render(<CardEditorScreen />);
 
-    const svg_input = screen.getByRole('textbox', { name: 'SVG 源码' });
-    fireEvent.change(svg_input, { target: { value: '<svg>updated</svg>' } });
+    fireEvent.change(screen.getByLabelText('单词'), { target: { value: '勉強' } });
+    fireEvent.change(screen.getByLabelText('平假名读音'), { target: { value: 'べんきょう' } });
+    fireEvent.change(screen.getByLabelText('语境 / 情景'), { target: { value: '考试前的周末' } });
+    fireEvent.change(screen.getByLabelText('例句'), { target: { value: '明日は一日中勉強します。' } });
 
     const memory_select = screen.getByRole('combobox', { name: /记忆等级/ }) as HTMLSelectElement;
     fireEvent.change(memory_select, { target: { value: MemoryLevel.NEEDS_REINFORCEMENT } });
@@ -58,7 +65,7 @@ describe('CardEditorScreen', () => {
     await waitFor(() => {
       expect(ingest_card).toHaveBeenCalledWith({
         card_id: undefined,
-        svg_source: '<svg>updated</svg>',
+        svg_source: '<svg>template</svg>',
         tags: [],
         memory_level: MemoryLevel.NEEDS_REINFORCEMENT,
       });
@@ -81,9 +88,10 @@ describe('CardEditorScreen', () => {
 
     render(<CardEditorScreen />);
 
-    fireEvent.change(screen.getByRole('textbox', { name: 'SVG 源码' }), {
-      target: { value: '<svg>broken</svg>' },
-    });
+    fireEvent.change(screen.getByLabelText('单词'), { target: { value: '勉強' } });
+    fireEvent.change(screen.getByLabelText('平假名读音'), { target: { value: 'べんきょう' } });
+    fireEvent.change(screen.getByLabelText('语境 / 情景'), { target: { value: '考试前的周末' } });
+    fireEvent.change(screen.getByLabelText('例句'), { target: { value: '明日は一日中勉強します。' } });
 
     fireEvent.click(screen.getByRole('button', { name: '保存卡片' }));
 

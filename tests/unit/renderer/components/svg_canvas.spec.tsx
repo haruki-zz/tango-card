@@ -51,7 +51,7 @@ describe('SvgCanvas', () => {
 
   it('renders empty state when svg source is blank', () => {
     render(<SvgCanvas svg_source="   " />);
-    expect(screen.getByText('粘贴 SVG 源码后即可在此查看预览。')).toBeInTheDocument();
+    expect(screen.getByText('填写卡片内容后即可在此查看预览。')).toBeInTheDocument();
   });
 
   it('renders an error message when svg cannot be parsed', () => {

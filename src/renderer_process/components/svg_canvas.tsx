@@ -119,7 +119,7 @@ export function SvgCanvas({ svg_source, on_swipe }: SvgCanvasProps) {
         <div aria-label="svg-preview" dangerouslySetInnerHTML={{ __html: preview_state.markup }} />
       ) : null}
       {preview_state.status === 'empty' ? (
-        <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>粘贴 SVG 源码后即可在此查看预览。</p>
+        <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>填写卡片内容后即可在此查看预览。</p>
       ) : null}
       {preview_state.status === 'error' ? (
         <p style={{ color: '#f87171', fontSize: '0.9rem' }}>SVG 无法解析，请检查源码。</p>

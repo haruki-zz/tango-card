@@ -4,11 +4,15 @@ import { use_card_store } from '../hooks/use_card_store';
 import { get_renderer_api } from '../utils/renderer_api';
 import { MEMORY_LEVEL_DEFAULT, MemoryLevel } from '../../domain/review/memory_level';
 import { MEMORY_LEVEL_OPTIONS } from '../../shared/constants/memory_levels';
+import { render_card_svg } from '../../shared/templates/card_svg_template';
 
 type SaveStatus = 'idle' | 'dirty' | 'saving' | 'success' | 'error';
 
 export function CardEditorScreen() {
-  const [svg_source, set_svg_source] = useState('<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+  const [word, set_word] = useState('');
+  const [reading, set_reading] = useState('');
+  const [context_text, set_context_text] = useState('');
+  const [example_sentence, set_example_sentence] = useState('');
   const [tag_input, set_tag_input] = useState('');
   const [memory_level, set_memory_level] = useState<MemoryLevel>(MEMORY_LEVEL_DEFAULT);
   const [save_status, set_save_status] = useState<SaveStatus>('idle');
@@ -38,14 +42,29 @@ export function CardEditorScreen() {
     }
   };
 
-  const handle_svg_change = (value: string) => {
-    set_svg_source(value);
+  const handle_word_change = (value: string) => {
+    set_word(value);
     if (!value.trim()) {
       set_active_card_id(undefined);
       set_save_status('idle');
-      set_status_message('请先输入 SVG 源码。');
+      set_status_message('请先填写单词内容。');
       return;
     }
+    mark_dirty();
+  };
+
+  const handle_reading_change = (value: string) => {
+    set_reading(value);
+    mark_dirty();
+  };
+
+  const handle_context_change = (value: string) => {
+    set_context_text(value);
+    mark_dirty();
+  };
+
+  const handle_example_change = (value: string) => {
+    set_example_sentence(value);
     mark_dirty();
   };
 
@@ -59,19 +78,35 @@ export function CardEditorScreen() {
     mark_dirty();
   };
 
+  const fields_populated =
+    word.trim().length > 0 &&
+    reading.trim().length > 0 &&
+    context_text.trim().length > 0 &&
+    example_sentence.trim().length > 0;
+
+  const preview_svg = fields_populated
+    ? render_card_svg({
+        word,
+        reading,
+        context: context_text,
+        example: example_sentence,
+        memory_level,
+      })
+    : '';
+
   const handle_save = async () => {
-    const sanitized_svg = svg_source.trim();
-    if (!sanitized_svg) {
+    if (!fields_populated) {
       set_save_status('error');
-      set_status_message('SVG 源码不能为空。');
+      set_status_message('请完整填写单词、读音、语境和例句。');
       return;
     }
+    const svg_source = preview_svg;
     set_save_status('saving');
     set_status_message('保存中...');
     try {
       const saved_card = await api.ingest_card({
         card_id: active_card_id,
-        svg_source: sanitized_svg,
+        svg_source,
         tags: tag_list,
         memory_level,
       });
@@ -85,19 +120,43 @@ export function CardEditorScreen() {
     }
   };
 
-  const is_save_disabled = save_status === 'saving' || svg_source.trim().length === 0;
+  const is_save_disabled = save_status === 'saving' || !fields_populated;
 
   return (
     <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>SVG 源码</span>
+          <span>单词</span>
+          <input
+            value={word}
+            onChange={(event) => handle_word_change(event.target.value)}
+            placeholder="例如：勉強"
+          />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <span>平假名读音</span>
+          <input
+            value={reading}
+            onChange={(event) => handle_reading_change(event.target.value)}
+            placeholder="例如：べんきょう"
+          />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <span>语境 / 情景</span>
           <textarea
-            name="svg"
-            rows={16}
-            value={svg_source}
-            onChange={(event) => handle_svg_change(event.target.value)}
-            style={{ fontFamily: 'monospace', padding: '0.75rem' }}
+            rows={3}
+            value={context_text}
+            onChange={(event) => handle_context_change(event.target.value)}
+            placeholder="描述单词出现的场景或用途"
+          />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <span>例句</span>
+          <textarea
+            rows={3}
+            value={example_sentence}
+            onChange={(event) => handle_example_change(event.target.value)}
+            placeholder="给出含有该单词的例句"
           />
         </label>
         <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -146,7 +205,7 @@ export function CardEditorScreen() {
       </div>
       <div style={{ border: '1px solid #1f2937', borderRadius: '0.75rem', padding: '1rem' }}>
         <h2>实时预览</h2>
-        <SvgCanvas svg_source={svg_source} />
+        <SvgCanvas svg_source={preview_svg} />
       </div>
     </section>
   );
