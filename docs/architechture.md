@@ -57,7 +57,7 @@ src/
 │  │  ├─ card_store.ts            # 基于 Zustand 的卡片集合状态（列表 / 加载 / 错误）
 │  │  └─ review_queue_store.ts    # 基于 Zustand 的复习队列及指针调度
 │  ├─ styles/
-│  │  └─ global.css               # 全局样式与主题变量
+│  │  └─ global.css               # Tailwind 入口与少量全局样式覆盖
 │  └─ utils/
 │     ├─ renderer_api.ts          # Electron 缺失时提供内存 Mock 的 API 解析器
 │     └─ svg_sanitizer.ts         # 清理、验证 SVG 源码的工具函数

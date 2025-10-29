@@ -14,8 +14,10 @@
 !jest.config.cjs
 !.prettierrc.json
 !prettier.config.cjs
+!postcss.config.cjs
 !playwright.config.ts
 !index.html
+!tailwind.config.cjs
 
 # Allow source and documentation directories
 !src/
