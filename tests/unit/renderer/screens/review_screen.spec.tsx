@@ -70,8 +70,8 @@ describe('ReviewScreen', () => {
     ).toBeInTheDocument();
 
     const target_option = MEMORY_LEVEL_OPTIONS[0];
-    const radio = screen.getByLabelText(new RegExp(target_option.label)) as HTMLInputElement;
-    fireEvent.click(radio);
+    const selector = screen.getByRole('combobox', { name: /记忆等级/ }) as HTMLSelectElement;
+    fireEvent.change(selector, { target: { value: target_option.level } });
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: '记录记忆等级' }));
     });

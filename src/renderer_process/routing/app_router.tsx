@@ -14,7 +14,7 @@ const ROUTE_LABELS: Record<RouteKey, string> = {
 };
 
 export function AppRouter() {
-  const [active_route, set_active_route] = useState<RouteKey>('editor');
+  const [active_route, set_active_route] = useState<RouteKey>('review');
 
   return (
     <div style={{ display: 'flex', height: '100vh' }}>

@@ -13,6 +13,10 @@ export function ReviewScreen() {
   const [submission_status, set_submission_status] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
   const [feedback_message, set_feedback_message] = useState<string | null>(null);
   const [is_submitting, set_is_submitting] = useState(false);
+  const selected_option = useMemo(
+    () => MEMORY_LEVEL_OPTIONS.find((option) => option.level === selected_level),
+    [selected_level],
+  );
 
   const shortcut_map = useMemo(() => {
     return MEMORY_LEVEL_OPTIONS.reduce<Record<string, typeof MEMORY_LEVEL_OPTIONS[number]>>(
@@ -146,35 +150,28 @@ export function ReviewScreen() {
         <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
           选择记忆等级后点击“记录记忆等级”。仍可使用快捷键 1/2/3、方向键或滑动手势快速提交。
         </p>
-        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {MEMORY_LEVEL_OPTIONS.map((option) => (
-            <li key={option.level}>
-              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', cursor: 'pointer' }}>
-                <input
-                  type="radio"
-                  name="memory-level-choice"
-                  value={option.level}
-                  checked={selected_level === option.level}
-                  disabled={is_submitting}
-                  onChange={() => {
-                    set_selected_level(option.level);
-                    set_submission_status('idle');
-                    set_feedback_message(null);
-                  }}
-                />
-                <span style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  <strong>{option.label}</strong>
-                  <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-                    快捷键：{[option.shortcut, ...(option.alt_shortcuts ?? [])].join(' / ')}
-                  </span>
-                  {option.description ? (
-                    <span style={{ fontSize: '0.75rem', color: '#cbd5f5' }}>{option.description}</span>
-                  ) : null}
-                </span>
-              </label>
-            </li>
-          ))}
-        </ul>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <span>记忆等级</span>
+          <select
+            value={selected_level}
+            disabled={is_submitting}
+            onChange={(event) => {
+              set_selected_level(event.target.value as MemoryLevel);
+              set_submission_status('idle');
+              set_feedback_message(null);
+            }}
+            style={{ padding: '0.5rem' }}
+          >
+            {MEMORY_LEVEL_OPTIONS.map((option) => (
+              <option key={option.level} value={option.level}>
+                {option.label}（快捷键：{[option.shortcut, ...(option.alt_shortcuts ?? [])].join(' / ')}）
+              </option>
+            ))}
+          </select>
+          {selected_option?.description ? (
+            <span style={{ fontSize: '0.75rem', color: '#cbd5f5' }}>{selected_option.description}</span>
+          ) : null}
+        </label>
         <button
           type="button"
           onClick={() => {
