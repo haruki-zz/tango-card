@@ -5,7 +5,7 @@ tango-card 是一款基于 TypeScript、React 与 Electron 的桌面应用，帮
 
 ## 核心功能规划
 - **SVG 渲染**：接收用户粘贴或导入的 SVG 源码，在渲染进程中自适应窗口尺寸展示，并提供空状态与异常提示。
-- **卡片编辑**：支持输入单词本身、平假名读音、语境描述与例句，生成统一尺寸的 SVG 卡片；并可为卡片设置标签、记忆等级后手动保存到本地。
+- **卡片编辑**：支持输入单词本身、平假名读音、语境描述与例句，模板会根据内容自动换行、缩放以保持统一尺寸的 SVG 卡片；并可为卡片设置标签、记忆等级后手动保存到本地。
   卡片数据在 `src/domain/card` 内定义为 `CardEntity`，并通过 `card_factory.ts` 统一校验与生成，确保字段完整。卡片渲染模板会将四项输入（单词、平假名、语境、例句）排版到统一宽高的画布中，便于后续复习界面的统一展示与裁切。
 - **智能复习**：基于记忆等级权重的随机抽取队列，优先推送记忆等级低的卡片，支持自定义标记（熟知、不太熟等，配置位于 `src/shared/constants/memory_levels.ts`），并提供数字键/方向键与左右、上下滑动操作加速打分。
 - **学习进度面板**：提供类似 GitHub contribution 的热力图，按周栅格展示每日学习频率，可在“综合活动 / 每日新增 / 复习次数”之间切换，并附带记忆等级分布概览，直观呈现趋势。
@@ -32,7 +32,7 @@ tango-card 是一款基于 TypeScript、React 与 Electron 的桌面应用，帮
 - 端到端测试：`npm run test:e2e`（Playwright 驱动 Electron 流程，首次运行前执行 `npx playwright install --with-deps`）
 - 发布前自检：`npm run release`（依次执行 typecheck、lint、unit test 与 build）
 - 浏览器预览：直接访问 Vite Dev Server（如 `http://localhost:5173`）时，渲染层会启用内存 Mock 的 Renderer API，便于在缺少 Electron 容器的情况下调试界面；在 Electron 中运行则会连接真实 IPC。
-- 样式开发：Tailwind 配置位于 `tailwind.config.cjs`，全局入口为 `src/renderer_process/styles/global.css`，必要时可结合自定义 CSS 扩展。
+- 样式开发：Tailwind 配置位于 `tailwind.config.cjs`，通过 `@tailwindcss/postcss` 插件接入 PostCSS；全局入口为 `src/renderer_process/styles/global.css`，必要时可结合自定义 CSS 扩展。
 - 存储引擎：`src/infrastructure/persistence/storage_engine.ts` 建立统一注册表，当前默认启用文件系统引擎（`file`），后续可根据部署场景扩展 SQLite 等实现。
 
 ## 后续工作

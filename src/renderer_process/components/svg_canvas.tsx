@@ -110,7 +110,7 @@ export function SvgCanvas({ svg_source, on_swipe }: SvgCanvasProps) {
     <div
       ref={attach_ref}
       className="svg-canvas"
-      style={{ width: '100%', height: '100%', touchAction: 'none' }}
+      style={{ width: '100%', aspectRatio: '21 / 12', minHeight: '240px', touchAction: 'none' }}
       onPointerDown={handle_pointer_down}
       onPointerCancel={handle_pointer_cancel}
       onPointerUp={handle_pointer_up}

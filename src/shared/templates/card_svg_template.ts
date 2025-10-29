@@ -8,17 +8,48 @@ export interface CardTemplateInput {
   readonly memory_level?: MemoryLevel;
 }
 
-const CARD_WIDTH = 420;
-const CARD_HEIGHT = 240;
-const MAX_CONTEXT_CHARS = 32;
-const MAX_EXAMPLE_CHARS = 36;
+const CARD_WIDTH = 390;
+const CARD_HEIGHT = 844;
+const CONTENT_PADDING = 32;
+const HEADER_BOTTOM = 220;
+const TITLE_GAP = 28;
+const SECTION_GAP = 48;
+const CONTEXT_BOX_HEIGHT = 260;
+const EXAMPLE_BOX_HEIGHT = 360;
+const BASE_FONT_SIZE = 24;
+const MIN_FONT_SIZE = 12;
+const LINE_HEIGHT_RATIO = 1.35;
 
 export function render_card_svg(input: CardTemplateInput): string {
   const word = sanitize_text(input.word);
   const reading = sanitize_text(input.reading);
-  const context_lines = wrap_lines(input.context, MAX_CONTEXT_CHARS);
-  const example_lines = wrap_lines(input.example, MAX_EXAMPLE_CHARS);
+  const context_layout = layout_section(input.context, {
+    box_height: CONTEXT_BOX_HEIGHT,
+    base_font_size: BASE_FONT_SIZE,
+    min_font_size: MIN_FONT_SIZE,
+    wrap_width: CARD_WIDTH - CONTENT_PADDING * 2,
+  });
+  const example_layout = layout_section(input.example, {
+    box_height: EXAMPLE_BOX_HEIGHT,
+    base_font_size: BASE_FONT_SIZE,
+    min_font_size: MIN_FONT_SIZE,
+    wrap_width: CARD_WIDTH - CONTENT_PADDING * 2,
+  });
   const memory_level_label = input.memory_level ? sanitize_text(input.memory_level) : '';
+
+  const context_title_y = HEADER_BOTTOM + SECTION_GAP;
+  const context_body_y = context_title_y + TITLE_GAP;
+  const context_block_height = context_layout.line_height * Math.max(1, context_layout.lines.length);
+
+  let example_title_y = context_body_y + context_block_height + SECTION_GAP;
+  let example_body_y = example_title_y + TITLE_GAP;
+  const example_block_height = example_layout.line_height * Math.max(1, example_layout.lines.length);
+
+  const overflow = Math.max(0, example_body_y + example_block_height - (CARD_HEIGHT - CONTENT_PADDING));
+  if (overflow > 0) {
+    example_title_y = Math.max(context_body_y + TITLE_GAP, example_title_y - overflow);
+    example_body_y = example_title_y + TITLE_GAP;
+  }
 
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
@@ -26,69 +57,105 @@ export function render_card_svg(input: CardTemplateInput): string {
     '<style>',
     '* { font-family: "Inter", "Noto Sans JP", system-ui, sans-serif; }',
     '.card-bg { fill: #0f172a; }',
-    '.word { fill: #f8fafc; font-size: 36px; font-weight: 700; }',
-    '.reading { fill: #94a3b8; font-size: 18px; font-weight: 500; }',
-    '.section-title { fill: #38bdf8; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; }',
-    '.section-body { fill: #e2e8f0; font-size: 16px; line-height: 1.4; }',
-    '.memory-label { fill: #22c55e; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }',
+    '.word { fill: #f8fafc; font-size: 52px; font-weight: 700; }',
+    '.reading { fill: #94a3b8; font-size: 28px; font-weight: 500; }',
+    '.section-title { fill: #38bdf8; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; }',
+    '.section-body { fill: #e2e8f0; }',
+    '.memory-label { fill: #22c55e; font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }',
     '</style>',
     `<rect class="card-bg" x="0" y="0" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" rx="18"/>`,
-    `<text class="word" x="28" y="72">${word}</text>`,
-    `<text class="reading" x="28" y="104">${reading}</text>`,
+    `<text class="word" x="${CONTENT_PADDING}" y="148">${word}</text>`,
+    `<text class="reading" x="${CONTENT_PADDING}" y="196">${reading}</text>`,
     memory_level_label
-      ? `<text class="memory-label" x="${CARD_WIDTH - 32}" y="32" text-anchor="end">${memory_level_label}</text>`
+      ? `<text class="memory-label" x="${CARD_WIDTH - CONTENT_PADDING}" y="32" text-anchor="end">${memory_level_label}</text>`
       : '',
-    `<text class="section-title" x="28" y="138">CONTEXT</text>`,
-    `<text class="section-body" x="28" y="160">${create_tspans(context_lines)}</text>`,
-    `<text class="section-title" x="28" y="202">EXAMPLE</text>`,
-    `<text class="section-body" x="28" y="224">${create_tspans(example_lines)}</text>`,
+    `<text class="section-title" x="${CONTENT_PADDING}" y="${context_title_y}">CONTEXT</text>`,
+    `<text class="section-body" x="${CONTENT_PADDING}" y="${context_body_y}" style="font-size:${context_layout.font_size}px">${create_tspans(context_layout.lines, CONTENT_PADDING, context_layout.line_height)}</text>`,
+    `<text class="section-title" x="${CONTENT_PADDING}" y="${example_title_y}">EXAMPLE</text>`,
+    `<text class="section-body" x="${CONTENT_PADDING}" y="${example_body_y}" style="font-size:${example_layout.font_size}px">${create_tspans(example_layout.lines, CONTENT_PADDING, example_layout.line_height)}</text>`,
     '</svg>',
   ]
     .filter(Boolean)
     .join('');
 }
 
-function create_tspans(lines: string[]): string {
+function create_tspans(lines: string[], padding: number, line_height: number): string {
   return lines
     .map((line, index) => {
-      const dy = index === 0 ? '0' : '20';
-      return `<tspan x="28" dy="${dy}">${sanitize_text(line)}</tspan>`;
+      const dy = index === 0 ? '0' : line_height;
+      return `<tspan x="${padding}" dy="${dy}">${sanitize_text(line)}</tspan>`;
     })
     .join('');
 }
 
-function wrap_lines(subject: string, limit: number): string[] {
-  const normalized = subject.replace(/\r\n/g, '\n').trim();
-  if (!normalized) {
-    return [''];
-  }
-  const segments: string[] = [];
-  normalized.split('\n').forEach((line) => {
-    segments.push(...split_line(line.trim(), limit));
-  });
-  return segments.length > 0 ? segments : [''];
+interface SectionLayoutOptions {
+  readonly box_height: number;
+  readonly base_font_size: number;
+  readonly min_font_size: number;
+  readonly wrap_width: number;
 }
 
-function split_line(line: string, limit: number): string[] {
-  if (line.length <= limit) {
-    return [line];
+function layout_section(
+  content: string,
+  options: SectionLayoutOptions,
+): { lines: string[]; font_size: number; line_height: number } {
+  const normalized = content.replace(/\r\n/g, '\n').trim();
+  if (!normalized) {
+    const line_height = Math.round(options.base_font_size * LINE_HEIGHT_RATIO);
+    return { lines: [''], font_size: options.base_font_size, line_height };
   }
-  const words = line.split(/\s+/);
-  const lines: string[] = [];
-  let current = '';
-  words.forEach((word) => {
-    const tentative = current ? `${current} ${word}` : word;
-    if (tentative.length > limit && current) {
-      lines.push(current);
-      current = word;
-    } else {
-      current = tentative;
+
+  let font_size = options.base_font_size;
+  while (font_size >= options.min_font_size) {
+    const lines = break_into_lines(normalized, options.wrap_width, font_size);
+    const line_height = Math.round(font_size * LINE_HEIGHT_RATIO);
+    if (lines.length * line_height <= options.box_height) {
+      return { lines, font_size, line_height };
+    }
+    font_size -= 1;
+  }
+
+  const final_font = options.min_font_size;
+  const lines = break_into_lines(normalized, options.wrap_width, final_font);
+  const line_height = Math.round(final_font * LINE_HEIGHT_RATIO);
+  const max_lines = Math.max(1, Math.floor(options.box_height / line_height));
+  const sliced = lines.slice(0, max_lines);
+  if (lines.length > max_lines) {
+    const last = sliced[max_lines - 1];
+    sliced[max_lines - 1] = `${last.slice(0, Math.max(0, last.length - 1))}…`;
+  }
+  return { lines: sliced.length ? sliced : [''], font_size: final_font, line_height };
+}
+
+function break_into_lines(text: string, width: number, font_size: number): string[] {
+  const chars_per_line = Math.max(4, Math.floor(width / (font_size * 0.55)));
+  const result: string[] = [];
+
+  text.split('\n').forEach((paragraph) => {
+    const trimmed = paragraph.trim();
+    if (!trimmed) {
+      result.push('');
+      return;
+    }
+    let buffer = '';
+    trimmed.split(/\s+/).forEach((word) => {
+      const tentative = buffer ? `${buffer} ${word}` : word;
+      if (tentative.length > chars_per_line && buffer) {
+        result.push(buffer);
+        buffer = word;
+      } else if (tentative.length > chars_per_line) {
+        result.push(tentative);
+        buffer = '';
+      } else {
+        buffer = tentative;
+      }
+    });
+    if (buffer) {
+      result.push(buffer);
     }
   });
-  if (current) {
-    lines.push(current);
-  }
-  return lines;
+
+  return result.length > 0 ? result : [''];
 }
 
 function sanitize_text(value: string): string {
