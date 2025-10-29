@@ -37,7 +37,7 @@ src/
 │  ├─ routing/
 │  │  └─ app_router.tsx           # 定义路由结构（编辑、复习、统计、设置）
 │  ├─ screens/
-│  │  ├─ card_editor_screen.tsx   # 创建 / 编辑 SVG 单词卡界面（手动保存与记忆等级选择）
+│  │  ├─ card_editor_screen.tsx   # 输入单词/读音/语境/例句生成统一尺寸卡片（手动保存与记忆等级选择）
 │  │  ├─ review_screen.tsx        # 复习流程视图，展示抽取的卡片
 │  │  ├─ analytics_screen.tsx     # 学习进度热力图与统计数据
 │  │  └─ settings_screen.tsx      # 配置存储策略、显示偏好等
