@@ -51,12 +51,12 @@ describe('SvgCanvas', () => {
 
   it('renders empty state when svg source is blank', () => {
     render(<SvgCanvas svg_source="   " />);
-    expect(screen.getByText('填写卡片内容后即可在此查看预览。')).toBeInTheDocument();
+    expect(screen.getByText('Fill in the card details to preview it here.')).toBeInTheDocument();
   });
 
   it('renders an error message when svg cannot be parsed', () => {
     render(<SvgCanvas svg_source="<svg>" />);
-    expect(screen.getByText('SVG 无法解析，请检查源码。')).toBeInTheDocument();
+    expect(screen.getByText('SVG could not be parsed. Please check the source.')).toBeInTheDocument();
   });
 
   it('renders the svg preview when markup is valid', () => {
@@ -69,7 +69,7 @@ describe('SvgCanvas', () => {
   it('shows initializing message while container size is unknown', () => {
     set_mock_size({ width: 0, height: 0 });
     render(<SvgCanvas svg_source="<svg xmlns='http://www.w3.org/2000/svg'></svg>" />);
-    expect(screen.getByText('预览加载中...')).toBeInTheDocument();
+    expect(screen.getByText('Loading preview...')).toBeInTheDocument();
   });
 
   it('invokes swipe callback when touch gesture is detected', () => {

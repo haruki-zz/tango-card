@@ -6,7 +6,7 @@ describe('ContributionHeatmap', () => {
   it('renders placeholder activity grid when no data is provided', () => {
     render(<ContributionHeatmap cells={[]} metric="total_activity" />);
 
-    expect(screen.getByText('最近暂无学习记录，开始一轮复习吧！')).toBeInTheDocument();
+    expect(screen.getByText('No recent activity—start a review session!')).toBeInTheDocument();
     expect(screen.getAllByRole('gridcell').length).toBeGreaterThan(0);
   });
 
@@ -18,8 +18,8 @@ describe('ContributionHeatmap', () => {
 
     render(<ContributionHeatmap cells={cells} metric="total_activity" />);
 
-    expect(screen.getByLabelText('2024-01-01：2 次学习活动')).toBeInTheDocument();
-    expect(screen.getByLabelText('2024-01-05：5 次学习活动')).toBeInTheDocument();
+    expect(screen.getByLabelText('2024-01-01: 2 Study activity')).toBeInTheDocument();
+    expect(screen.getByLabelText('2024-01-05: 5 Study activity')).toBeInTheDocument();
   });
 
   it('displays month labels to delineate periods', () => {

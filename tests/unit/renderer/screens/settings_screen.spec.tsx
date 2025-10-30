@@ -30,20 +30,24 @@ describe('SettingsScreen', () => {
 
     render(<SettingsScreen />);
 
-    const export_json_button = screen.getByRole('button', { name: '导出 JSON' });
+    const export_json_button = screen.getByRole('button', { name: 'Export JSON' });
     fireEvent.click(export_json_button);
 
     await waitFor(() => {
       expect(export_cards).toHaveBeenCalledWith({ format: 'json' });
-      expect(screen.getByText(/成功导出 2 张卡片/)).toBeInTheDocument();
+      expect(
+        screen.getByText('Exported 2 cards, Review sessions: 1, Saved to: /tmp/cards.json'),
+      ).toBeInTheDocument();
     });
 
-    const import_button = screen.getByRole('button', { name: '导入备份' });
+    const import_button = screen.getByRole('button', { name: 'Import Backup' });
     fireEvent.click(import_button);
 
     await waitFor(() => {
       expect(import_cards).toHaveBeenCalled();
-      expect(screen.getByText(/成功导入 2 张卡片/)).toBeInTheDocument();
+      expect(
+        screen.getByText('Imported 2 cards, Review sessions: 1, If updates do not appear, restart the app.'),
+      ).toBeInTheDocument();
     });
   });
 });

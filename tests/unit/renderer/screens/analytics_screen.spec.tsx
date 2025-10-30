@@ -37,10 +37,10 @@ describe('AnalyticsScreen', () => {
       ],
     };
     const cards = [
-      { id: 'a', svg_source: '', created_at: '', tags: [], memory_level: MemoryLevel.WELL_KNOWN, review_count: 0, last_reviewed_at: undefined },
-      { id: 'b', svg_source: '', created_at: '', tags: [], memory_level: MemoryLevel.SOMEWHAT_FAMILIAR, review_count: 0, last_reviewed_at: undefined },
-      { id: 'c', svg_source: '', created_at: '', tags: [], memory_level: MemoryLevel.NEEDS_REINFORCEMENT, review_count: 0, last_reviewed_at: undefined },
-      { id: 'd', svg_source: '', created_at: '', tags: [], memory_level: MemoryLevel.NEEDS_REINFORCEMENT, review_count: 0, last_reviewed_at: undefined },
+      { id: 'a', svg_source: '', created_at: '', memory_level: MemoryLevel.WELL_KNOWN, review_count: 0, last_reviewed_at: undefined },
+      { id: 'b', svg_source: '', created_at: '', memory_level: MemoryLevel.SOMEWHAT_FAMILIAR, review_count: 0, last_reviewed_at: undefined },
+      { id: 'c', svg_source: '', created_at: '', memory_level: MemoryLevel.NEEDS_REINFORCEMENT, review_count: 0, last_reviewed_at: undefined },
+      { id: 'd', svg_source: '', created_at: '', memory_level: MemoryLevel.NEEDS_REINFORCEMENT, review_count: 0, last_reviewed_at: undefined },
     ];
 
     const fetch_snapshot = jest.fn().mockResolvedValue(snapshot);
@@ -54,27 +54,27 @@ describe('AnalyticsScreen', () => {
     render(<AnalyticsScreen />);
 
     await waitFor(() => {
-      expect(screen.getByText('连续学习天数')).toBeInTheDocument();
+      expect(screen.getByText('Streak')).toBeInTheDocument();
     });
 
     expect(fetch_snapshot).toHaveBeenCalled();
     expect(list_cards).toHaveBeenCalled();
 
-    expect(screen.getByText('3 天')).toBeInTheDocument();
-    expect(screen.getByText('近 7 天新增')).toBeInTheDocument();
-    expect(screen.getByText('4 张卡片')).toBeInTheDocument();
+    expect(screen.getByText('3 days')).toBeInTheDocument();
+    expect(screen.getByText('Cards Created (7 days)')).toBeInTheDocument();
+    expect(screen.getByText('4 cards created')).toBeInTheDocument();
 
     const heatmapCells = await screen.findAllByRole('gridcell');
     expect(heatmapCells.length).toBeGreaterThan(0);
-    expect(screen.getByLabelText('2024-03-08：5 次学习活动')).toBeInTheDocument();
+    expect(screen.getByLabelText('2024-03-08: 5 Study activity')).toBeInTheDocument();
 
-    const createdButton = screen.getByRole('button', { name: /每日新增/ });
+    const createdButton = screen.getByRole('button', { name: /Cards Created/ });
     fireEvent.click(createdButton);
     expect(createdButton).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByLabelText('2024-03-08：2 次新增卡片')).toBeInTheDocument();
+    expect(screen.getByLabelText('2024-03-08: 2 Cards created')).toBeInTheDocument();
 
-    expect(screen.getByText('熟知')).toBeInTheDocument();
-    expect(screen.getByText('需要强化')).toBeInTheDocument();
-    expect(screen.getAllByText(/张$/).length).toBeGreaterThan(0);
+    expect(screen.getByText('Well Known')).toBeInTheDocument();
+    expect(screen.getByText('Needs Reinforcement')).toBeInTheDocument();
+    expect(screen.getAllByText(/cards$/i).length).toBeGreaterThan(0);
   });
 });

@@ -50,17 +50,17 @@ describe('analytics_builder', () => {
 
   it('computes memory level distribution with percentages', () => {
     const cards = [
-      { id: 'a', svg_source: '', created_at: '', tags: [], memory_level: MemoryLevel.WELL_KNOWN, review_count: 0, last_reviewed_at: undefined },
-      { id: 'b', svg_source: '', created_at: '', tags: [], memory_level: MemoryLevel.SOMEWHAT_FAMILIAR, review_count: 0, last_reviewed_at: undefined },
-      { id: 'c', svg_source: '', created_at: '', tags: [], memory_level: MemoryLevel.NEEDS_REINFORCEMENT, review_count: 0, last_reviewed_at: undefined },
-      { id: 'd', svg_source: '', created_at: '', tags: [], memory_level: MemoryLevel.NEEDS_REINFORCEMENT, review_count: 0, last_reviewed_at: undefined },
+      { id: 'a', svg_source: '', created_at: '', memory_level: MemoryLevel.WELL_KNOWN, review_count: 0, last_reviewed_at: undefined },
+      { id: 'b', svg_source: '', created_at: '', memory_level: MemoryLevel.SOMEWHAT_FAMILIAR, review_count: 0, last_reviewed_at: undefined },
+      { id: 'c', svg_source: '', created_at: '', memory_level: MemoryLevel.NEEDS_REINFORCEMENT, review_count: 0, last_reviewed_at: undefined },
+      { id: 'd', svg_source: '', created_at: '', memory_level: MemoryLevel.NEEDS_REINFORCEMENT, review_count: 0, last_reviewed_at: undefined },
     ];
 
     const distribution = build_memory_level_distribution(cards);
     expect(distribution).toEqual([
-      { level: MemoryLevel.WELL_KNOWN, label: '熟知', count: 1, percentage: 25 },
-      { level: MemoryLevel.SOMEWHAT_FAMILIAR, label: '不太熟', count: 1, percentage: 25 },
-      { level: MemoryLevel.NEEDS_REINFORCEMENT, label: '需要强化', count: 2, percentage: 50 },
+      { level: MemoryLevel.WELL_KNOWN, label: 'Well Known', count: 1, percentage: 25 },
+      { level: MemoryLevel.SOMEWHAT_FAMILIAR, label: 'Somewhat Familiar', count: 1, percentage: 25 },
+      { level: MemoryLevel.NEEDS_REINFORCEMENT, label: 'Needs Reinforcement', count: 2, percentage: 50 },
     ]);
   });
 });

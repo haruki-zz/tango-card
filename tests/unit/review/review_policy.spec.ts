@@ -9,7 +9,6 @@ function create_card(id: string, level: MemoryLevel, review_count = 0): CardEnti
     id,
     svg_source: `<svg id="${id}"></svg>`,
     created_at: new Date().toISOString(),
-    tags: [],
     memory_level: level,
     review_count,
     last_reviewed_at: undefined,

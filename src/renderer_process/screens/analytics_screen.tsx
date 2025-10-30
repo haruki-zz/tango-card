@@ -17,9 +17,9 @@ const HEATMAP_METRIC_OPTIONS: Array<{
   readonly label: string;
   readonly description: string;
 }> = [
-  { value: 'total_activity', label: '综合活动', description: '新增 + 复习次数' },
-  { value: 'created_cards', label: '每日新增', description: '当天新增的卡片数量' },
-  { value: 'reviewed_cards', label: '复习次数', description: '当天完成的复习次数' },
+  { value: 'total_activity', label: 'Total Activity', description: 'New cards + reviews' },
+  { value: 'created_cards', label: 'Cards Created', description: 'Cards added on that day' },
+  { value: 'reviewed_cards', label: 'Cards Reviewed', description: 'Reviews completed on that day' },
 ];
 
 export function AnalyticsScreen() {
@@ -69,15 +69,15 @@ export function AnalyticsScreen() {
   if (!snapshot) {
     return (
       <section>
-        <h2>学习统计</h2>
-        <p>暂无统计数据，先创建一些单词卡吧。</p>
+        <h2>Learning Analytics</h2>
+        <p>No analytics yet—create a few cards to get started.</p>
       </section>
     );
   }
 
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <h2>学习统计</h2>
+      <h2>Learning Analytics</h2>
       <div
         style={{
           display: 'grid',
@@ -92,12 +92,12 @@ export function AnalyticsScreen() {
             padding: '1rem',
           }}
         >
-          <h3 style={{ margin: 0, fontSize: '1rem' }}>连续学习天数</h3>
+          <h3 style={{ margin: 0, fontSize: '1rem' }}>Streak</h3>
           <p style={{ margin: '0.5rem 0 0 0', fontSize: '1.5rem', fontWeight: 600 }}>
-            {snapshot.streak_days} 天
+            {snapshot.streak_days} days
           </p>
           <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
-            保持每天的复习节奏，维持 streak 不间断。
+            Stay consistent and keep the streak alive.
           </p>
         </article>
         <article
@@ -107,12 +107,12 @@ export function AnalyticsScreen() {
             padding: '1rem',
           }}
         >
-          <h3 style={{ margin: 0, fontSize: '1rem' }}>近 7 天新增</h3>
+          <h3 style={{ margin: 0, fontSize: '1rem' }}>Cards Created (7 days)</h3>
           <p style={{ margin: '0.5rem 0 0 0', fontSize: '1.5rem', fontWeight: 600 }}>
-            {seven_day_totals.created_cards} 张
+            {seven_day_totals.created_cards} cards
           </p>
           <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
-            近 7 天内创建的卡片总数。
+            Total cards created over the past week.
           </p>
         </article>
         <article
@@ -122,12 +122,12 @@ export function AnalyticsScreen() {
             padding: '1rem',
           }}
         >
-          <h3 style={{ margin: 0, fontSize: '1rem' }}>近 7 天复习</h3>
+          <h3 style={{ margin: 0, fontSize: '1rem' }}>Cards Reviewed (7 days)</h3>
           <p style={{ margin: '0.5rem 0 0 0', fontSize: '1.5rem', fontWeight: 600 }}>
-            {seven_day_totals.reviewed_cards} 次
+            {seven_day_totals.reviewed_cards} reviews
           </p>
           <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
-            近 7 天完成的复习次数。
+            Total reviews completed over the past week.
           </p>
         </article>
         <article
@@ -137,22 +137,22 @@ export function AnalyticsScreen() {
             padding: '1rem',
           }}
         >
-          <h3 style={{ margin: 0, fontSize: '1rem' }}>累计进度</h3>
+          <h3 style={{ margin: 0, fontSize: '1rem' }}>Overall Progress</h3>
           <p style={{ margin: '0.5rem 0 0 0', fontSize: '1.5rem', fontWeight: 600 }}>
-            {snapshot.total_cards} 张卡片
+            {snapshot.total_cards} cards created
           </p>
           <p style={{ margin: '0.25rem 0 0 0', fontSize: '1rem', fontWeight: 600 }}>
-            {snapshot.total_reviews} 次复习
+            {snapshot.total_reviews} reviews logged
           </p>
           <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
-            总计创建与复习的累积数据。
+            Cumulative totals for everything you have created and reviewed.
           </p>
         </article>
       </div>
 
       <section style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <header style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <h3 style={{ margin: 0, fontSize: '1rem' }}>学习热力图</h3>
+          <h3 style={{ margin: 0, fontSize: '1rem' }}>Activity Heatmap</h3>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {HEATMAP_METRIC_OPTIONS.map((option) => (
               <button
@@ -186,10 +186,10 @@ export function AnalyticsScreen() {
         style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
       >
         <h3 id="memory-level-distribution" style={{ margin: 0, fontSize: '1rem' }}>
-          记忆等级分布
+          Memory-Level Breakdown
         </h3>
         {total_cards === 0 ? (
-          <p>目前还没有卡片，先创建一些内容吧。</p>
+          <p>No cards yet—add something to see the distribution.</p>
         ) : (
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '0.75rem' }}>
             {memory_level_distribution.map((entry) => (
@@ -206,7 +206,7 @@ export function AnalyticsScreen() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <MemoryLevelBadge level={entry.level} />
-                  <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>{entry.count} 张</span>
+                  <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>{entry.count} cards</span>
                 </div>
                 <span style={{ fontSize: '0.9rem', color: '#94a3b8' }}>
                   {entry.percentage}

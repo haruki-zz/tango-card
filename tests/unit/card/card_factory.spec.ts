@@ -10,7 +10,6 @@ describe('create_card', () => {
       expect(result.data.memory_level).toBe(MemoryLevel.SOMEWHAT_FAMILIAR);
       expect(result.data.svg_source).toContain('<svg');
       expect(is_card_entity(result.data)).toBe(true);
-      expect(result.data.tags).toEqual([]);
       expect(typeof result.data.created_at).toBe('string');
     }
   });
@@ -20,23 +19,11 @@ describe('create_card', () => {
     expect(result.ok).toBe(false);
   });
 
-  it('deduplicates and trims tags', () => {
-    const result = create_card({
-      svg_source: '<svg></svg>',
-      tags: ['  N5 ', '动词', 'N5', ''],
-    });
-    expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect(result.data.tags).toEqual(['N5', '动词']);
-    }
-  });
-
   it('updates existing cards while preserving identity', () => {
     const base_card: CardEntity = {
       id: 'card-1',
       svg_source: '<svg></svg>',
       created_at: '2024-01-01T00:00:00.000Z',
-      tags: ['N5'],
       memory_level: MemoryLevel.SOMEWHAT_FAMILIAR,
       review_count: 0,
       last_reviewed_at: undefined,
@@ -44,14 +31,12 @@ describe('create_card', () => {
 
     const updated_result = update_card(base_card, {
       svg_source: '<svg><rect/></svg>',
-      tags: ['语法', 'N5'],
     });
 
     expect(updated_result.ok).toBe(true);
     if (updated_result.ok) {
       expect(updated_result.data.id).toBe(base_card.id);
       expect(updated_result.data.svg_source).toContain('<rect');
-      expect(updated_result.data.tags).toEqual(['语法', 'N5']);
       expect(updated_result.data.created_at).toBe(base_card.created_at);
     }
   });

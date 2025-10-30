@@ -20,7 +20,6 @@ export function register_card_ingest_handler(storage_context: StorageContext): v
 
     const create_result = create_card({
       svg_source: payload.svg_source,
-      tags: payload.tags ?? [],
       memory_level: payload.memory_level,
       created_at: payload.created_at,
     });

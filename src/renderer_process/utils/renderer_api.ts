@@ -41,24 +41,8 @@ function sanitize_svg(svg_source: string): string {
   return trimmed;
 }
 
-function normalize_tags(tags: string[] | undefined): string[] {
-  if (!Array.isArray(tags)) {
-    return [];
-  }
-  const seen = new Set<string>();
-  const normalized: string[] = [];
-  tags.forEach((tag) => {
-    const value = tag.trim();
-    if (value && !seen.has(value)) {
-      seen.add(value);
-      normalized.push(value);
-    }
-  });
-  return normalized;
-}
-
 function clone_card(card: CardEntity): CardEntity {
-  return { ...card, tags: [...card.tags] };
+  return { ...card };
 }
 
 function compute_analytics_snapshot(): ActivitySnapshot {
@@ -132,7 +116,6 @@ function calculate_streak(points: DailyActivityPoint[]): number {
 const fallback_api: RendererApi = {
   async ingest_card(payload: CardIngestRequest) {
     const sanitized_svg = sanitize_svg(payload.svg_source);
-    const tags = normalize_tags(payload.tags);
     const memory_level = payload.memory_level ?? MEMORY_LEVEL_DEFAULT;
     const created_at = payload.created_at ?? new Date().toISOString();
 
@@ -141,7 +124,6 @@ const fallback_api: RendererApi = {
       const updated_card: CardEntity = {
         ...existing,
         svg_source: sanitized_svg,
-        tags,
         memory_level,
         created_at,
       };
@@ -153,7 +135,6 @@ const fallback_api: RendererApi = {
       id: create_identifier(),
       svg_source: sanitized_svg,
       created_at,
-      tags,
       memory_level,
       review_count: 0,
       last_reviewed_at: undefined,
@@ -197,14 +178,14 @@ const fallback_api: RendererApi = {
     void request;
     return {
       status: 'error' as const,
-      message: '卡片导出仅支持在 Electron 环境中执行。',
+      message: 'Card export is only available in the Electron environment.',
     };
   },
 
   async import_cards() {
     return {
       status: 'error' as const,
-      message: '卡片导入仅支持在 Electron 环境中执行。',
+      message: 'Card import is only available in the Electron environment.',
     };
   },
 };

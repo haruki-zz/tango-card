@@ -29,18 +29,18 @@ const COLUMN_LABEL_WIDTH = 48;
 const DEFAULT_WEEK_RANGE = 20;
 const COLOR_SCALE = ['#1f2937', '#84cc16', '#22c55e', '#16a34a', '#15803d'];
 const WEEKDAY_LABELS: Array<{ readonly label: string; readonly visible: boolean }> = [
-  { label: '周日', visible: true },
+  { label: 'Sun', visible: true },
   { label: '', visible: false },
-  { label: '周二', visible: true },
+  { label: 'Tue', visible: true },
   { label: '', visible: false },
-  { label: '周四', visible: true },
+  { label: 'Thu', visible: true },
   { label: '', visible: false },
-  { label: '周六', visible: true },
+  { label: 'Sat', visible: true },
 ];
 const METRIC_LABELS: Record<HeatmapMetric, string> = {
-  total_activity: '学习活动',
-  created_cards: '新增卡片',
-  reviewed_cards: '复习次数',
+  total_activity: 'Study activity',
+  created_cards: 'Cards created',
+  reviewed_cards: 'Cards reviewed',
 };
 
 function parse_iso_date(date: string): Date {
@@ -187,12 +187,12 @@ export function ContributionHeatmap({ cells, metric }: ContributionHeatmapProps)
   const metric_label = METRIC_LABELS[metric] ?? METRIC_LABELS.total_activity;
 
   if (layout.weeks.length === 0) {
-    return <p>目前暂无学习记录。</p>;
+    return <p>No learning activity yet.</p>;
   }
 
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-      {!has_activity ? <p>最近暂无学习记录，开始一轮复习吧！</p> : null}
+      {!has_activity ? <p>No recent activity—start a review session!</p> : null}
       <div
         style={{
           display: 'grid',
@@ -217,7 +217,7 @@ export function ContributionHeatmap({ cells, metric }: ContributionHeatmapProps)
       </div>
       <div
         role="grid"
-        aria-label="学习进度热力图"
+        aria-label="Study progress heatmap"
         style={{
           display: 'grid',
           gridTemplateColumns: `${COLUMN_LABEL_WIDTH}px repeat(${layout.weeks.length}, ${CELL_SIZE}px)`,
@@ -244,7 +244,7 @@ export function ContributionHeatmap({ cells, metric }: ContributionHeatmapProps)
                 <span
                   key={`${day.date}-${column_index}`}
                   role="gridcell"
-                  aria-label={`${day.date}：${label_value} 次${metric_label}`}
+                  aria-label={`${day.date}: ${label_value} ${metric_label}`}
                   title={`${day.date}: ${label_value}`}
                   style={{
                     width: `${CELL_SIZE}px`,
@@ -270,7 +270,7 @@ export function ContributionHeatmap({ cells, metric }: ContributionHeatmapProps)
       >
         <span>{metric_label}</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          <span>较少</span>
+          <span>Less</span>
           {COLOR_SCALE.map((color, index) => (
             <span
               key={`legend-${color}-${index}`}
@@ -282,7 +282,7 @@ export function ContributionHeatmap({ cells, metric }: ContributionHeatmapProps)
               }}
             />
           ))}
-          <span>较多</span>
+          <span>More</span>
         </div>
       </footer>
     </section>

@@ -13,25 +13,23 @@ export function SettingsScreen() {
     try {
       const result = await get_renderer_api().export_cards({ format });
       if (result.status === 'cancelled') {
-        set_operation_message('已取消导出操作。');
+        set_operation_message('Export cancelled.');
         return;
       }
       if (result.status === 'error') {
-        set_operation_message(result.message ?? '导出失败，稍后再试。');
+        set_operation_message(result.message ?? 'Export failed; please try again later.');
         return;
       }
       const summary = [
-        `成功导出 ${result.exported_cards ?? 0} 张卡片`,
-        result.exported_sessions !== undefined
-          ? `复习记录 ${result.exported_sessions ?? 0} 条`
-          : null,
-        result.file_path ? `位置：${result.file_path}` : null,
+        `Exported ${result.exported_cards ?? 0} cards`,
+        result.exported_sessions !== undefined ? `Review sessions: ${result.exported_sessions ?? 0}` : null,
+        result.file_path ? `Saved to: ${result.file_path}` : null,
       ]
         .filter((value): value is string => Boolean(value))
-        .join('，');
-      set_operation_message(summary || '导出成功。');
+        .join(', ');
+      set_operation_message(summary || 'Export completed.');
     } catch (error) {
-      set_operation_message(error instanceof Error ? error.message : '导出失败，稍后再试。');
+      set_operation_message(error instanceof Error ? error.message : 'Export failed; please try again later.');
     } finally {
       set_pending_action(null);
     }
@@ -43,25 +41,23 @@ export function SettingsScreen() {
     try {
       const result = await get_renderer_api().import_cards();
       if (result.status === 'cancelled') {
-        set_operation_message('已取消导入操作。');
+        set_operation_message('Import cancelled.');
         return;
       }
       if (result.status === 'error') {
-        set_operation_message(result.message ?? '导入失败，稍后再试。');
+        set_operation_message(result.message ?? 'Import failed; please try again later.');
         return;
       }
       const summary = [
-        `成功导入 ${result.imported_cards ?? 0} 张卡片`,
-        result.imported_sessions !== undefined
-          ? `复习记录 ${result.imported_sessions ?? 0} 条`
-          : null,
-        '为确保数据刷新，可在必要时重新打开应用。',
+        `Imported ${result.imported_cards ?? 0} cards`,
+        result.imported_sessions !== undefined ? `Review sessions: ${result.imported_sessions ?? 0}` : null,
+        'If updates do not appear, restart the app.',
       ]
         .filter((value): value is string => Boolean(value))
-        .join('，');
+        .join(', ');
       set_operation_message(summary);
     } catch (error) {
-      set_operation_message(error instanceof Error ? error.message : '导入失败，稍后再试。');
+      set_operation_message(error instanceof Error ? error.message : 'Import failed; please try again later.');
     } finally {
       set_pending_action(null);
     }
@@ -72,21 +68,21 @@ export function SettingsScreen() {
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '720px' }}>
       <header>
-        <h2>设置</h2>
-        <p>更多配置选项将在后续版本开放。</p>
+        <h2>Settings</h2>
+        <p>More configuration options are coming soon.</p>
       </header>
       <article>
-        <h3>基础信息</h3>
+        <h3>Basics</h3>
         <ul>
-          <li>数据目录：Electron userData/tango-card</li>
-          <li>默认记忆权重：熟知 1，不太熟 3，需要强化 5</li>
-          <li>SVG 安全：保存前会自动移除 script/foreignObject 标签</li>
+          <li>Data directory: Electron userData/tango-card</li>
+          <li>Default memory weights: Well Known 1, Somewhat Familiar 3, Needs Reinforcement 5</li>
+          <li>SVG safety: removes script/foreignObject tags before saving</li>
         </ul>
       </article>
       <article style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        <h3>数据备份与迁移</h3>
+        <h3>Backup & Migration</h3>
         <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.9rem' }}>
-          导出操作会包含卡片、复习记录与学习统计，可保存为 JSON/ZIP；导入会覆写当前数据，请先备份。
+          Exports include cards, review history, and analytics (JSON or ZIP). Imports overwrite existing data, so back up first.
         </p>
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
           <button
@@ -102,7 +98,7 @@ export function SettingsScreen() {
               cursor: is_busy ? 'not-allowed' : 'pointer',
             }}
           >
-            导出 JSON
+            Export JSON
           </button>
           <button
             type="button"
@@ -117,7 +113,7 @@ export function SettingsScreen() {
               cursor: is_busy ? 'not-allowed' : 'pointer',
             }}
           >
-            导出 ZIP
+            Export ZIP
           </button>
           <button
             type="button"
@@ -132,11 +128,11 @@ export function SettingsScreen() {
               cursor: is_busy ? 'not-allowed' : 'pointer',
             }}
           >
-            导入备份
+            Import Backup
           </button>
         </div>
         <p aria-live="polite" style={{ minHeight: '1.5rem', margin: 0, color: '#94a3b8' }}>
-          {is_busy ? '处理中...' : operation_message}
+          {is_busy ? 'Processing...' : operation_message}
         </p>
       </article>
     </section>

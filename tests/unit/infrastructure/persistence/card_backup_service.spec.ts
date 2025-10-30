@@ -20,7 +20,6 @@ describe('card_backup_service', () => {
       id: 'card-1',
       svg_source: '<svg/>',
       created_at: '2024-03-10T00:00:00.000Z',
-      tags: ['tag'],
       memory_level: MemoryLevel.WELL_KNOWN,
       review_count: 1,
       last_reviewed_at: '2024-03-11T00:00:00.000Z',

@@ -19,7 +19,6 @@ describe('renderer_api fallback', () => {
     const api = get_renderer_api();
     const card = await api.ingest_card({
       svg_source: '<svg xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10"/></svg>',
-      tags: ['mock'],
     });
 
     expect(card.id).toBeDefined();

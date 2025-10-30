@@ -4,6 +4,7 @@ export interface CardTemplateInput {
   readonly word: string;
   readonly reading: string;
   readonly context: string;
+  readonly scene: string;
   readonly example: string;
   readonly memory_level?: MemoryLevel;
 }
@@ -11,14 +12,18 @@ export interface CardTemplateInput {
 const CARD_WIDTH = 390;
 const CARD_HEIGHT = 844;
 const CONTENT_PADDING = 32;
-const HEADER_BOTTOM = 220;
-const TITLE_GAP = 28;
-const SECTION_GAP = 48;
-const CONTEXT_BOX_HEIGHT = 260;
-const EXAMPLE_BOX_HEIGHT = 360;
+const HEADER_BOTTOM = 200;
+const TITLE_GAP = 22;
+const SECTION_GAP = 32;
+const CONTEXT_BOX_HEIGHT = 150;
+const SCENE_BOX_HEIGHT = 140;
+const EXAMPLE_BOX_HEIGHT = 150;
 const BASE_FONT_SIZE = 24;
 const MIN_FONT_SIZE = 12;
 const LINE_HEIGHT_RATIO = 1.35;
+const TITLE_FONT_SCALE = 1.1;
+const TITLE_FONT_STEP = 2;
+const TITLE_FONT_MAX = 32;
 
 export function render_card_svg(input: CardTemplateInput): string {
   const word = sanitize_text(input.word);
@@ -29,25 +34,39 @@ export function render_card_svg(input: CardTemplateInput): string {
     min_font_size: MIN_FONT_SIZE,
     wrap_width: CARD_WIDTH - CONTENT_PADDING * 2,
   });
+  const scene_layout = layout_section(input.scene, {
+    box_height: SCENE_BOX_HEIGHT,
+    base_font_size: BASE_FONT_SIZE,
+    min_font_size: MIN_FONT_SIZE,
+    wrap_width: CARD_WIDTH - CONTENT_PADDING * 2,
+  });
   const example_layout = layout_section(input.example, {
     box_height: EXAMPLE_BOX_HEIGHT,
     base_font_size: BASE_FONT_SIZE,
     min_font_size: MIN_FONT_SIZE,
     wrap_width: CARD_WIDTH - CONTENT_PADDING * 2,
   });
-  const memory_level_label = input.memory_level ? sanitize_text(input.memory_level) : '';
 
   const context_title_y = HEADER_BOTTOM + SECTION_GAP;
   const context_body_y = context_title_y + TITLE_GAP;
   const context_block_height = context_layout.line_height * Math.max(1, context_layout.lines.length);
+  const context_title_font_size = compute_title_font_size(context_layout.font_size);
 
-  let example_title_y = context_body_y + context_block_height + SECTION_GAP;
+  const scene_title_y = context_body_y + context_block_height + SECTION_GAP;
+  const scene_body_y = scene_title_y + TITLE_GAP;
+  const scene_block_height = scene_layout.line_height * Math.max(1, scene_layout.lines.length);
+  const scene_title_font_size = compute_title_font_size(scene_layout.font_size);
+
+  let example_title_y = scene_body_y + scene_block_height + SECTION_GAP;
   let example_body_y = example_title_y + TITLE_GAP;
   const example_block_height = example_layout.line_height * Math.max(1, example_layout.lines.length);
+  const example_title_font_size = compute_title_font_size(example_layout.font_size);
 
-  const overflow = Math.max(0, example_body_y + example_block_height - (CARD_HEIGHT - CONTENT_PADDING));
+  const max_content_bottom = CARD_HEIGHT - CONTENT_PADDING;
+  const overflow = Math.max(0, example_body_y + example_block_height - max_content_bottom);
   if (overflow > 0) {
-    example_title_y = Math.max(context_body_y + TITLE_GAP, example_title_y - overflow);
+    const minimum_example_title_y = scene_body_y + scene_block_height + SECTION_GAP;
+    example_title_y = Math.max(minimum_example_title_y, example_title_y - overflow);
     example_body_y = example_title_y + TITLE_GAP;
   }
 
@@ -55,23 +74,21 @@ export function render_card_svg(input: CardTemplateInput): string {
     '<?xml version="1.0" encoding="UTF-8"?>',
     `<svg xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" preserveAspectRatio="xMidYMid meet">`,
     '<style>',
-    '* { font-family: "Inter", "Noto Sans JP", system-ui, sans-serif; }',
+    '* { font-family: "游明朝", "Yu Mincho", "YuMincho", serif; }',
     '.card-bg { fill: #0f172a; }',
     '.word { fill: #f8fafc; font-size: 52px; font-weight: 700; }',
     '.reading { fill: #94a3b8; font-size: 28px; font-weight: 500; }',
-    '.section-title { fill: #38bdf8; font-size: 18px; letter-spacing: 0.12em; text-transform: uppercase; }',
+    '.section-title { fill: #38bdf8; letter-spacing: 0.08em; font-weight: 600; }',
     '.section-body { fill: #e2e8f0; }',
-    '.memory-label { fill: #22c55e; font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }',
     '</style>',
     `<rect class="card-bg" x="0" y="0" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" rx="18"/>`,
     `<text class="word" x="${CONTENT_PADDING}" y="148">${word}</text>`,
     `<text class="reading" x="${CONTENT_PADDING}" y="196">${reading}</text>`,
-    memory_level_label
-      ? `<text class="memory-label" x="${CARD_WIDTH - CONTENT_PADDING}" y="32" text-anchor="end">${memory_level_label}</text>`
-      : '',
-    `<text class="section-title" x="${CONTENT_PADDING}" y="${context_title_y}">CONTEXT</text>`,
+    `<text class="section-title" x="${CONTENT_PADDING}" y="${context_title_y}" style="font-size:${context_title_font_size}px">Context</text>`,
     `<text class="section-body" x="${CONTENT_PADDING}" y="${context_body_y}" style="font-size:${context_layout.font_size}px">${create_tspans(context_layout.lines, CONTENT_PADDING, context_layout.line_height)}</text>`,
-    `<text class="section-title" x="${CONTENT_PADDING}" y="${example_title_y}">EXAMPLE</text>`,
+    `<text class="section-title" x="${CONTENT_PADDING}" y="${scene_title_y}" style="font-size:${scene_title_font_size}px">Scene</text>`,
+    `<text class="section-body" x="${CONTENT_PADDING}" y="${scene_body_y}" style="font-size:${scene_layout.font_size}px">${create_tspans(scene_layout.lines, CONTENT_PADDING, scene_layout.line_height)}</text>`,
+    `<text class="section-title" x="${CONTENT_PADDING}" y="${example_title_y}" style="font-size:${example_title_font_size}px">Example</text>`,
     `<text class="section-body" x="${CONTENT_PADDING}" y="${example_body_y}" style="font-size:${example_layout.font_size}px">${create_tspans(example_layout.lines, CONTENT_PADDING, example_layout.line_height)}</text>`,
     '</svg>',
   ]
@@ -204,6 +221,11 @@ function measure_char_units(char: string): number {
 
 function is_breakable(char: string): boolean {
   return /\s/.test(char);
+}
+
+function compute_title_font_size(body_font_size: number): number {
+  const base = Math.max(body_font_size + TITLE_FONT_STEP, Math.round(body_font_size * TITLE_FONT_SCALE));
+  return Math.min(TITLE_FONT_MAX, base);
 }
 
 function sanitize_text(value: string): string {

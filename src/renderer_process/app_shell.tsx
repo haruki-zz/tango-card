@@ -13,7 +13,7 @@ export function AppShell() {
 
 const container = document.getElementById('root');
 if (!container) {
-  throw new Error('缺少 root 容器，无法挂载应用。');
+  throw new Error('Missing root container; cannot mount application.');
 }
 
 const root = createRoot(container);

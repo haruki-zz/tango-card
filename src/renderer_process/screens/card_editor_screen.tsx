@@ -12,23 +12,14 @@ export function CardEditorScreen() {
   const [word, set_word] = useState('');
   const [reading, set_reading] = useState('');
   const [context_text, set_context_text] = useState('');
+  const [scene_text, set_scene_text] = useState('');
   const [example_sentence, set_example_sentence] = useState('');
-  const [tag_input, set_tag_input] = useState('');
   const [memory_level, set_memory_level] = useState<MemoryLevel>(MEMORY_LEVEL_DEFAULT);
   const [save_status, set_save_status] = useState<SaveStatus>('idle');
-  const [status_message, set_status_message] = useState('尚未保存');
+  const [status_message, set_status_message] = useState('Not saved yet');
   const [active_card_id, set_active_card_id] = useState<string | undefined>(undefined);
   const api = useMemo(() => get_renderer_api(), []);
   const { refresh_cards } = use_card_store();
-
-  const tag_list = useMemo(
-    () =>
-      tag_input
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter(Boolean),
-    [tag_input],
-  );
 
   const selected_memory_option = useMemo(
     () => MEMORY_LEVEL_OPTIONS.find((option) => option.level === memory_level),
@@ -38,7 +29,7 @@ export function CardEditorScreen() {
   const mark_dirty = () => {
     if (save_status !== 'dirty') {
       set_save_status('dirty');
-      set_status_message('存在尚未保存的更改。');
+      set_status_message('Unsaved changes.');
     }
   };
 
@@ -47,7 +38,7 @@ export function CardEditorScreen() {
     if (!value.trim()) {
       set_active_card_id(undefined);
       set_save_status('idle');
-      set_status_message('请先填写单词内容。');
+      set_status_message('Please enter a word first.');
       return;
     }
     mark_dirty();
@@ -63,13 +54,13 @@ export function CardEditorScreen() {
     mark_dirty();
   };
 
-  const handle_example_change = (value: string) => {
-    set_example_sentence(value);
+  const handle_scene_change = (value: string) => {
+    set_scene_text(value);
     mark_dirty();
   };
 
-  const handle_tag_change = (value: string) => {
-    set_tag_input(value);
+  const handle_example_change = (value: string) => {
+    set_example_sentence(value);
     mark_dirty();
   };
 
@@ -82,6 +73,7 @@ export function CardEditorScreen() {
     word.trim().length > 0 &&
     reading.trim().length > 0 &&
     context_text.trim().length > 0 &&
+    scene_text.trim().length > 0 &&
     example_sentence.trim().length > 0;
 
   const preview_svg = fields_populated
@@ -89,6 +81,7 @@ export function CardEditorScreen() {
         word,
         reading,
         context: context_text,
+        scene: scene_text,
         example: example_sentence,
         memory_level,
       })
@@ -97,26 +90,25 @@ export function CardEditorScreen() {
   const handle_save = async () => {
     if (!fields_populated) {
       set_save_status('error');
-      set_status_message('请完整填写单词、读音、语境和例句。');
+      set_status_message('Please complete word, reading, context, scene, and example.');
       return;
     }
     const svg_source = preview_svg;
     set_save_status('saving');
-    set_status_message('保存中...');
+    set_status_message('Saving...');
     try {
       const saved_card = await api.ingest_card({
         card_id: active_card_id,
         svg_source,
-        tags: tag_list,
         memory_level,
       });
       set_active_card_id(saved_card.id);
       set_save_status('success');
-      set_status_message('保存成功。');
+      set_status_message('Saved successfully.');
       await refresh_cards();
     } catch (error) {
       set_save_status('error');
-      set_status_message(`保存失败：${(error as Error).message}`);
+      set_status_message(`Save failed: ${(error as Error).message}`);
     }
   };
 
@@ -126,49 +118,50 @@ export function CardEditorScreen() {
     <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>单词</span>
+          <span>Word</span>
           <input
             value={word}
             onChange={(event) => handle_word_change(event.target.value)}
-            placeholder="例如：勉強"
+            placeholder="e.g., study"
           />
         </label>
         <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>平假名读音</span>
+          <span>Hiragana Reading</span>
           <input
             value={reading}
             onChange={(event) => handle_reading_change(event.target.value)}
-            placeholder="例如：べんきょう"
+            placeholder="e.g., benkyou"
           />
         </label>
         <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>语境 / 情景</span>
+          <span>Context</span>
           <textarea
             rows={3}
             value={context_text}
             onChange={(event) => handle_context_change(event.target.value)}
-            placeholder="描述单词出现的场景或用途"
+            placeholder="Describe where the word appears."
           />
         </label>
         <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>例句</span>
+          <span>Scene</span>
+          <textarea
+            rows={3}
+            value={scene_text}
+            onChange={(event) => handle_scene_change(event.target.value)}
+            placeholder="Explain the specific scene or background."
+          />
+        </label>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <span>Example Sentence</span>
           <textarea
             rows={3}
             value={example_sentence}
             onChange={(event) => handle_example_change(event.target.value)}
-            placeholder="给出含有该单词的例句"
+            placeholder="Provide a sentence using the word."
           />
         </label>
         <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>标签（用逗号分隔）</span>
-          <input
-            value={tag_input}
-            onChange={(event) => handle_tag_change(event.target.value)}
-            placeholder="语法, N5, 动词"
-          />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>记忆等级</span>
+          <span>Memory Level</span>
           <select
             value={memory_level}
             onChange={(event) => handle_memory_level_change(event.target.value as MemoryLevel)}
@@ -198,13 +191,13 @@ export function CardEditorScreen() {
               cursor: is_save_disabled ? 'not-allowed' : 'pointer',
             }}
           >
-            保存卡片
+            Save Card
           </button>
           <SaveStatusHint state={save_status} message={status_message} />
         </div>
       </div>
       <div style={{ border: '1px solid #1f2937', borderRadius: '0.75rem', padding: '1rem' }}>
-        <h2>实时预览</h2>
+        <h2>Live Preview</h2>
         <SvgCanvas svg_source={preview_svg} />
       </div>
     </section>

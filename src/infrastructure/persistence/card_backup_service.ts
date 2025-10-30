@@ -81,7 +81,7 @@ export async function parse_backup_buffer(
   const archive = await JSZip.loadAsync(buffer);
   const entry = archive.file(BACKUP_FILENAME);
   if (!entry) {
-    throw new Error('备份压缩包缺少 backup.json 文件。');
+    throw new Error('Backup archive is missing backup.json.');
   }
   const content = await entry.async('string');
   return parse_backup_json(content);
@@ -109,15 +109,15 @@ function parse_backup_json(source: string): CardBackupPayload {
   try {
     parsed = JSON.parse(source);
   } catch {
-    throw new Error('备份文件不是有效的 JSON。');
+    throw new Error('Backup file is not valid JSON.');
   }
 
   if (!is_record(parsed)) {
-    throw new Error('备份文件缺少必要的顶层结构。');
+    throw new Error('Backup file is missing required top-level structure.');
   }
 
   if (parsed.version !== BACKUP_VERSION) {
-    throw new Error(`不支持的备份版本：${String(parsed.version)}`);
+    throw new Error(`Unsupported backup version: ${String(parsed.version)}`);
   }
 
   const payload: CardBackupPayload = {
@@ -141,7 +141,22 @@ function normalize_cards(subject: unknown): CardEntity[] {
     return [];
   }
   return subject
-    .map((candidate) => (is_card_entity(candidate) ? candidate : null))
+    .map((candidate) => {
+      if (!is_card_entity(candidate)) {
+        return null;
+      }
+      return {
+        id: candidate.id,
+        svg_source: candidate.svg_source,
+        created_at: candidate.created_at,
+        memory_level: candidate.memory_level,
+        review_count: candidate.review_count,
+        last_reviewed_at:
+          candidate.last_reviewed_at === undefined || candidate.last_reviewed_at === null
+            ? undefined
+            : candidate.last_reviewed_at,
+      } satisfies CardEntity;
+    })
     .filter((value): value is CardEntity => value !== null);
 }
 
@@ -178,17 +193,25 @@ function normalize_snapshot(subject: unknown): ActivitySnapshot {
 
 function validate_card_entity(card: CardEntity): void {
   if (!SUPPORTED_LEVELS.has(card.memory_level)) {
-    throw new Error(`未知的记忆等级：${card.memory_level}`);
+    throw new Error(`Unknown memory level: ${card.memory_level}`);
   }
 }
 
 function validate_session_record(record: ReviewSessionRecord): void {
   if (!SUPPORTED_LEVELS.has(record.memory_level)) {
-    throw new Error(`未知的记忆等级：${record.memory_level}`);
+    throw new Error(`Unknown memory level: ${record.memory_level}`);
   }
 }
 
-function is_card_entity(candidate: unknown): candidate is CardEntity {
+function is_card_entity(candidate: unknown): candidate is {
+  readonly id: string;
+  readonly svg_source: string;
+  readonly created_at: string;
+  readonly memory_level: string;
+  readonly review_count: number;
+  readonly last_reviewed_at?: string | null;
+  readonly tags?: unknown;
+} {
   if (!is_record(candidate)) {
     return false;
   }
@@ -196,9 +219,6 @@ function is_card_entity(candidate: unknown): candidate is CardEntity {
     return false;
   }
   if (typeof candidate.created_at !== 'string') {
-    return false;
-  }
-  if (!Array.isArray(candidate.tags) || candidate.tags.some((tag) => typeof tag !== 'string')) {
     return false;
   }
   if (typeof candidate.memory_level !== 'string') {

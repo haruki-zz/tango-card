@@ -46,7 +46,7 @@ export function ReviewScreen() {
 
   useEffect(() => {
     load_queue().catch(() => {
-      // 由调用方负责显示错误，这里保持静默以便在 UI 中处理。
+      // Let the caller surface errors so UI can react appropriately.
     });
   }, [load_queue]);
 
@@ -57,14 +57,14 @@ export function ReviewScreen() {
       }
       set_is_submitting(true);
       set_submission_status('saving');
-      set_feedback_message('提交中...');
+      set_feedback_message('Submitting...');
       try {
         await submit_review(card_id, level);
         set_submission_status('success');
-        set_feedback_message('已记录本次记忆等级。');
+        set_feedback_message('Memory level recorded.');
       } catch (error) {
         set_submission_status('error');
-        set_feedback_message(`提交失败：${(error as Error).message}`);
+        set_feedback_message(`Submission failed: ${(error as Error).message}`);
       } finally {
         set_is_submitting(false);
       }
@@ -125,8 +125,8 @@ export function ReviewScreen() {
   if (!render_card) {
     return (
       <section>
-        <h2>准备复习</h2>
-        <p>目前没有待复习的单词卡，请先创建或更新卡片。</p>
+        <h2>Ready to Review</h2>
+        <p>No cards are queued right now. Create or update cards to start a session.</p>
       </section>
     );
   }
@@ -137,21 +137,21 @@ export function ReviewScreen() {
         <SvgCanvas svg_source={render_card.svg_source} on_swipe={handle_swipe} />
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '280px' }}>
-        <h2>记忆强度</h2>
+        <h2>Memory Strength</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>上次记录</span>
+          <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Last recorded</span>
           <MemoryLevelBadge level={render_card.memory_level} />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>本次选择</span>
+          <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Current selection</span>
           <MemoryLevelBadge level={selected_level} />
         </div>
-        <p>待复习队列：{queue.length} 张</p>
+        <p>Cards awaiting review: {queue.length}</p>
         <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-          选择记忆等级后点击“记录记忆等级”。仍可使用快捷键 1/2/3、方向键或滑动手势快速提交。
+          Choose a memory level and select “Log Memory Level.” Shortcuts 1/2/3, arrow keys, or swipe gestures submit instantly.
         </p>
         <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>记忆等级</span>
+          <span>Memory Level</span>
           <select
             value={selected_level}
             disabled={is_submitting}
@@ -164,7 +164,7 @@ export function ReviewScreen() {
           >
             {MEMORY_LEVEL_OPTIONS.map((option) => (
               <option key={option.level} value={option.level}>
-                {option.label}（快捷键：{[option.shortcut, ...(option.alt_shortcuts ?? [])].join(' / ')}）
+                {option.label} (Shortcut: {[option.shortcut, ...(option.alt_shortcuts ?? [])].join(' / ')})
               </option>
             ))}
           </select>
@@ -189,7 +189,7 @@ export function ReviewScreen() {
             cursor: is_submitting ? 'not-allowed' : 'pointer',
           }}
         >
-          记录记忆等级
+          Log Memory Level
         </button>
         <SubmissionHint status={submission_status} message={feedback_message} />
       </div>
@@ -206,7 +206,7 @@ function SubmissionHint({ status, message }: SubmissionHintProps) {
   if (!message) {
     return (
       <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-        使用快捷键或滑动手势也会立即提交当前卡片。
+        Keyboard shortcuts or swipe gestures also submit the card instantly.
       </p>
     );
   }

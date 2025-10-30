@@ -16,7 +16,6 @@ function create_candidate(overrides: Partial<ReviewCandidate> = {}): ReviewCandi
     id: 'card-id',
     svg_source: '<svg></svg>',
     created_at: '2023-01-01T00:00:00.000Z',
-    tags: [],
     memory_level: MemoryLevel.SOMEWHAT_FAMILIAR,
     review_count: 0,
     last_reviewed_at: undefined,
@@ -43,7 +42,7 @@ describe('ReviewScreen', () => {
 
     render(<ReviewScreen />);
 
-    expect(screen.getByText('准备复习')).toBeInTheDocument();
+    expect(screen.getByText('Ready to Review')).toBeInTheDocument();
     await waitFor(() => {
       expect(load_queue).toHaveBeenCalled();
     });
@@ -66,58 +65,58 @@ describe('ReviewScreen', () => {
     render(<ReviewScreen />);
 
     expect(
-      screen.getByText(/选择记忆等级后点击“记录记忆等级”。仍可使用快捷键 1\/2\/3、方向键或滑动手势快速提交。/),
+      screen.getByText(/Choose a memory level and select “Log Memory Level.” Shortcuts 1\/2\/3, arrow keys, or swipe gestures submit instantly./),
     ).toBeInTheDocument();
 
     const target_option = MEMORY_LEVEL_OPTIONS[0];
-    const selector = screen.getByRole('combobox', { name: /记忆等级/ }) as HTMLSelectElement;
+    const selector = screen.getByRole('combobox', { name: /Memory Level/ }) as HTMLSelectElement;
     fireEvent.change(selector, { target: { value: target_option.level } });
     await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: '记录记忆等级' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Log Memory Level' }));
     });
 
     await waitFor(() => {
-      expect(screen.getByText('已记录本次记忆等级。')).toBeInTheDocument();
+      expect(screen.getByText('Memory level recorded.')).toBeInTheDocument();
     });
 
     fireEvent.keyDown(window, { key: target_option.shortcut });
 
     await waitFor(() => {
-      expect(screen.getByText('提交中...')).toBeInTheDocument();
+      expect(screen.getByText('Submitting...')).toBeInTheDocument();
     });
 
     await waitFor(() => {
-      expect(screen.getByText('已记录本次记忆等级。')).toBeInTheDocument();
+      expect(screen.getByText('Memory level recorded.')).toBeInTheDocument();
     });
 
     fireEvent.keyDown(window, { key: 'ArrowRight' });
 
     await waitFor(() => {
-      expect(screen.getByText('提交中...')).toBeInTheDocument();
+      expect(screen.getByText('Submitting...')).toBeInTheDocument();
     });
 
     await waitFor(() => {
-      expect(screen.getByText('已记录本次记忆等级。')).toBeInTheDocument();
+      expect(screen.getByText('Memory level recorded.')).toBeInTheDocument();
     });
 
     fireEvent.keyDown(window, { key: 'ArrowLeft' });
 
     await waitFor(() => {
-      expect(screen.getByText('提交中...')).toBeInTheDocument();
+      expect(screen.getByText('Submitting...')).toBeInTheDocument();
     });
 
     await waitFor(() => {
-      expect(screen.getByText('已记录本次记忆等级。')).toBeInTheDocument();
+      expect(screen.getByText('Memory level recorded.')).toBeInTheDocument();
     });
 
     fireEvent.keyDown(window, { key: 'ArrowUp' });
 
     await waitFor(() => {
-      expect(screen.getByText('提交中...')).toBeInTheDocument();
+      expect(screen.getByText('Submitting...')).toBeInTheDocument();
     });
 
     await waitFor(() => {
-      expect(screen.getByText('已记录本次记忆等级。')).toBeInTheDocument();
+      expect(screen.getByText('Memory level recorded.')).toBeInTheDocument();
     });
   });
 });

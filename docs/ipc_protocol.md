@@ -6,7 +6,7 @@
 
 | 通道 (channel) | 方向 | 请求结构 | 响应结构 | 说明 |
 | --- | --- | --- | --- | --- |
-| `card:ingest` | Renderer → Main | `{ card_id?: string, svg_source: string, tags?: string[], memory_level?: MemoryLevel, created_at?: string }` | `CardEntity` | 创建或更新单词卡。主进程会根据是否携带 `card_id` 调用对应的持久化逻辑，并更新学习统计。 |
+| `card:ingest` | Renderer → Main | `{ card_id?: string, svg_source: string, memory_level?: MemoryLevel, created_at?: string }` | `CardEntity` | 创建或更新单词卡。主进程会根据是否携带 `card_id` 调用对应的持久化逻辑，并更新学习统计。 |
 | `card:list` | Renderer → Main | `void` | `CardEntity[]` | 拉取全部单词卡，供编辑器与复习流程同步状态。 |
 | `review:queue` | Renderer → Main | `{ size?: number }` | `ReviewCandidate[]` | 请求下一批复习卡片。未提供 `size` 时由主进程策略给出默认值。 |
 | `review:update` | Renderer → Main | `{ card_id: string, memory_level: MemoryLevel }` | `CardEntity` | 提交复习结果并回写记忆等级、复习次数、统计数据。 |

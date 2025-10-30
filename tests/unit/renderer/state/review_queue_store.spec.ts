@@ -6,7 +6,6 @@ const create_candidate = (id: string): ReviewCandidate => ({
   id,
   svg_source: '<svg></svg>',
   created_at: new Date().toISOString(),
-  tags: [],
   memory_level: MemoryLevel.SOMEWHAT_FAMILIAR,
   review_count: 0,
   weight: 1,

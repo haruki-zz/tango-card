@@ -7,10 +7,10 @@ import { SettingsScreen } from '../screens/settings_screen';
 type RouteKey = 'editor' | 'review' | 'analytics' | 'settings';
 
 const ROUTE_LABELS: Record<RouteKey, string> = {
-  editor: '创建卡片',
-  review: '复习单词',
-  analytics: '学习统计',
-  settings: '设置',
+  editor: 'Create Card',
+  review: 'Review Words',
+  analytics: 'Learning Analytics',
+  settings: 'Settings',
 };
 
 export function AppRouter() {

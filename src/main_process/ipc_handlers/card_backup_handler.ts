@@ -25,11 +25,11 @@ export function register_card_backup_handler(storage_context: StorageContext): v
         const format: BackupFormat = request.format === 'zip' ? 'zip' : 'json';
         const browser_window = BrowserWindow.getFocusedWindow();
         const save_options: SaveDialogOptions = {
-          title: '导出卡片数据',
+          title: 'Export Cards',
           defaultPath: `tango-card-backup.${format}`,
           filters: format === 'zip'
-            ? [{ name: 'ZIP 备份', extensions: ['zip'] }]
-            : [{ name: 'JSON 备份', extensions: ['json'] }],
+            ? [{ name: 'ZIP backup', extensions: ['zip'] }]
+            : [{ name: 'JSON backup', extensions: ['json'] }],
         };
         const { canceled, filePath } = browser_window
           ? await dialog.showSaveDialog(browser_window, save_options)
@@ -55,7 +55,7 @@ export function register_card_backup_handler(storage_context: StorageContext): v
       } catch (error) {
         return {
           status: 'error',
-          message: error instanceof Error ? error.message : '导出失败。',
+          message: error instanceof Error ? error.message : 'Export failed.',
         };
       }
     },
@@ -65,8 +65,8 @@ export function register_card_backup_handler(storage_context: StorageContext): v
     try {
       const browser_window = BrowserWindow.getFocusedWindow();
       const open_options: OpenDialogOptions = {
-        title: '导入卡片数据',
-        filters: [{ name: '备份文件', extensions: ['json', 'zip'] }],
+        title: 'Import Cards',
+        filters: [{ name: 'Backup files', extensions: ['json', 'zip'] }],
         properties: ['openFile'],
       };
       const { canceled, filePaths } = browser_window
@@ -97,7 +97,7 @@ export function register_card_backup_handler(storage_context: StorageContext): v
     } catch (error) {
       return {
         status: 'error',
-        message: error instanceof Error ? error.message : '导入失败。',
+        message: error instanceof Error ? error.message : 'Import failed.',
       };
     }
   });

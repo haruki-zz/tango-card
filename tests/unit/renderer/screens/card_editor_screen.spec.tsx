@@ -35,7 +35,6 @@ describe('CardEditorScreen', () => {
       id: 'card-1',
       svg_source: '<svg />',
       created_at: '2024-01-01T00:00:00.000Z',
-      tags: [],
       memory_level: MemoryLevel.WELL_KNOWN,
       review_count: 0,
       last_reviewed_at: undefined,
@@ -51,28 +50,28 @@ describe('CardEditorScreen', () => {
 
     render(<CardEditorScreen />);
 
-    fireEvent.change(screen.getByLabelText('单词'), { target: { value: '勉強' } });
-    fireEvent.change(screen.getByLabelText('平假名读音'), { target: { value: 'べんきょう' } });
-    fireEvent.change(screen.getByLabelText('语境 / 情景'), { target: { value: '考试前的周末' } });
-    fireEvent.change(screen.getByLabelText('例句'), { target: { value: '明日は一日中勉強します。' } });
+    fireEvent.change(screen.getByLabelText('Word'), { target: { value: '勉強' } });
+    fireEvent.change(screen.getByLabelText('Hiragana Reading'), { target: { value: 'べんきょう' } });
+    fireEvent.change(screen.getByLabelText('Context'), { target: { value: '考试前的周末' } });
+    fireEvent.change(screen.getByLabelText('Scene'), { target: { value: '安排好了学习计划' } });
+    fireEvent.change(screen.getByLabelText('Example Sentence'), { target: { value: '明日は一日中勉強します。' } });
 
-    const memory_select = screen.getByRole('combobox', { name: /记忆等级/ }) as HTMLSelectElement;
+    const memory_select = screen.getByRole('combobox', { name: /Memory Level/ }) as HTMLSelectElement;
     fireEvent.change(memory_select, { target: { value: MemoryLevel.NEEDS_REINFORCEMENT } });
 
-    const save_button = screen.getByRole('button', { name: '保存卡片' });
+    const save_button = screen.getByRole('button', { name: 'Save Card' });
     fireEvent.click(save_button);
 
     await waitFor(() => {
       expect(ingest_card).toHaveBeenCalledWith({
         card_id: undefined,
         svg_source: '<svg>template</svg>',
-        tags: [],
         memory_level: MemoryLevel.NEEDS_REINFORCEMENT,
       });
     });
 
     expect(refresh_cards).toHaveBeenCalled();
-    expect(screen.getByText('保存成功。')).toBeInTheDocument();
+    expect(screen.getByText('Saved successfully.')).toBeInTheDocument();
   });
 
   it('shows error when save fails', async () => {
@@ -88,15 +87,16 @@ describe('CardEditorScreen', () => {
 
     render(<CardEditorScreen />);
 
-    fireEvent.change(screen.getByLabelText('单词'), { target: { value: '勉強' } });
-    fireEvent.change(screen.getByLabelText('平假名读音'), { target: { value: 'べんきょう' } });
-    fireEvent.change(screen.getByLabelText('语境 / 情景'), { target: { value: '考试前的周末' } });
-    fireEvent.change(screen.getByLabelText('例句'), { target: { value: '明日は一日中勉強します。' } });
+    fireEvent.change(screen.getByLabelText('Word'), { target: { value: '勉強' } });
+    fireEvent.change(screen.getByLabelText('Hiragana Reading'), { target: { value: 'べんきょう' } });
+    fireEvent.change(screen.getByLabelText('Context'), { target: { value: '考试前的周末' } });
+    fireEvent.change(screen.getByLabelText('Scene'), { target: { value: '安排好了学习计划' } });
+    fireEvent.change(screen.getByLabelText('Example Sentence'), { target: { value: '明日は一日中勉強します。' } });
 
-    fireEvent.click(screen.getByRole('button', { name: '保存卡片' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save Card' }));
 
     await waitFor(() => {
-      expect(screen.getByText(/保存失败：network error/)).toBeInTheDocument();
+      expect(screen.getByText(/Save failed: network error/)).toBeInTheDocument();
     });
   });
 });
