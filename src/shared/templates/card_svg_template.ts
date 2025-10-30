@@ -128,7 +128,7 @@ function layout_section(
 }
 
 function break_into_lines(text: string, width: number, font_size: number): string[] {
-  const chars_per_line = Math.max(4, Math.floor(width / (font_size * 0.55)));
+  const max_units_per_line = Math.max(4, Math.floor(width / (font_size * 0.55)));
   const result: string[] = [];
 
   text.split('\n').forEach((paragraph) => {
@@ -137,25 +137,73 @@ function break_into_lines(text: string, width: number, font_size: number): strin
       result.push('');
       return;
     }
-    let buffer = '';
-    trimmed.split(/\s+/).forEach((word) => {
-      const tentative = buffer ? `${buffer} ${word}` : word;
-      if (tentative.length > chars_per_line && buffer) {
-        result.push(buffer);
-        buffer = word;
-      } else if (tentative.length > chars_per_line) {
-        result.push(tentative);
-        buffer = '';
-      } else {
-        buffer = tentative;
+
+    const chars = Array.from(trimmed);
+    let buffer: string[] = [];
+    let buffer_units = 0;
+    let last_break_index = -1;
+
+    const flush = (end_index: number) => {
+      const line_chars = buffer.slice(0, end_index);
+      result.push(line_chars.join('').trimEnd());
+      const consumed_units = sum_char_units(line_chars);
+      buffer = buffer.slice(end_index);
+      buffer_units -= consumed_units;
+      while (buffer.length > 0 && is_breakable(buffer[0])) {
+        const removed = buffer.shift();
+        if (removed) {
+          buffer_units -= measure_char_units(removed);
+        }
+      }
+      if (buffer_units < 0) {
+        buffer_units = 0;
+      }
+    };
+
+    chars.forEach((char) => {
+      const char_units = measure_char_units(char);
+
+      if (buffer_units + char_units > max_units_per_line && buffer.length > 0) {
+        if (last_break_index >= 0) {
+          flush(last_break_index);
+        } else {
+          result.push(buffer.join('').trimEnd());
+          buffer = [];
+          buffer_units = 0;
+        }
+        last_break_index = -1;
+      }
+
+      buffer.push(char);
+      buffer_units += char_units;
+
+      if (is_breakable(char)) {
+        last_break_index = buffer.length;
       }
     });
-    if (buffer) {
-      result.push(buffer);
+
+    if (buffer.length > 0) {
+      result.push(buffer.join('').trimEnd());
     }
   });
 
   return result.length > 0 ? result : [''];
+}
+
+function sum_char_units(chars: string[]): number {
+  return chars.reduce((total, char) => total + measure_char_units(char), 0);
+}
+
+function measure_char_units(char: string): number {
+  const code = char.codePointAt(0);
+  if (code === undefined) {
+    return 1;
+  }
+  return code > 0xff ? 2 : 1;
+}
+
+function is_breakable(char: string): boolean {
+  return /\s/.test(char);
 }
 
 function sanitize_text(value: string): string {

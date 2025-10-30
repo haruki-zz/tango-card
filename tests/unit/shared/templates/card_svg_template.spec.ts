@@ -12,4 +12,27 @@ describe('render_card_svg', () => {
     expect(svg).toContain('<tspan');
     expect((svg.match(/<tspan/g) ?? []).length).toBeGreaterThanOrEqual(2);
   });
+
+  it('wraps continuous CJK example text without spaces', () => {
+    const long_example = '語'.repeat(80);
+    const svg = render_card_svg({
+      word: '語彙',
+      reading: 'ごい',
+      context: '長文の練習をしています。',
+      example: long_example,
+    });
+
+    const section_bodies = Array.from(svg.matchAll(/<text class="section-body"[^>]*>(.*?)<\/text>/g));
+    expect(section_bodies.length).toBeGreaterThanOrEqual(2);
+
+    const example_body = section_bodies[1][1];
+    const example_tspans = Array.from(example_body.matchAll(/<tspan[^>]*>(.*?)<\/tspan>/g));
+
+    expect(example_tspans.length).toBeGreaterThan(1);
+    const concatenated_example = example_tspans.map((match) => match[1]).join('');
+    expect(concatenated_example).toBe(long_example);
+    example_tspans.forEach((match) => {
+      expect(match[1].length).toBeLessThan(long_example.length);
+    });
+  });
 });
