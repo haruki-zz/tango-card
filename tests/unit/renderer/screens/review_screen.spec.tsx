@@ -14,6 +14,11 @@ const mocked_use_review_cycle = use_review_cycle as unknown as jest.MockedFuncti
 function create_candidate(overrides: Partial<ReviewCandidate> = {}): ReviewCandidate {
   return {
     id: 'card-id',
+    word: '語彙',
+    reading: 'ごい',
+    context: 'context',
+    scene: 'scene',
+    example: 'example',
     svg_source: '<svg></svg>',
     created_at: '2023-01-01T00:00:00.000Z',
     memory_level: MemoryLevel.SOMEWHAT_FAMILIAR,

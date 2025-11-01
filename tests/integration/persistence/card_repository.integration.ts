@@ -15,7 +15,13 @@ describe('CardRepository with FileStorageProvider', () => {
   });
 
   it('persists and retrieves cards', async () => {
-    const create_result = create_card({ svg_source: '<svg></svg>' });
+    const create_result = create_card({
+      word: '練習',
+      reading: 'れんしゅう',
+      context: '友達とスピーチの練習をする。',
+      scene: '放課後の教室で練習している。',
+      example: '本番の前に何度も練習した方がいい。',
+    });
     if (!create_result.ok) {
       throw create_result.error;
     }

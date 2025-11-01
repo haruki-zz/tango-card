@@ -5,7 +5,6 @@ import type { MemoryLevel } from '../../domain/review/memory_level';
 import type { ActivitySnapshot } from '../../domain/analytics/activity_snapshot';
 export interface CardIngestRequest extends CardDraft {
   readonly card_id?: string;
-  readonly svg_source: string;
 }
 
 export type CardIngestResponse = CardEntity;

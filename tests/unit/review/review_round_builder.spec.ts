@@ -5,7 +5,11 @@ import type { CardEntity } from '../../../src/domain/card/card_entity';
 describe('build_review_round', () => {
   const create_card = (id: string, level: MemoryLevel): CardEntity => ({
     id,
-    svg_source: `<svg id="${id}"></svg>`,
+    word: `word-${id}`,
+    reading: `reading-${id}`,
+    context: `context-${id}`,
+    scene: `scene-${id}`,
+    example: `example-${id}`,
     created_at: '2025-02-20T00:00:00.000Z',
     memory_level: level,
     review_count: 0,

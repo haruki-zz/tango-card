@@ -93,13 +93,16 @@ export function CardEditorScreen() {
       set_status_message('Please complete word, reading, context, scene, and example.');
       return;
     }
-    const svg_source = preview_svg;
     set_save_status('saving');
     set_status_message('Saving...');
     try {
       const saved_card = await api.ingest_card({
         card_id: active_card_id,
-        svg_source,
+        word,
+        reading,
+        context: context_text,
+        scene: scene_text,
+        example: example_sentence,
         memory_level,
       });
       set_active_card_id(saved_card.id);

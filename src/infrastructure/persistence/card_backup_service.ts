@@ -138,7 +138,11 @@ function validate_payload(payload: CardBackupPayload): void {
 
 interface RawBackupCard {
   readonly id: string;
-  readonly svg_source: string;
+  readonly word: string;
+  readonly reading: string;
+  readonly context: string;
+  readonly scene: string;
+  readonly example: string;
   readonly created_at: string;
   readonly memory_level: string;
   readonly review_count: number;
@@ -160,7 +164,11 @@ function normalize_cards(subject: unknown): CardEntity[] {
     }
     normalized.push({
       id: candidate.id,
-      svg_source: candidate.svg_source,
+      word: candidate.word,
+      reading: candidate.reading,
+      context: candidate.context,
+      scene: candidate.scene,
+      example: candidate.example,
       created_at: candidate.created_at,
       memory_level,
       review_count: candidate.review_count,
@@ -218,7 +226,14 @@ function is_raw_card(candidate: unknown): candidate is RawBackupCard {
   if (!is_record(candidate)) {
     return false;
   }
-  if (typeof candidate.id !== 'string' || typeof candidate.svg_source !== 'string') {
+  if (
+    typeof candidate.id !== 'string' ||
+    typeof candidate.word !== 'string' ||
+    typeof candidate.reading !== 'string' ||
+    typeof candidate.context !== 'string' ||
+    typeof candidate.scene !== 'string' ||
+    typeof candidate.example !== 'string'
+  ) {
     return false;
   }
   if (typeof candidate.created_at !== 'string') {

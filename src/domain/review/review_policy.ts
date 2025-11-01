@@ -1,7 +1,9 @@
 import type { CardEntity } from '../card/card_entity';
 import { MemoryLevel, MEMORY_LEVEL_WEIGHTS } from './memory_level';
+import { render_card_svg } from '../../shared/templates/card_svg_template';
 
 export interface ReviewCandidate extends CardEntity {
+  readonly svg_source: string;
   readonly weight: number;
 }
 
@@ -16,7 +18,7 @@ export class WeightedMemoryReviewPolicy implements ReviewPolicy {
       return [];
     }
 
-    const candidates = cards.map((card) => ({ ...card, weight: this.calculate_weight(card) }));
+    const candidates = cards.map((card) => this.create_candidate(card));
     return this.select_weighted_candidates(candidates, size);
   }
 
@@ -33,6 +35,21 @@ export class WeightedMemoryReviewPolicy implements ReviewPolicy {
     const base_weight = MEMORY_LEVEL_WEIGHTS[card.memory_level] ?? 1;
     const decay = Math.max(1, card.review_count);
     return Math.max(0.001, base_weight + 1 / decay);
+  }
+
+  private create_candidate(card: CardEntity): ReviewCandidate {
+    return {
+      ...card,
+      svg_source: render_card_svg({
+        word: card.word,
+        reading: card.reading,
+        context: card.context,
+        scene: card.scene,
+        example: card.example,
+        memory_level: card.memory_level,
+      }),
+      weight: this.calculate_weight(card),
+    };
   }
 
   private select_weighted_candidates(candidates: ReviewCandidate[], size: number): ReviewCandidate[] {

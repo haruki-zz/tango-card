@@ -14,6 +14,7 @@ import {
 } from '../../domain/review/review_round_builder';
 import { MEMORY_LEVEL_DEFAULT, MemoryLevel } from '../../domain/review/memory_level';
 import type { ActivitySnapshot, DailyActivityPoint } from '../../domain/analytics/activity_snapshot';
+import { create_card, update_card } from '../../domain/card/card_factory';
 
 declare global {
   interface Window {
@@ -30,21 +31,6 @@ interface ReviewRecord {
 const weighted_policy = new WeightedMemoryReviewPolicy();
 const in_memory_cards: Map<string, CardEntity> = new Map();
 const review_records: ReviewRecord[] = [];
-
-function create_identifier(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID();
-  }
-  return Math.random().toString(36).slice(2, 10);
-}
-
-function sanitize_svg(svg_source: string): string {
-  const trimmed = svg_source.trim();
-  if (!trimmed) {
-    throw new Error('SVG source must not be empty.');
-  }
-  return trimmed;
-}
 
 function clone_card(card: CardEntity): CardEntity {
   return { ...card };
@@ -120,30 +106,43 @@ function calculate_streak(points: DailyActivityPoint[]): number {
 
 const fallback_api: RendererApi = {
   async ingest_card(payload: CardIngestRequest) {
-    const sanitized_svg = sanitize_svg(payload.svg_source);
     const memory_level = payload.memory_level ?? MEMORY_LEVEL_DEFAULT;
     const created_at = payload.created_at ?? new Date().toISOString();
 
     if (payload.card_id && in_memory_cards.has(payload.card_id)) {
       const existing = in_memory_cards.get(payload.card_id)!;
-      const updated_card: CardEntity = {
-        ...existing,
-        svg_source: sanitized_svg,
+      const update_result = update_card(existing, {
+        word: payload.word,
+        reading: payload.reading,
+        context: payload.context,
+        scene: payload.scene,
+        example: payload.example,
         memory_level,
         created_at,
-      };
+      });
+      if (!update_result.ok) {
+        throw update_result.error;
+      }
+      const updated_card = update_result.data;
       in_memory_cards.set(updated_card.id, updated_card);
       return clone_card(updated_card);
     }
 
-    const new_card: CardEntity = {
-      id: create_identifier(),
-      svg_source: sanitized_svg,
-      created_at,
+    const create_result = create_card({
+      word: payload.word,
+      reading: payload.reading,
+      context: payload.context,
+      scene: payload.scene,
+      example: payload.example,
       memory_level,
-      review_count: 0,
-      last_reviewed_at: undefined,
-    };
+      created_at,
+    });
+
+    if (!create_result.ok) {
+      throw create_result.error;
+    }
+
+    const new_card = create_result.data;
     in_memory_cards.set(new_card.id, new_card);
     return clone_card(new_card);
   },

@@ -18,7 +18,11 @@ describe('card_backup_service', () => {
   const cards: CardEntity[] = [
     {
       id: 'card-1',
-      svg_source: '<svg/>',
+      word: '練習',
+      reading: 'れんしゅう',
+      context: '友達とスピーチの練習をする。',
+      scene: '放課後の教室で練習している。',
+      example: '本番の前に何度も練習した方がいい。',
       created_at: '2024-03-10T00:00:00.000Z',
       memory_level: MemoryLevel.WELL_KNOWN,
       review_count: 1,

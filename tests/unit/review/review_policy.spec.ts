@@ -7,7 +7,11 @@ const policy = new WeightedMemoryReviewPolicy();
 function create_card(id: string, level: MemoryLevel, review_count = 0): CardEntity {
   return {
     id,
-    svg_source: `<svg id="${id}"></svg>`,
+    word: `word-${id}`,
+    reading: `reading-${id}`,
+    context: `context-${id}`,
+    scene: `scene-${id}`,
+    example: `example-${id}`,
     created_at: new Date().toISOString(),
     memory_level: level,
     review_count,
@@ -40,6 +44,7 @@ describe('WeightedMemoryReviewPolicy', () => {
     expect(queue).toHaveLength(3);
     expect(queue[0].id).toBe('2');
     expect(queue.map((card) => card.id)).toEqual(['2', '3', '1']);
+    expect(queue[0].svg_source).toContain('<svg');
   });
 
   it('increments review count on update', () => {

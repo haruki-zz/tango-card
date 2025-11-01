@@ -2,7 +2,11 @@ import { MemoryLevel } from '../review/memory_level';
 
 export interface CardEntity {
   readonly id: string;
-  readonly svg_source: string;
+  readonly word: string;
+  readonly reading: string;
+  readonly context: string;
+  readonly scene: string;
+  readonly example: string;
   readonly created_at: string;
   readonly memory_level: MemoryLevel;
   readonly review_count: number;
@@ -10,7 +14,11 @@ export interface CardEntity {
 }
 
 export interface CardDraft {
-  readonly svg_source: string;
+  readonly word: string;
+  readonly reading: string;
+  readonly context: string;
+  readonly scene: string;
+  readonly example: string;
   readonly memory_level?: MemoryLevel;
   readonly created_at?: string;
 }
@@ -22,7 +30,11 @@ export function is_card_entity(subject: unknown): subject is CardEntity {
   const candidate = subject as Partial<CardEntity>;
   return (
     typeof candidate.id === 'string' &&
-    typeof candidate.svg_source === 'string' &&
+    typeof candidate.word === 'string' &&
+    typeof candidate.reading === 'string' &&
+    typeof candidate.context === 'string' &&
+    typeof candidate.scene === 'string' &&
+    typeof candidate.example === 'string' &&
     typeof candidate.created_at === 'string' &&
     typeof candidate.memory_level === 'string' &&
     typeof candidate.review_count === 'number'

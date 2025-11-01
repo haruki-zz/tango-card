@@ -1,6 +1,7 @@
 import type { CardEntity } from '../card/card_entity';
 import { MemoryLevel, MEMORY_LEVEL_WEIGHTS } from './memory_level';
 import type { ReviewCandidate } from './review_policy';
+import { render_card_svg } from '../../shared/templates/card_svg_template';
 
 export const DEFAULT_REVIEW_ROUND_SIZE = 30;
 export const DEFAULT_REVIEW_RATIO: Record<MemoryLevel, number> = {
@@ -109,6 +110,14 @@ export function build_review_round(
 function create_candidate(card: CardEntity): ReviewCandidate {
   return {
     ...card,
+    svg_source: render_card_svg({
+      word: card.word,
+      reading: card.reading,
+      context: card.context,
+      scene: card.scene,
+      example: card.example,
+      memory_level: card.memory_level,
+    }),
     weight: MEMORY_LEVEL_WEIGHTS[card.memory_level] ?? 1,
   };
 }

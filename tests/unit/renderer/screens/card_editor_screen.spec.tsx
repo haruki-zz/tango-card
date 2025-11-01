@@ -33,7 +33,11 @@ describe('CardEditorScreen', () => {
   it('allows selecting memory level and saving manually', async () => {
     const ingest_card = jest.fn().mockResolvedValue({
       id: 'card-1',
-      svg_source: '<svg />',
+      word: '勉強',
+      reading: 'べんきょう',
+      context: '考试前的周末',
+      scene: '安排好了学习计划',
+      example: '明日は一日中勉強します。',
       created_at: '2024-01-01T00:00:00.000Z',
       memory_level: MemoryLevel.WELL_KNOWN,
       review_count: 0,
@@ -65,7 +69,11 @@ describe('CardEditorScreen', () => {
     await waitFor(() => {
       expect(ingest_card).toHaveBeenCalledWith({
         card_id: undefined,
-        svg_source: '<svg>template</svg>',
+        word: '勉強',
+        reading: 'べんきょう',
+        context: '考试前的周末',
+        scene: '安排好了学习计划',
+        example: '明日は一日中勉強します。',
         memory_level: MemoryLevel.NEEDS_REINFORCEMENT,
       });
     });

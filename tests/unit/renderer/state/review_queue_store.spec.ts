@@ -4,6 +4,11 @@ import { review_queue_store } from '../../../../src/renderer_process/state/revie
 
 const create_candidate = (id: string): ReviewCandidate => ({
   id,
+  word: '語彙',
+  reading: 'ごい',
+  context: 'context',
+  scene: 'scene',
+  example: 'example',
   svg_source: '<svg></svg>',
   created_at: new Date().toISOString(),
   memory_level: MemoryLevel.SOMEWHAT_FAMILIAR,

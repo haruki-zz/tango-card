@@ -63,7 +63,7 @@ src/
 │     └─ svg_sanitizer.ts         # 清理、验证 SVG 源码的工具函数
 ├─ domain/
 │  ├─ card/
-│  │  ├─ card_entity.ts           # 定义卡片领域模型（id、svg_source、created_at、memory_level 等）
+│  │  ├─ card_entity.ts           # 定义卡片领域模型（id、word、reading、context、scene、example、memory_level 等）
 │  │  └─ card_factory.ts          # 构建卡片实例，封装默认值与验证
 │  ├─ review/
 │  │  ├─ review_policy.ts         # 复习策略接口与具体实现（记忆权重 + 随机抽取）

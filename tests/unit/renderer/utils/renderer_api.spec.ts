@@ -18,7 +18,11 @@ describe('renderer_api fallback', () => {
   it('returns a mock implementation when Electron bridge is missing', async () => {
     const api = get_renderer_api();
     const card = await api.ingest_card({
-      svg_source: '<svg xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10"/></svg>',
+      word: '学ぶ',
+      reading: 'まなぶ',
+      context: '朝カフェで新しい単語を学ぶ。',
+      scene: 'スケジュールを調整しながらの勉強時間。',
+      example: '毎朝30分学ぶ習慣を続けています。',
     });
 
     expect(card.id).toBeDefined();
@@ -31,7 +35,11 @@ describe('renderer_api fallback', () => {
   it('records review updates and exposes analytics data', async () => {
     const api = get_renderer_api();
     const created = await api.ingest_card({
-      svg_source: '<svg xmlns="http://www.w3.org/2000/svg"><circle r="5"/></svg>',
+      word: '練習',
+      reading: 'れんしゅう',
+      context: '友達とスピーチの練習をする。',
+      scene: '放課後の教室で練習している。',
+      example: '本番の前に何度も練習した方がいい。',
     });
 
     await api.update_review({ card_id: created.id, memory_level: MemoryLevel.NEEDS_REINFORCEMENT });

@@ -5,12 +5,12 @@ import { create_uuid } from '../../shared/utils/uuid';
 import { create_domain_error } from '../../shared/errors/domain_error';
 import { get_iso_timestamp } from '../../shared/utils/date_utils';
 
+type CardField = 'word' | 'reading' | 'context' | 'scene' | 'example';
+
 export function create_card(input: CardDraft): Result<CardEntity, Error> {
-  const trimmed_svg = input.svg_source.trim();
-  if (!trimmed_svg) {
-    return create_failure_result(
-      create_domain_error('card_factory.svg_empty', 'SVG source must not be empty.'),
-    );
+  const normalized = normalize_fields(input);
+  if (!normalized.ok) {
+    return normalized;
   }
 
   const created_at = input.created_at ?? get_iso_timestamp();
@@ -18,7 +18,7 @@ export function create_card(input: CardDraft): Result<CardEntity, Error> {
 
   const card: CardEntity = {
     id: create_uuid(),
-    svg_source: trimmed_svg,
+    ...normalized.data,
     created_at,
     memory_level,
     review_count: 0,
@@ -29,11 +29,9 @@ export function create_card(input: CardDraft): Result<CardEntity, Error> {
 }
 
 export function update_card(existing: CardEntity, patch: CardDraft): Result<CardEntity, Error> {
-  const svg_source = resolve_svg_source(existing, patch);
-  if (!svg_source) {
-    return create_failure_result(
-      create_domain_error('card_factory.svg_empty', 'SVG source must not be empty.'),
-    );
+  const normalized = normalize_fields(patch);
+  if (!normalized.ok) {
+    return normalized;
   }
 
   const memory_level = patch.memory_level ?? existing.memory_level;
@@ -41,7 +39,7 @@ export function update_card(existing: CardEntity, patch: CardDraft): Result<Card
 
   const updated_card: CardEntity = {
     ...existing,
-    svg_source,
+    ...normalized.data,
     memory_level,
     created_at,
   };
@@ -49,14 +47,36 @@ export function update_card(existing: CardEntity, patch: CardDraft): Result<Card
   return create_success_result(updated_card);
 }
 
-function resolve_svg_source(existing: CardEntity, patch: CardDraft): string | null {
-  if (typeof patch.svg_source === 'string') {
-    const trimmed = patch.svg_source.trim();
-    if (!trimmed) {
-      return null;
+function normalize_fields(
+  draft: CardDraft,
+): Result<
+  Pick<CardEntity, 'word' | 'reading' | 'context' | 'scene' | 'example'>,
+  Error
+> {
+  const required_fields: Array<CardField> = ['word', 'reading', 'context', 'scene', 'example'];
+  const normalized: Partial<Record<CardField, string>> = {};
+
+  for (const field of required_fields) {
+    const value = draft[field];
+    if (typeof value !== 'string') {
+      return create_failure_result(
+        create_domain_error(`card_factory.${field}_missing`, `Field "${field}" is required.`),
+      );
     }
-    return trimmed;
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return create_failure_result(
+        create_domain_error(`card_factory.${field}_empty`, `Field "${field}" must not be empty.`),
+      );
+    }
+    normalized[field] = trimmed;
   }
-  const preserved = existing.svg_source.trim();
-  return preserved ? preserved : null;
+
+  return create_success_result({
+    word: normalized.word!,
+    reading: normalized.reading!,
+    context: normalized.context!,
+    scene: normalized.scene!,
+    example: normalized.example!,
+  });
 }

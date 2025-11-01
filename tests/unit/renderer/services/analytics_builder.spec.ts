@@ -50,10 +50,54 @@ describe('analytics_builder', () => {
 
   it('computes memory level distribution with percentages', () => {
     const cards = [
-      { id: 'a', svg_source: '', created_at: '', memory_level: MemoryLevel.WELL_KNOWN, review_count: 0, last_reviewed_at: undefined },
-      { id: 'b', svg_source: '', created_at: '', memory_level: MemoryLevel.SOMEWHAT_FAMILIAR, review_count: 0, last_reviewed_at: undefined },
-      { id: 'c', svg_source: '', created_at: '', memory_level: MemoryLevel.NEEDS_REINFORCEMENT, review_count: 0, last_reviewed_at: undefined },
-      { id: 'd', svg_source: '', created_at: '', memory_level: MemoryLevel.NEEDS_REINFORCEMENT, review_count: 0, last_reviewed_at: undefined },
+      {
+        id: 'a',
+        word: '語彙',
+        reading: 'ごい',
+        context: 'context',
+        scene: 'scene',
+        example: 'example',
+        created_at: '',
+        memory_level: MemoryLevel.WELL_KNOWN,
+        review_count: 0,
+        last_reviewed_at: undefined,
+      },
+      {
+        id: 'b',
+        word: '練習',
+        reading: 'れんしゅう',
+        context: 'context',
+        scene: 'scene',
+        example: 'example',
+        created_at: '',
+        memory_level: MemoryLevel.SOMEWHAT_FAMILIAR,
+        review_count: 0,
+        last_reviewed_at: undefined,
+      },
+      {
+        id: 'c',
+        word: '挑戦',
+        reading: 'ちょうせん',
+        context: 'context',
+        scene: 'scene',
+        example: 'example',
+        created_at: '',
+        memory_level: MemoryLevel.NEEDS_REINFORCEMENT,
+        review_count: 0,
+        last_reviewed_at: undefined,
+      },
+      {
+        id: 'd',
+        word: '習慣',
+        reading: 'しゅうかん',
+        context: 'context',
+        scene: 'scene',
+        example: 'example',
+        created_at: '',
+        memory_level: MemoryLevel.NEEDS_REINFORCEMENT,
+        review_count: 0,
+        last_reviewed_at: undefined,
+      },
     ];
 
     const distribution = build_memory_level_distribution(cards);
