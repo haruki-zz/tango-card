@@ -9,8 +9,11 @@ test.describe('Review flow E2E', () => {
     await expect(page.getByLabel('Word')).toBeVisible();
 
     await page.getByRole('button', { name: 'Review Words' }).click();
+    await expect(page.getByText('Ready to Review')).toBeVisible();
+    await page.getByRole('button', { name: 'Start Review' }).click();
+
     await expect(page.getByText('Memory Strength')).toBeVisible();
-    await expect(page.getByText(/Cards awaiting review:/)).toBeVisible();
+    await expect(page.getByText(/Cards remaining in this round:/)).toBeVisible();
     await expect(page.getByRole('combobox', { name: 'Memory Level' })).toBeVisible();
   });
 });

@@ -32,8 +32,12 @@ export const review_queue_store = create<ReviewQueueStore>((set) => ({
       if (state.queue.length === 0) {
         return state;
       }
-      const next_index = (state.active_index + 1) % state.queue.length;
-      return { ...state, active_index: next_index };
+      const next_queue = state.queue.filter((_, index) => index !== state.active_index);
+      const next_index = next_queue.length === 0 ? 0 : Math.min(state.active_index, next_queue.length - 1);
+      return {
+        queue: next_queue,
+        active_index: next_index,
+      };
     }),
   reset: () => set(INITIAL_STATE),
   update_card: (card_id: string, updater: (card: ReviewCandidate) => ReviewCandidate) =>

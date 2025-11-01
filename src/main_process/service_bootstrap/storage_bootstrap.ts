@@ -1,5 +1,5 @@
 import { app } from 'electron';
-import { join } from 'node:path';
+import { join, resolve, isAbsolute } from 'node:path';
 import { CardRepository } from '../../infrastructure/persistence/card_repository';
 import { ReviewSessionRepository } from '../../infrastructure/persistence/review_session_repository';
 import { AnalyticsTracker } from '../../infrastructure/telemetry/analytics_tracker';
@@ -14,9 +14,16 @@ export interface StorageContext {
 }
 
 export async function bootstrap_storage(): Promise<StorageContext> {
-  const data_root_override = process.env.TANGO_CARD_DATA_DIR;
-  const user_data_root = data_root_override ?? app.getPath('userData');
-  const storage_path = data_root_override ? user_data_root : join(user_data_root, 'tango-card');
+  const override = process.env.TANGO_CARD_DATA_DIR;
+  const resolved_override =
+    override && override.length > 0
+      ? isAbsolute(override)
+        ? override
+        : resolve(app.getAppPath(), override)
+      : undefined;
+
+  const base_root = resolved_override ?? app.getPath('userData');
+  const storage_path = resolved_override ?? join(base_root, 'tango-card');
   const storage_driver = await create_storage_driver<FileStorageEngineOptions>({
     type: 'file',
     options: { base_path: storage_path },

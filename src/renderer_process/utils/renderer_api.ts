@@ -7,6 +7,11 @@ import type {
 } from '../../shared/ipc/contracts';
 import type { CardEntity } from '../../domain/card/card_entity';
 import { WeightedMemoryReviewPolicy } from '../../domain/review/review_policy';
+import {
+  build_review_round,
+  DEFAULT_REVIEW_RATIO,
+  DEFAULT_REVIEW_ROUND_SIZE,
+} from '../../domain/review/review_round_builder';
 import { MEMORY_LEVEL_DEFAULT, MemoryLevel } from '../../domain/review/memory_level';
 import type { ActivitySnapshot, DailyActivityPoint } from '../../domain/analytics/activity_snapshot';
 
@@ -149,7 +154,8 @@ const fallback_api: RendererApi = {
 
   async fetch_review_queue(request?: ReviewQueueRequest) {
     const cards = Array.from(in_memory_cards.values());
-    return weighted_policy.generate_review_queue(cards, request?.size);
+    const size = request?.size ?? DEFAULT_REVIEW_ROUND_SIZE;
+    return build_review_round(cards, { size, ratio: DEFAULT_REVIEW_RATIO });
   },
 
   async update_review(payload: ReviewUpdateRequest) {

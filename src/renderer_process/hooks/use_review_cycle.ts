@@ -9,10 +9,9 @@ function useReviewCycle() {
   const active_index = review_queue_store((state) => state.active_index);
   const set_queue = review_queue_store((state) => state.set_queue);
   const advance = review_queue_store((state) => state.advance);
-  const reset = review_queue_store((state) => state.reset);
   const update_card = review_queue_store((state) => state.update_card);
 
-  const load_queue = useCallback(async (size?: number) => {
+  const start_round = useCallback(async (size?: number) => {
     const api = get_renderer_api();
     const queue = await api.fetch_review_queue(size ? { size } : undefined);
     set_queue(queue);
@@ -31,19 +30,14 @@ function useReviewCycle() {
     advance();
   }, [advance, update_card]);
 
-  const reset_queue = useCallback(() => {
-    reset();
-  }, [reset]);
-
   const active_card = useMemo(() => queue[active_index], [active_index, queue]);
 
   return {
     queue,
     active_index,
     active_card,
-    load_queue,
+    start_round,
     submit_review,
-    reset_queue,
   };
 }
 

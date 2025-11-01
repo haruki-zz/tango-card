@@ -29,27 +29,28 @@ describe('ReviewScreen', () => {
     mocked_use_review_cycle.mockReset();
   });
 
-  it('renders an empty state when no card is active', async () => {
-    const load_queue = jest.fn().mockResolvedValue(undefined);
+  it('renders an empty state when no card is active and allows starting a round', async () => {
+    const start_round = jest.fn().mockResolvedValue(undefined);
     mocked_use_review_cycle.mockImplementation(() => ({
       queue: [],
       active_card: undefined,
       active_index: 0,
-      load_queue,
+      start_round,
       submit_review: jest.fn(),
-      reset_queue: jest.fn(),
     }));
 
     render(<ReviewScreen />);
 
     expect(screen.getByText('Ready to Review')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Start Review' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Start Review' }));
     await waitFor(() => {
-      expect(load_queue).toHaveBeenCalled();
+      expect(start_round).toHaveBeenCalled();
     });
   });
 
   it('allows selecting a memory level and submits the review', async () => {
-    const load_queue = jest.fn().mockResolvedValue(undefined);
+    const start_round = jest.fn().mockResolvedValue(undefined);
     const submit_review = jest.fn().mockResolvedValue(undefined);
     const candidate = create_candidate();
 
@@ -57,15 +58,14 @@ describe('ReviewScreen', () => {
       queue: [candidate],
       active_card: candidate,
       active_index: 0,
-      load_queue,
+      start_round,
       submit_review,
-      reset_queue: jest.fn(),
     }));
 
     render(<ReviewScreen />);
 
     expect(
-      screen.getByText(/Choose a memory level and select “Log Memory Level.” Shortcuts 1\/2\/3, arrow keys, or swipe gestures submit instantly./),
+      screen.getByText(/Choose a memory level and select "Log Memory Level." Shortcuts 1\/2\/3, arrow keys, or swipe gestures submit instantly./),
     ).toBeInTheDocument();
 
     const target_option = MEMORY_LEVEL_OPTIONS[0];

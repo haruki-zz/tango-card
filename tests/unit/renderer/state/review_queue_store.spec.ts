@@ -24,11 +24,12 @@ describe('review_queue_store', () => {
     expect(state.active_index).toBe(0);
   });
 
-  it('advances but never exceeds queue bounds', () => {
-    review_queue_store.getState().set_queue([create_candidate('1')]);
-    review_queue_store.getState().advance();
+  it('removes the active card when advancing', () => {
+    review_queue_store.getState().set_queue([create_candidate('1'), create_candidate('2')]);
     review_queue_store.getState().advance();
     const state = review_queue_store.getState();
+    expect(state.queue).toHaveLength(1);
+    expect(state.queue[0].id).toBe('2');
     expect(state.active_index).toBe(0);
   });
 
