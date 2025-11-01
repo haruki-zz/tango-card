@@ -136,28 +136,39 @@ function validate_payload(payload: CardBackupPayload): void {
   payload.review_sessions.forEach((session) => validate_session_record(session));
 }
 
+interface RawBackupCard {
+  readonly id: string;
+  readonly svg_source: string;
+  readonly created_at: string;
+  readonly memory_level: string;
+  readonly review_count: number;
+  readonly last_reviewed_at?: string | null;
+}
+
 function normalize_cards(subject: unknown): CardEntity[] {
   if (!Array.isArray(subject)) {
     return [];
   }
-  return subject
-    .map((candidate) => {
-      if (!is_card_entity(candidate)) {
-        return null;
-      }
-      return {
-        id: candidate.id,
-        svg_source: candidate.svg_source,
-        created_at: candidate.created_at,
-        memory_level: candidate.memory_level,
-        review_count: candidate.review_count,
-        last_reviewed_at:
-          candidate.last_reviewed_at === undefined || candidate.last_reviewed_at === null
-            ? undefined
-            : candidate.last_reviewed_at,
-      } satisfies CardEntity;
-    })
-    .filter((value): value is CardEntity => value !== null);
+  const normalized: CardEntity[] = [];
+  subject.forEach((candidate) => {
+    if (!is_raw_card(candidate)) {
+      return;
+    }
+    const memory_level = cast_memory_level(candidate.memory_level);
+    if (!memory_level) {
+      return;
+    }
+    normalized.push({
+      id: candidate.id,
+      svg_source: candidate.svg_source,
+      created_at: candidate.created_at,
+      memory_level,
+      review_count: candidate.review_count,
+      last_reviewed_at:
+        typeof candidate.last_reviewed_at === 'string' ? candidate.last_reviewed_at : undefined,
+    });
+  });
+  return normalized;
 }
 
 function normalize_review_sessions(subject: unknown): ReviewSessionRecord[] {
@@ -203,15 +214,7 @@ function validate_session_record(record: ReviewSessionRecord): void {
   }
 }
 
-function is_card_entity(candidate: unknown): candidate is {
-  readonly id: string;
-  readonly svg_source: string;
-  readonly created_at: string;
-  readonly memory_level: string;
-  readonly review_count: number;
-  readonly last_reviewed_at?: string | null;
-  readonly tags?: unknown;
-} {
+function is_raw_card(candidate: unknown): candidate is RawBackupCard {
   if (!is_record(candidate)) {
     return false;
   }
@@ -235,6 +238,11 @@ function is_card_entity(candidate: unknown): candidate is {
     return false;
   }
   return true;
+}
+
+function cast_memory_level(value: string): MemoryLevel | null {
+  const level = value as MemoryLevel;
+  return SUPPORTED_LEVELS.has(level) ? level : null;
 }
 
 function is_review_session(candidate: unknown): candidate is ReviewSessionRecord {
