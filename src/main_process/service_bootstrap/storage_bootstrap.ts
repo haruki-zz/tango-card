@@ -3,13 +3,13 @@ import { join, resolve, isAbsolute } from 'node:path';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import type { CardEntity } from '../../domain/card/card_entity';
 import { CardRepository } from '../../infrastructure/persistence/card_repository';
 import { ReviewSessionRepository } from '../../infrastructure/persistence/review_session_repository';
 import { AnalyticsTracker } from '../../infrastructure/telemetry/analytics_tracker';
 import { create_storage_driver } from '../../infrastructure/persistence/storage_engine';
 import type { FileStorageEngineOptions } from '../../infrastructure/persistence/engines/file_storage_engine';
 import '../../infrastructure/persistence/engines/file_storage_engine';
-import type { CardEntity } from '../../domain/card/card_entity';
 
 export interface StorageContext {
   readonly card_repository: CardRepository;
@@ -76,23 +76,28 @@ async function seed_sample_data(base_path: string, context: StorageContext): Pro
     return;
   }
 
-  const cards_path = join(base_path, 'cards.json');
-  if (!existsSync(cards_path)) {
-    return;
-  }
+  const legacy_cards_path = join(base_path, 'cards.json');
+  const words_path = join(base_path, 'words.json');
+  const candidates = [words_path, legacy_cards_path];
 
-  try {
-    const cards_payload = JSON.parse(await readFile(cards_path, 'utf-8'));
-    if (Array.isArray(cards_payload) && cards_payload.length > 0) {
-      await context.card_repository.replace_cards(cards_payload);
-      return;
+  for (const candidate of candidates) {
+    if (!existsSync(candidate)) {
+      continue;
     }
-    if (cards_payload && typeof cards_payload === 'object') {
-      await context.card_repository.replace_cards(
-        Object.values(cards_payload as Record<string, CardEntity>),
-      );
+    try {
+      const payload = JSON.parse(await readFile(candidate, 'utf-8'));
+      if (Array.isArray(payload) && payload.length > 0) {
+        await context.card_repository.replace_cards(payload as CardEntity[]);
+        return;
+      }
+      if (payload && typeof payload === 'object') {
+        await context.card_repository.replace_cards(
+          Object.values(payload as Record<string, CardEntity>),
+        );
+        return;
+      }
+    } catch {
+      continue;
     }
-  } catch {
-    return;
   }
 }

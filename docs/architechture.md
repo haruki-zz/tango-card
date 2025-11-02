@@ -77,7 +77,7 @@ src/
 │     └─ result.ts                # 统一的结果类型（成功 / 失败）
 ├─ infrastructure/
 │  ├─ persistence/
-│  │  ├─ card_repository.ts       # 卡片持久化接口，供主进程与领域层调用（cards.json 以单词为 key 存储）
+│  │  ├─ card_repository.ts       # 卡片持久化接口，供主进程与领域层调用（words.json 以单词为 key 存储）
 │  │  ├─ review_session_repository.ts # 复习记录的持久化
 │  │  ├─ storage_driver.ts        # 抽象底层存储驱动接口
 │  │  ├─ storage_engine.ts        # 存储引擎注册表，管理不同驱动的初始化

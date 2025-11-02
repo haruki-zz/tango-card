@@ -14,7 +14,7 @@ export class FileStorageProvider implements StorageDriver {
   }
 
   async read_cards(): Promise<CardEntity[]> {
-    const payload = await this.read_json<unknown>('cards.json', {});
+    const payload = await this.read_json<unknown>('words.json', {});
     return this.normalize_cards_payload(payload);
   }
 
@@ -23,7 +23,7 @@ export class FileStorageProvider implements StorageDriver {
     cards.forEach((card) => {
       payload[card.word] = card;
     });
-    await this.write_json('cards.json', payload);
+    await this.write_json('words.json', payload);
   }
 
   async read_review_sessions(): Promise<ReviewSessionRecord[]> {
