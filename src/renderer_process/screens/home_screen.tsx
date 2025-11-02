@@ -1,26 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ActivitySnapshot } from '../../domain/analytics/activity_snapshot';
 import type { CardEntity } from '../../domain/card/card_entity';
-import {
-  aggregate_activity_totals,
-  build_heatmap_cells,
-} from '../services/analytics_builder';
-import type { HeatmapMetric } from '../services/analytics_builder';
+import { build_heatmap_cells } from '../services/analytics_builder';
 import { get_renderer_api } from '../utils/renderer_api';
 import { use_card_store } from '../hooks/use_card_store';
-import { HomeHeatmapSection } from '../components/home_heatmap_section';
+import { HomeHeatmapCard } from '../components/home_heatmap_card';
 import { HomeFeaturedCard } from '../components/home_featured_card';
+import { HomeSearchBar } from '../components/home_search_bar';
 
 interface HomeScreenProps {
   on_open_analytics(): void;
   on_open_cards(): void;
   on_start_review(): void;
   on_create_card(): void;
-}
-
-interface WeeklyTotals {
-  readonly created_cards: number;
-  readonly reviewed_cards: number;
 }
 
 export function HomeScreen({
@@ -33,9 +25,8 @@ export function HomeScreen({
   const [snapshot, set_snapshot] = useState<ActivitySnapshot | null>(null);
   const [snapshot_error, set_snapshot_error] = useState<string | null>(null);
   const [is_loading_snapshot, set_is_loading_snapshot] = useState(true);
-  const [selected_heatmap_metric, set_selected_heatmap_metric] =
-    useState<HeatmapMetric>('total_activity');
   const [featured_card, set_featured_card] = useState<CardEntity | null>(null);
+  const [search_query, set_search_query] = useState('');
 
   useEffect(() => {
     let canceled = false;
@@ -66,17 +57,6 @@ export function HomeScreen({
     };
   }, []);
 
-  const weekly_totals: WeeklyTotals | null = useMemo(() => {
-    if (!snapshot) {
-      return null;
-    }
-    const totals = aggregate_activity_totals(snapshot, 7);
-    return {
-      created_cards: totals.created_cards,
-      reviewed_cards: totals.reviewed_cards,
-    };
-  }, [snapshot]);
-
   const heatmap_cells = useMemo(() => (snapshot ? build_heatmap_cells(snapshot) : []), [snapshot]);
   useEffect(() => {
     let canceled = false;
@@ -102,16 +82,19 @@ export function HomeScreen({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-900">
-      <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-6 pb-[calc(3.5rem+env(safe-area-inset-bottom))] pt-[calc(3rem+env(safe-area-inset-top))]">
-        <div className="flex flex-1 flex-col gap-8">
-          <HomeHeatmapSection
-            is_loading={is_loading_snapshot}
+      <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col px-6 pb-[calc(3rem+env(safe-area-inset-bottom))] pt-[calc(3rem+env(safe-area-inset-top))]">
+        <div className="flex flex-1 flex-col gap-6">
+          <HomeSearchBar
+            cards={cards}
+            query={search_query}
+            on_query_change={set_search_query}
+            on_open_cards={on_open_cards}
+            on_create_card={on_create_card}
+          />
+
+          <HomeHeatmapCard
             cells={heatmap_cells}
-            selected_metric={selected_heatmap_metric}
-            on_select_metric={set_selected_heatmap_metric}
-            weekly_created={weekly_totals?.created_cards ?? null}
-            weekly_reviewed={weekly_totals?.reviewed_cards ?? null}
-            streak_days={snapshot?.streak_days ?? null}
+            is_loading={is_loading_snapshot}
             on_open_analytics={on_open_analytics}
           />
 
@@ -120,7 +103,6 @@ export function HomeScreen({
             card={featured_card}
             on_open_cards={on_open_cards}
           />
-
           {show_error ? (
             <p className="rounded-2xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-600 shadow-sm">
               {show_error}
