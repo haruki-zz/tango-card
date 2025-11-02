@@ -9,6 +9,7 @@ import { AnalyticsTracker } from '../../infrastructure/telemetry/analytics_track
 import { create_storage_driver } from '../../infrastructure/persistence/storage_engine';
 import type { FileStorageEngineOptions } from '../../infrastructure/persistence/engines/file_storage_engine';
 import '../../infrastructure/persistence/engines/file_storage_engine';
+import type { CardEntity } from '../../domain/card/card_entity';
 
 export interface StorageContext {
   readonly card_repository: CardRepository;
@@ -84,6 +85,12 @@ async function seed_sample_data(base_path: string, context: StorageContext): Pro
     const cards_payload = JSON.parse(await readFile(cards_path, 'utf-8'));
     if (Array.isArray(cards_payload) && cards_payload.length > 0) {
       await context.card_repository.replace_cards(cards_payload);
+      return;
+    }
+    if (cards_payload && typeof cards_payload === 'object') {
+      await context.card_repository.replace_cards(
+        Object.values(cards_payload as Record<string, CardEntity>),
+      );
     }
   } catch {
     return;

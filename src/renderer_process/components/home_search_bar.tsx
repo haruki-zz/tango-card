@@ -74,8 +74,11 @@ export function HomeSearchBar({
             ))}
           </ul>
         </div>
+      ) : query.trim().length > 0 ? (
+        <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-10 rounded-[20px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 shadow-lg">
+          No matching words found.
+        </div>
       ) : null}
     </section>
   );
 }
-

@@ -32,7 +32,10 @@
 !scripts/**
 !tests/
 !tests/**
-!data/.gitkeep
+!data/
+!data/**
+data/analytics_snapshot.json
+data/review_sessions.json
 
 # Always ignore generated and environment-specific artifacts
 node_modules/

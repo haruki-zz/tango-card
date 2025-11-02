@@ -17,6 +17,12 @@ export class CardRepository {
     return cards.find((card) => card.id === card_id);
   }
 
+  async find_card_by_word(word: string): Promise<CardEntity | undefined> {
+    const normalized = word.trim();
+    const cards = await this.storage_driver.read_cards();
+    return cards.find((card) => card.word.trim() === normalized);
+  }
+
   async upsert_card(card: CardEntity): Promise<void> {
     const cards = await this.storage_driver.read_cards();
     const existing_index = cards.findIndex((item) => item.id === card.id);

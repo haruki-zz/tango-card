@@ -1,10 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import type {
-  ReviewSessionRecord,
-  StorageDriver
-} from '../persistence/storage_driver';
+import type { ReviewSessionRecord, StorageDriver } from '../persistence/storage_driver';
 import type { CardEntity } from '../../domain/card/card_entity';
 import type { ActivitySnapshot } from '../../domain/analytics/activity_snapshot';
 import { EMPTY_ACTIVITY_SNAPSHOT } from '../../domain/analytics/activity_snapshot';
@@ -17,11 +14,16 @@ export class FileStorageProvider implements StorageDriver {
   }
 
   async read_cards(): Promise<CardEntity[]> {
-    return this.read_json<CardEntity[]>('cards.json', []);
+    const payload = await this.read_json<unknown>('cards.json', {});
+    return this.normalize_cards_payload(payload);
   }
 
   async write_cards(cards: CardEntity[]): Promise<void> {
-    await this.write_json('cards.json', cards);
+    const payload: Record<string, CardEntity> = {};
+    cards.forEach((card) => {
+      payload[card.word] = card;
+    });
+    await this.write_json('cards.json', payload);
   }
 
   async read_review_sessions(): Promise<ReviewSessionRecord[]> {
@@ -65,5 +67,16 @@ export class FileStorageProvider implements StorageDriver {
     if (!existsSync(this.base_path)) {
       await mkdir(this.base_path, { recursive: true });
     }
+  }
+
+  private normalize_cards_payload(subject: unknown): CardEntity[] {
+    if (Array.isArray(subject)) {
+      return subject as CardEntity[];
+    }
+    if (subject && typeof subject === 'object') {
+      const record = subject as Record<string, CardEntity>;
+      return Object.values(record);
+    }
+    return [];
   }
 }

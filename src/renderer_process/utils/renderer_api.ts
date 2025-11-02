@@ -15,6 +15,7 @@ import {
 import { MEMORY_LEVEL_DEFAULT, MemoryLevel } from '../../domain/review/memory_level';
 import type { ActivitySnapshot, DailyActivityPoint } from '../../domain/analytics/activity_snapshot';
 import { create_card, update_card } from '../../domain/card/card_factory';
+import { create_domain_error } from '../../shared/errors/domain_error';
 
 declare global {
   interface Window {
@@ -124,8 +125,28 @@ const fallback_api: RendererApi = {
         throw update_result.error;
       }
       const updated_card = update_result.data;
+      const duplicate = Array.from(in_memory_cards.values()).find(
+        (card) => card.word.trim() === updated_card.word.trim() && card.id !== updated_card.id,
+      );
+      if (duplicate) {
+        throw create_domain_error(
+          'card.duplicate_word',
+          `The word "${updated_card.word}" already exists in your collection.`,
+        );
+      }
       in_memory_cards.set(updated_card.id, updated_card);
       return clone_card(updated_card);
+    }
+
+    const normalized_word = payload.word.trim();
+    const duplicate = Array.from(in_memory_cards.values()).find(
+      (card) => card.word.trim() === normalized_word,
+    );
+    if (duplicate) {
+      throw create_domain_error(
+        'card.duplicate_word',
+        `The word "${normalized_word}" already exists in your collection.`,
+      );
     }
 
     const create_result = create_card({
