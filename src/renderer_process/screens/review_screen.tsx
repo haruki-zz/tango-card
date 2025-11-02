@@ -182,8 +182,8 @@ export function ReviewScreen() {
             </div>
             <p>Cards remaining in this round: {queue.length}</p>
             <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-              Choose a memory level and select "Log Memory Level." Shortcuts 1/2/3, arrow keys, or swipe gestures submit
-              instantly.
+              Choose a memory level and select &ldquo;Log Memory Level.&rdquo; Shortcuts 1/2/3, arrow keys, or swipe
+              gestures submit instantly.
             </p>
             <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <span>Memory Level</span>
@@ -232,7 +232,7 @@ export function ReviewScreen() {
       ) : (
         <article style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <h2>Ready to Review</h2>
-          <p>No active round yet. Press "Start Review" to draw a new set of words.</p>
+          <p>No active round yet. Press &ldquo;Start Review&rdquo; to draw a new set of words.</p>
           <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
             You can begin another round whenever you like; completed cards are removed from the current session.
           </p>

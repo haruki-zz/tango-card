@@ -37,6 +37,7 @@ src/
 │  ├─ routing/
 │  │  └─ app_router.tsx           # 定义路由结构（编辑、复习、统计、设置）
 │  ├─ screens/
+│  │  ├─ home_screen.tsx          # 竖屏优先的主界面（热力图摘要 + 单词卡片概览 + 底部操作区）
 │  │  ├─ card_editor_screen.tsx   # 输入单词/读音/语境/例句生成统一尺寸卡片（手动保存与记忆等级选择）
 │  │  ├─ review_screen.tsx        # 复习流程视图，展示抽取的卡片
 │  │  ├─ analytics_screen.tsx     # 学习进度热力图与统计数据
