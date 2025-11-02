@@ -2,11 +2,13 @@
 
 ## Overview
 本文件定义 tango-card 的统一目录结构与职责划分。所有新代码需要遵循这里的模块边界和命名约定，以保持简单、清晰、低耦合的实现。各技术栈职责参见 `docs/stack_responsibility.md`。
+界面实现须与 `UI/` 目录中的最新设计稿保持一致；在提交 UI 相关改动时务必核对对应的 SVG 或说明文件，并在评审中引用其路径。
 
 ## Repository Layout
 ```
 .
 ├─ docs/                 # 项目文档（架构、规范、设计草案）
+├─ UI/                   # 界面设计稿与交互关系（SVG/说明文档）
 ├─ assets/               # 静态资源：图标、示例 SVG、演示截图
 ├─ config/               # 环境变量模板与打包配置
 ├─ scripts/              # 自动化脚本（构建、发布、数据迁移）
@@ -37,7 +39,7 @@ src/
 │  ├─ routing/
 │  │  └─ app_router.tsx           # 定义路由结构（编辑、复习、统计、设置）
 │  ├─ screens/
-│  │  ├─ home_screen.tsx          # 竖屏优先的主界面（热力图摘要 + 单词卡片概览 + 底部操作区）
+│  │  ├─ home_screen.tsx          # 竖屏优先的主界面（热力图 + 精选单词卡 + 底部操作区），细节对照 UI/main-interface.svg
 │  │  ├─ card_editor_screen.tsx   # 输入单词/读音/语境/例句生成统一尺寸卡片（手动保存与记忆等级选择）
 │  │  ├─ review_screen.tsx        # 复习流程视图，展示抽取的卡片
 │  │  ├─ analytics_screen.tsx     # 学习进度热力图与统计数据
