@@ -152,21 +152,21 @@ export function HomeHeatmapCard({ cells, is_loading, on_open_analytics }: HomeHe
         </p>
       ) : (
         <div className="flex">
-          <div className="mr-4 flex flex-col gap-[6px] py-1 text-right">
+          <div className="mr-4 flex flex-col gap-[12px] pt-2 text-right">
             {DAY_LABELS.map((label, index) => (
               <span key={`day-${index}`} className="h-[12px] text-[11px] text-slate-400">
                 {label}
               </span>
             ))}
           </div>
-          <div className="relative" style={{ width: `${grid_width}px` }}>
-            <div className="pointer-events-none absolute -top-6 left-0">
+          <div className="relative pt-[18px]" style={{ width: `${grid_width}px` }}>
+            <div className="pointer-events-none absolute left-0 top-0 h-0 w-full">
               {month_labels.map((label) => (
                 <span
                   key={`month-${label.column_index}`}
                   className="absolute text-xs font-medium text-slate-400"
                   style={{
-                    left: `${label.column_index * (CELL_SIZE + CELL_GAP) + CELL_SIZE / 2}px`,
+                    left: `${label.column_index * (CELL_SIZE + CELL_GAP)}px`,
                     transform: 'translateX(-50%)',
                   }}
                 >

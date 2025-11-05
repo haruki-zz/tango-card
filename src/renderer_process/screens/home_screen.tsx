@@ -81,28 +81,31 @@ export function HomeScreen({
   const show_error = error_message ?? snapshot_error;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-900">
-      <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col px-6 pb-[calc(3rem+env(safe-area-inset-bottom))] pt-[calc(3rem+env(safe-area-inset-top))]">
-        <div className="flex flex-1 flex-col gap-6">
-          <HomeSearchBar
-            cards={cards}
-            query={search_query}
-            on_query_change={set_search_query}
-            on_open_cards={on_open_cards}
-            on_create_card={on_create_card}
-          />
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900">
+      <main className="mx-auto flex min-h-screen w-full max-w-[478px] flex-col px-[32px] pb-[78px] pt-[78px]">
+        <div className="flex flex-1 flex-col gap-[36px]">
+          <div className="flex flex-col gap-[24px]">
+            <HomeSearchBar
+              cards={cards}
+              query={search_query}
+              on_query_change={set_search_query}
+              on_open_cards={on_open_cards}
+              on_create_card={on_create_card}
+            />
 
-          <HomeHeatmapCard
-            cells={heatmap_cells}
-            is_loading={is_loading_snapshot}
-            on_open_analytics={on_open_analytics}
-          />
+            <HomeHeatmapCard
+              cells={heatmap_cells}
+              is_loading={is_loading_snapshot}
+              on_open_analytics={on_open_analytics}
+            />
+          </div>
 
           <HomeFeaturedCard
             is_loading={is_cards_loading}
             card={featured_card}
             on_open_cards={on_open_cards}
           />
+
           {show_error ? (
             <p className="rounded-2xl border border-red-200/80 bg-red-50 px-4 py-3 text-sm text-red-600 shadow-sm">
               {show_error}
@@ -110,22 +113,14 @@ export function HomeScreen({
           ) : null}
         </div>
 
-        <footer className="mt-12 flex items-end justify-between gap-5">
+        <footer className="mt-[48px] flex justify-center">
           <button
             type="button"
             onClick={on_start_review}
             disabled={!can_start_review}
-            className="flex-1 rounded-full bg-white px-6 py-4 text-lg font-semibold text-slate-900 shadow-[0px_20px_45px_rgba(26,36,58,0.18)] transition-[transform,box-shadow] duration-150 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none hover:-translate-y-[1px] hover:shadow-[0px_26px_55px_rgba(26,36,58,0.24)] focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
+            className="w-[258px] rounded-[30px] bg-[#111827] py-4 text-lg font-semibold text-white shadow-[0px_20px_45px_rgba(17,24,39,0.24)] transition-transform duration-150 disabled:cursor-not-allowed disabled:opacity-60 disabled:shadow-none hover:-translate-y-[1px] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#111827]"
           >
             Start Review
-          </button>
-          <button
-            type="button"
-            onClick={on_create_card}
-            aria-label="Create new card"
-            className="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl font-semibold text-slate-900 shadow-[0px_16px_40px_rgba(26,36,58,0.18)] transition-[transform,box-shadow] duration-150 hover:-translate-y-[1px] hover:shadow-[0px_22px_52px_rgba(26,36,58,0.24)] focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
-          >
-            +
           </button>
         </footer>
       </main>

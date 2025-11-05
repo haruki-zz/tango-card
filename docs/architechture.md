@@ -39,7 +39,7 @@ src/
 │  ├─ routing/
 │  │  └─ app_router.tsx           # 定义路由结构（编辑、复习、统计、设置）
 │  ├─ screens/
-│  │  ├─ home_screen.tsx          # 竖屏优先的主界面（搜索栏 + GitHub 风格热力图 + 精选单词卡 + Start Review，整体高度比 1:3:5:1），细节对照 UI/main-interface.svg
+│  │  ├─ home_screen.tsx          # 竖屏优先的主界面（搜索栏 + GitHub 风格热力图 + 精选单词卡 + Start Review，整体高度比 1:3:5:1），细节对照 UI/main_interface.tsx
 │  │  ├─ card_editor_screen.tsx   # 输入单词/读音/语境/例句生成统一尺寸卡片（手动保存与记忆等级选择）
 │  │  ├─ review_screen.tsx        # 复习流程视图，展示抽取的卡片
 │  │  ├─ analytics_screen.tsx     # 学习进度热力图与统计数据

@@ -30,13 +30,13 @@ export function HomeSearchBar({
 
   return (
     <section className="relative">
-      <div className="flex items-center gap-3 rounded-[24px] border border-slate-200 bg-white px-5 py-4 shadow-sm">
+      <div className="flex items-center gap-3 rounded-[28px] border border-slate-200 bg-white px-6 py-4 shadow-sm">
         <input
           type="search"
           value={query}
           onChange={(event) => on_query_change(event.target.value)}
           placeholder="Search existing words"
-          className="w-full bg-transparent text-base text-slate-700 placeholder:text-slate-400 focus:outline-none"
+          className="w-full bg-transparent text-lg text-slate-700 placeholder:text-slate-400 focus:outline-none"
           onKeyDown={(event) => {
             if (event.key === 'Enter' && on_open_cards) {
               on_open_cards();
@@ -47,7 +47,7 @@ export function HomeSearchBar({
           type="button"
           aria-label="Create new card"
           onClick={on_create_card}
-          className="flex h-11 w-11 items-center justify-center rounded-full bg-slate-900 text-2xl font-semibold text-white transition-transform hover:-translate-y-[1px] focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/70"
+          className="flex h-10 w-[52px] items-center justify-center rounded-[20px] bg-slate-900 text-2xl font-semibold text-white transition-transform hover:-translate-y-[1px] focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/70"
         >
           +
         </button>
