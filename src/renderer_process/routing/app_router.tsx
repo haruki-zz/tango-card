@@ -70,7 +70,7 @@ export function AppRouter() {
       case 'review':
         return (
           <ScreenContainer title={ROUTE_LABELS.review} on_back={go_home}>
-            <ReviewScreen />
+            <ReviewScreen on_exit={go_home} />
           </ScreenContainer>
         );
       case 'analytics':

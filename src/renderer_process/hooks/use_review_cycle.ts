@@ -9,6 +9,7 @@ function useReviewCycle() {
   const active_index = review_queue_store((state) => state.active_index);
   const set_queue = review_queue_store((state) => state.set_queue);
   const advance = review_queue_store((state) => state.advance);
+  const reset_queue = review_queue_store((state) => state.reset);
   const update_card = review_queue_store((state) => state.update_card);
 
   const start_round = useCallback(async (size?: number) => {
@@ -37,6 +38,7 @@ function useReviewCycle() {
     active_index,
     active_card,
     start_round,
+    reset_queue,
     submit_review,
   };
 }

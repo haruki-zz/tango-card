@@ -5,8 +5,12 @@ import { use_review_cycle } from '../hooks/use_review_cycle';
 import { MEMORY_LEVEL_OPTIONS } from '../../shared/constants/memory_levels';
 import { MEMORY_LEVEL_DEFAULT, MemoryLevel } from '../../domain/review/memory_level';
 
-export function ReviewScreen() {
-  const { queue, active_card, start_round, submit_review } = use_review_cycle();
+interface ReviewScreenProps {
+  on_exit(): void;
+}
+
+export function ReviewScreen({ on_exit }: ReviewScreenProps) {
+  const { queue, active_card, start_round, submit_review, reset_queue } = use_review_cycle();
 
   const render_card = active_card;
   const [selected_level, set_selected_level] = useState<MemoryLevel>(MEMORY_LEVEL_DEFAULT);
@@ -15,6 +19,7 @@ export function ReviewScreen() {
   const [is_submitting, set_is_submitting] = useState(false);
   const [round_status, set_round_status] = useState<'idle' | 'loading' | 'error'>('idle');
   const [round_error, set_round_error] = useState<string | null>(null);
+  const [has_started, set_has_started] = useState(false);
 
   const selected_option = useMemo(
     () => MEMORY_LEVEL_OPTIONS.find((option) => option.level === selected_level),
@@ -125,6 +130,7 @@ export function ReviewScreen() {
     try {
       await start_round();
       set_round_status('idle');
+      set_has_started(true);
     } catch (error) {
       set_round_status('error');
       set_round_error((error as Error).message);
@@ -132,6 +138,29 @@ export function ReviewScreen() {
   }, [start_round]);
 
   const round_in_progress = queue.length > 0 && Boolean(render_card);
+
+  useEffect(() => {
+    if (has_started) {
+      return;
+    }
+    if (round_status !== 'idle') {
+      return;
+    }
+    void handle_start_round();
+  }, [handle_start_round, has_started, round_status]);
+
+  useEffect(() => {
+    if (!has_started) {
+      return;
+    }
+    if (round_in_progress) {
+      return;
+    }
+    if (round_status === 'idle') {
+      reset_queue();
+      on_exit();
+    }
+  }, [has_started, round_in_progress, round_status, on_exit, reset_queue]);
 
   return (
     <section style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
