@@ -81,7 +81,7 @@ export function HomeScreen({
   const show_error = error_message ?? snapshot_error;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900">
+    <div className="min-h-screen bg-white text-black">
       <main className="mx-auto flex min-h-screen w-full max-w-[478px] flex-col px-[32px] pb-[78px] pt-[78px]">
         <div className="flex flex-1 flex-col gap-[36px]">
           <div className="flex flex-col gap-[24px]">

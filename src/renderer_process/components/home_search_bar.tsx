@@ -30,13 +30,13 @@ export function HomeSearchBar({
 
   return (
     <section className="relative">
-      <div className="flex items-center gap-3 rounded-[28px] border border-slate-200 bg-white px-6 py-4 shadow-sm">
+      <div className="flex items-center gap-3 rounded-[28px] border border-black bg-white px-6 py-4 shadow-sm">
         <input
           type="search"
           value={query}
           onChange={(event) => on_query_change(event.target.value)}
           placeholder="Search existing words"
-          className="w-full bg-transparent text-lg text-slate-700 placeholder:text-slate-400 focus:outline-none"
+          className="w-full bg-transparent text-lg text-black placeholder:text-black/50 focus:outline-none"
           onKeyDown={(event) => {
             if (event.key === 'Enter' && on_open_cards) {
               on_open_cards();
@@ -47,14 +47,14 @@ export function HomeSearchBar({
           type="button"
           aria-label="Create new card"
           onClick={on_create_card}
-          className="flex h-10 w-[52px] items-center justify-center rounded-[20px] bg-slate-900 text-2xl font-semibold text-white transition-transform hover:-translate-y-[1px] focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/70"
+          className="flex h-10 w-[52px] items-center justify-center rounded-[20px] border border-black bg-white text-2xl font-semibold text-black transition-transform hover:-translate-y-[1px] focus:outline-none focus-visible:ring-2 focus-visible:ring-black"
         >
           +
         </button>
       </div>
       {suggestions.length > 0 ? (
-        <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-10 rounded-[20px] border border-slate-200 bg-white p-3 shadow-lg">
-          <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+        <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-10 rounded-[20px] border border-black bg-white p-3 shadow-lg">
+          <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-[0.2em] text-black/70">
             Matches
           </p>
           <ul className="flex flex-col gap-2">
@@ -63,10 +63,10 @@ export function HomeSearchBar({
                 <button
                   type="button"
                   onClick={on_open_cards}
-                  className="flex w-full items-center justify-between rounded-[18px] px-3 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/60"
+                  className="flex w-full items-center justify-between rounded-[18px] px-3 py-2 text-left text-sm text-black transition-colors hover:bg-black/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-black/60"
                 >
-                  <span className="font-medium text-slate-900">{card.word}</span>
-                  <span className="text-xs uppercase tracking-[0.18em] text-slate-400">
+                  <span className="font-medium text-black">{card.word}</span>
+                  <span className="text-xs uppercase tracking-[0.18em] text-black/70">
                     View all
                   </span>
                 </button>
@@ -75,7 +75,7 @@ export function HomeSearchBar({
           </ul>
         </div>
       ) : query.trim().length > 0 ? (
-        <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-10 rounded-[20px] border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 shadow-lg">
+        <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-10 rounded-[20px] border border-black bg-white px-4 py-3 text-sm text-black shadow-lg">
           No matching words found.
         </div>
       ) : null}
