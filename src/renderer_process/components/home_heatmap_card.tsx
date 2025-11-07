@@ -6,6 +6,7 @@ interface HomeHeatmapCardProps {
   readonly cells: HeatmapCell[];
   readonly is_loading: boolean;
   readonly on_open_analytics?: () => void;
+  readonly className?: string;
 }
 
 interface HeatmapDay {
@@ -24,7 +25,7 @@ const TOTAL_COLUMNS = MONTH_COUNT * COLUMNS_PER_MONTH;
 const DAY_COUNT = 7;
 const CELL_SIZE = 10;
 const CELL_GAP = 2;
-const COLOR_SCALE = ['#E2E8F0', '#bbf7d0', '#4ade80', '#22c55e', '#16a34a'];
+const COLOR_SCALE = ['#1e293b', '#fbbf24', '#34d399', '#38bdf8', '#818cf8'];
 const DAY_LABELS: string[] = ['Sun', '', 'Tue', '', 'Thu', '', 'Sat'];
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -101,7 +102,18 @@ function resolve_color(value: number, max_value: number): string {
   return COLOR_SCALE[index];
 }
 
-export function HomeHeatmapCard({ cells, is_loading, on_open_analytics }: HomeHeatmapCardProps) {
+export function HomeHeatmapCard({
+  cells,
+  is_loading,
+  on_open_analytics,
+  className,
+}: HomeHeatmapCardProps) {
+  const root_class = [
+    'flex h-full flex-col rounded-[28px] border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-900/30 px-6 py-5 text-white shadow-[0_25px_65px_rgba(2,6,23,0.65)] backdrop-blur',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
   const layout = useMemo(() => build_columns(cells), [cells]);
   const grid_width = TOTAL_COLUMNS * (CELL_SIZE + CELL_GAP) - CELL_GAP;
   const month_labels = useMemo(() => {
@@ -125,11 +137,11 @@ export function HomeHeatmapCard({ cells, is_loading, on_open_analytics }: HomeHe
   }, [layout.columns]);
 
   return (
-    <section className="rounded-[32px] border border-black bg-white px-6 py-5 shadow-sm">
+    <section className={root_class}>
       <header className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-black">Study Heat Map</h2>
-          <p className="text-xs uppercase tracking-[0.22em] text-black/70">
+          <h2 className="text-lg font-semibold">Study Heat Map</h2>
+          <p className="text-xs uppercase tracking-[0.35em] text-white/55">
             Last 5 months overview
           </p>
         </div>
@@ -137,24 +149,26 @@ export function HomeHeatmapCard({ cells, is_loading, on_open_analytics }: HomeHe
           <button
             type="button"
             onClick={on_open_analytics}
-            className="rounded-full border border-black px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-black transition-colors hover:bg-black hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-black/60"
+            className="rounded-full border border-white/30 px-4 py-1 text-[11px] font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:border-white/60 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
           >
-            View all
+            View analytics
           </button>
         ) : null}
       </header>
 
       {is_loading ? (
-        <div className="h-32 animate-pulse rounded-[24px] bg-black/10" />
+        <div className="flex flex-1 items-center justify-center rounded-[24px] border border-dashed border-white/15 bg-white/5">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-white/30 border-t-white/80" />
+        </div>
       ) : layout.columns.length === 0 ? (
-        <p className="rounded-[20px] border border-dashed border-black px-4 py-6 text-center text-sm text-black">
+        <p className="rounded-[20px] border border-dashed border-white/15 px-4 py-6 text-center text-sm text-white/70">
           No activity yet. Start learning to populate your heat map.
         </p>
       ) : (
-        <div className="flex">
+        <div className="flex flex-1 overflow-hidden">
           <div className="mr-4 flex flex-col gap-[12px] pt-2 text-right">
             {DAY_LABELS.map((label, index) => (
-              <span key={`day-${index}`} className="h-[12px] text-[11px] text-black/70">
+              <span key={`day-${index}`} className="h-[12px] text-[11px] text-white/45">
                 {label}
               </span>
             ))}
@@ -164,7 +178,7 @@ export function HomeHeatmapCard({ cells, is_loading, on_open_analytics }: HomeHe
               {month_labels.map((label) => (
                 <span
                   key={`month-${label.column_index}`}
-                  className="absolute text-xs font-medium text-black/70"
+                  className="absolute text-xs font-medium text-white/60"
                   style={{
                     left: `${label.column_index * (CELL_SIZE + CELL_GAP)}px`,
                     transform: 'translateX(-50%)',
@@ -204,6 +218,16 @@ export function HomeHeatmapCard({ cells, is_loading, on_open_analytics }: HomeHe
           </div>
         </div>
       )}
+
+      <div className="mt-4 flex items-center justify-between text-[11px] text-white/50">
+        <span>Less</span>
+        <div className="flex items-center gap-1">
+          {COLOR_SCALE.map((color) => (
+            <span key={color} className="h-[8px] w-[24px] rounded-full" style={{ backgroundColor: color }} />
+          ))}
+        </div>
+        <span>More</span>
+      </div>
     </section>
   );
 }

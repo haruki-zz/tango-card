@@ -24,18 +24,18 @@ interface ScreenContainerProps {
 
 function ScreenContainer({ title, on_back, children }: ScreenContainerProps) {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-[calc(2rem+env(safe-area-inset-top))]">
+    <div className="min-h-screen bg-[#020617] px-4 py-6 text-white">
+      <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-6xl flex-col rounded-[32px] border border-white/10 bg-white/5 px-6 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-[calc(2rem+env(safe-area-inset-top))] shadow-[0_35px_90px_rgba(2,6,23,0.7)] backdrop-blur">
         <header className="flex items-center gap-4">
           <button
             type="button"
             onClick={on_back}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-700 bg-slate-900 text-lg text-slate-200 shadow-sm transition hover:border-slate-500 hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-200"
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-white/10 text-lg text-white/90 transition hover:border-white/60 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
             aria-label="Return to home"
           >
             ←
           </button>
-          <h1 className="text-xl font-semibold text-slate-100">{title}</h1>
+          <h1 className="text-2xl font-semibold">{title}</h1>
         </header>
         <div className="mt-6 flex-1 overflow-auto pb-8">{children}</div>
       </div>

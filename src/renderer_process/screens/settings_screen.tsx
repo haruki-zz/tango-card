@@ -66,37 +66,31 @@ export function SettingsScreen() {
   const is_busy = pending_action !== null;
 
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '720px' }}>
-      <header>
-        <h2>Settings</h2>
-        <p>More configuration options are coming soon.</p>
+    <section className="flex max-w-3xl flex-col gap-6 text-white">
+      <header className="rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-[0_25px_60px_rgba(2,6,23,0.55)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.45em] text-white/60">Settings</p>
+        <h2 className="mt-3 text-3xl font-semibold">Control backups and data safety</h2>
+        <p className="mt-2 text-sm text-white/70">More configuration options are coming soon.</p>
       </header>
-      <article>
-        <h3>Basics</h3>
-        <ul>
+      <article className="rounded-[28px] border border-white/10 bg-white/5 p-5">
+        <h3 className="text-lg font-semibold">Basics</h3>
+        <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-white/75">
           <li>Data directory: Electron userData/tango-card</li>
           <li>Default memory weights: Well Known 1, Somewhat Familiar 3, Needs Reinforcement 5</li>
-          <li>SVG safety: removes script/foreignObject tags before saving</li>
+          <li>SVG sanitizer strips script/foreignObject tags before saving</li>
         </ul>
       </article>
-      <article style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-        <h3>Backup & Migration</h3>
-        <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.9rem' }}>
-          Exports include cards, review history, and analytics (JSON or ZIP). Imports overwrite existing data, so back up first.
+      <article className="rounded-[28px] border border-white/10 bg-white/5 p-5">
+        <h3 className="text-lg font-semibold">Backup &amp; migration</h3>
+        <p className="mt-2 text-sm text-white/70">
+          Exports include cards, review history, and analytics data. Imports overwrite existing data—always back up first.
         </p>
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+        <div className="mt-4 flex flex-wrap gap-3">
           <button
             type="button"
             onClick={() => handle_export('json')}
             disabled={is_busy}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '9999px',
-              border: '1px solid #334155',
-              backgroundColor: '#0f172a',
-              color: '#f8fafc',
-              cursor: is_busy ? 'not-allowed' : 'pointer',
-            }}
+            className="rounded-[999px] border border-white/20 px-5 py-2 text-sm font-semibold text-white/80 transition hover:border-white/60 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
           >
             Export JSON
           </button>
@@ -104,14 +98,7 @@ export function SettingsScreen() {
             type="button"
             onClick={() => handle_export('zip')}
             disabled={is_busy}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '9999px',
-              border: '1px solid #334155',
-              backgroundColor: '#0f172a',
-              color: '#f8fafc',
-              cursor: is_busy ? 'not-allowed' : 'pointer',
-            }}
+            className="rounded-[999px] border border-white/20 px-5 py-2 text-sm font-semibold text-white/80 transition hover:border-white/60 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
           >
             Export ZIP
           </button>
@@ -119,20 +106,13 @@ export function SettingsScreen() {
             type="button"
             onClick={handle_import}
             disabled={is_busy}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '9999px',
-              border: '1px solid #22c55e',
-              backgroundColor: '#22c55e',
-              color: '#0f172a',
-              cursor: is_busy ? 'not-allowed' : 'pointer',
-            }}
+            className="rounded-[999px] border border-emerald-300/60 bg-emerald-400/80 px-5 py-2 text-sm font-semibold text-slate-900 shadow-[0_12px_30px_rgba(16,185,129,0.35)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Import Backup
+            Import backup
           </button>
         </div>
-        <p aria-live="polite" style={{ minHeight: '1.5rem', margin: 0, color: '#94a3b8' }}>
-          {is_busy ? 'Processing...' : operation_message}
+        <p aria-live="polite" className="mt-3 min-h-[1.5rem] text-sm text-white/70">
+          {is_busy ? 'Processing...' : operation_message ?? ''}
         </p>
       </article>
     </section>

@@ -68,149 +68,91 @@ export function AnalyticsScreen() {
 
   if (!snapshot) {
     return (
-      <section>
-        <h2>Learning Analytics</h2>
-        <p>No analytics yet—create a few cards to get started.</p>
+      <section className="rounded-[32px] border border-white/10 bg-white/5 p-6 text-white shadow-[0_25px_60px_rgba(2,6,23,0.55)]">
+        <h2 className="text-2xl font-semibold">Learning analytics</h2>
+        <p className="mt-2 text-sm text-white/70">No analytics yet—create a few cards to get started.</p>
       </section>
     );
   }
 
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <h2>Learning Analytics</h2>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: '1rem',
-        }}
-      >
-        <article
-          style={{
-            backgroundColor: '#0f172a',
-            borderRadius: '12px',
-            padding: '1rem',
-          }}
-        >
-          <h3 style={{ margin: 0, fontSize: '1rem' }}>Streak</h3>
-          <p style={{ margin: '0.5rem 0 0 0', fontSize: '1.5rem', fontWeight: 600 }}>
-            {snapshot.streak_days} days
-          </p>
-          <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
-            Stay consistent and keep the streak alive.
-          </p>
-        </article>
-        <article
-          style={{
-            backgroundColor: '#0f172a',
-            borderRadius: '12px',
-            padding: '1rem',
-          }}
-        >
-          <h3 style={{ margin: 0, fontSize: '1rem' }}>Cards Created (7 days)</h3>
-          <p style={{ margin: '0.5rem 0 0 0', fontSize: '1.5rem', fontWeight: 600 }}>
-            {seven_day_totals.created_cards} cards
-          </p>
-          <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
-            Total cards created over the past week.
-          </p>
-        </article>
-        <article
-          style={{
-            backgroundColor: '#0f172a',
-            borderRadius: '12px',
-            padding: '1rem',
-          }}
-        >
-          <h3 style={{ margin: 0, fontSize: '1rem' }}>Cards Reviewed (7 days)</h3>
-          <p style={{ margin: '0.5rem 0 0 0', fontSize: '1.5rem', fontWeight: 600 }}>
-            {seven_day_totals.reviewed_cards} reviews
-          </p>
-          <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
-            Total reviews completed over the past week.
-          </p>
-        </article>
-        <article
-          style={{
-            backgroundColor: '#0f172a',
-            borderRadius: '12px',
-            padding: '1rem',
-          }}
-        >
-          <h3 style={{ margin: 0, fontSize: '1rem' }}>Overall Progress</h3>
-          <p style={{ margin: '0.5rem 0 0 0', fontSize: '1.5rem', fontWeight: 600 }}>
-            {snapshot.total_cards} cards created
-          </p>
-          <p style={{ margin: '0.25rem 0 0 0', fontSize: '1rem', fontWeight: 600 }}>
-            {snapshot.total_reviews} reviews logged
-          </p>
-          <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem', color: '#94a3b8' }}>
-            Cumulative totals for everything you have created and reviewed.
-          </p>
-        </article>
+    <section className="flex flex-col gap-8 text-white">
+      <div className="flex flex-col gap-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.45em] text-white/60">Insights</p>
+        <h2 className="text-3xl font-semibold">Learning analytics</h2>
+        <p className="text-sm text-white/70">
+          Track your streak, weekly throughput, and how reviews distribute across memory levels.
+        </p>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <AnalyticsStatCard title="Streak" value={`${snapshot.streak_days} days`} hint="Keep the habit going." />
+        <AnalyticsStatCard
+          title="Cards created (7d)"
+          value={`${seven_day_totals.created_cards.toLocaleString()} cards`}
+          hint="New additions this week."
+        />
+        <AnalyticsStatCard
+          title="Cards reviewed (7d)"
+          value={`${seven_day_totals.reviewed_cards.toLocaleString()} reviews`}
+          hint="Completed sessions this week."
+        />
+        <AnalyticsStatCard
+          title="Lifetime totals"
+          value={`${snapshot.total_cards.toLocaleString()} cards`}
+          secondary={`${snapshot.total_reviews.toLocaleString()} reviews`}
+          hint="All-time progress."
+        />
       </div>
 
-      <section style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <header style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <h3 style={{ margin: 0, fontSize: '1rem' }}>Activity Heatmap</h3>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      <section className="rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-[0_25px_60px_rgba(2,6,23,0.55)] backdrop-blur">
+        <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 className="text-lg font-semibold">Activity heatmap</h3>
+            <p className="text-sm text-white/60">Switch metrics to compare creation and review cadence.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
             {HEATMAP_METRIC_OPTIONS.map((option) => (
               <button
                 key={option.value}
                 type="button"
                 onClick={() => set_metric(option.value)}
                 aria-pressed={metric === option.value}
-                style={{
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '9999px',
-                  border: '1px solid #334155',
-                  backgroundColor: metric === option.value ? '#1d4ed8' : 'transparent',
-                  color: '#f8fafc',
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                }}
+                className={`rounded-[999px] border px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] transition ${
+                  metric === option.value
+                    ? 'border-sky-300/60 bg-sky-500/20 text-sky-100'
+                    : 'border-white/15 bg-white/5 text-white/70 hover:text-white'
+                }`}
               >
-                <span style={{ display: 'block', fontWeight: 600 }}>{option.label}</span>
-                <span style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8' }}>
-                  {option.description}
-                </span>
+                {option.label}
               </button>
             ))}
           </div>
         </header>
-        <ContributionHeatmap cells={cells} metric={metric} />
+        <div className="mt-6">
+          <ContributionHeatmap cells={cells} metric={metric} />
+        </div>
       </section>
 
-      <section
-        aria-labelledby="memory-level-distribution"
-        style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
-      >
-        <h3 id="memory-level-distribution" style={{ margin: 0, fontSize: '1rem' }}>
-          Memory-Level Breakdown
+      <section className="rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-[0_25px_60px_rgba(2,6,23,0.55)] backdrop-blur">
+        <h3 id="memory-level-distribution" className="text-lg font-semibold">
+          Memory-level breakdown
         </h3>
         {total_cards === 0 ? (
-          <p>No cards yet—add something to see the distribution.</p>
+          <p className="mt-2 text-sm text-white/70">No cards yet—add something to see the distribution.</p>
         ) : (
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '0.75rem' }}>
+          <ul className="mt-4 grid gap-3">
             {memory_level_distribution.map((entry) => (
               <li
                 key={entry.level}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  backgroundColor: '#0f172a',
-                  borderRadius: '12px',
-                  padding: '0.75rem 1rem',
-                }}
+                className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/20 px-4 py-3"
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div className="flex items-center gap-3">
                   <MemoryLevelBadge level={entry.level} />
-                  <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>{entry.count} cards</span>
+                  <span className="text-xl font-semibold">{entry.count} cards</span>
                 </div>
-                <span style={{ fontSize: '0.9rem', color: '#94a3b8' }}>
+                <span className="text-sm text-white/70">
                   {entry.percentage}
-                  <span style={{ fontSize: '0.75rem' }}>%</span>
+                  <span className="text-xs">%</span>
                 </span>
               </li>
             ))}
@@ -218,5 +160,23 @@ export function AnalyticsScreen() {
         )}
       </section>
     </section>
+  );
+}
+
+interface AnalyticsStatCardProps {
+  readonly title: string;
+  readonly value: string;
+  readonly secondary?: string;
+  readonly hint: string;
+}
+
+function AnalyticsStatCard({ title, value, secondary, hint }: AnalyticsStatCardProps) {
+  return (
+    <article className="rounded-[28px] border border-white/10 bg-white/5 p-5 text-white shadow-[0_20px_45px_rgba(2,6,23,0.45)] backdrop-blur">
+      <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/60">{title}</p>
+      <p className="mt-3 text-2xl font-semibold">{value}</p>
+      {secondary ? <p className="text-lg font-semibold text-white/80">{secondary}</p> : null}
+      <p className="mt-2 text-xs text-white/60">{hint}</p>
+    </article>
   );
 }

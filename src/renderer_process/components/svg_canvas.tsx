@@ -109,8 +109,8 @@ export function SvgCanvas({ svg_source, on_swipe }: SvgCanvasProps) {
   return (
     <div
       ref={attach_ref}
-      className="svg-canvas"
-      style={{ width: '100%', aspectRatio: '21 / 12', minHeight: '240px', touchAction: 'none' }}
+      className="w-full min-h-[240px] touch-none rounded-3xl bg-slate-950/40 p-4 [aspect-ratio:21/12]"
+      style={{ touchAction: 'none' }}
       onPointerDown={handle_pointer_down}
       onPointerCancel={handle_pointer_cancel}
       onPointerUp={handle_pointer_up}
@@ -119,13 +119,13 @@ export function SvgCanvas({ svg_source, on_swipe }: SvgCanvasProps) {
         <div aria-label="svg-preview" dangerouslySetInnerHTML={{ __html: preview_state.markup }} />
       ) : null}
       {preview_state.status === 'empty' ? (
-        <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Fill in the card details to preview it here.</p>
+        <p className="text-sm text-white/60">Fill in the card details to preview it here.</p>
       ) : null}
       {preview_state.status === 'error' ? (
-        <p style={{ color: '#f87171', fontSize: '0.9rem' }}>SVG could not be parsed. Please check the source.</p>
+        <p className="text-sm text-red-300">SVG could not be parsed. Please check the source.</p>
       ) : null}
       {preview_state.status === 'initializing' ? (
-        <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Loading preview...</p>
+        <p className="text-sm text-white/60">Loading preview...</p>
       ) : null}
     </div>
   );

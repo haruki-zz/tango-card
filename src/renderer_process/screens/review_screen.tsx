@@ -163,59 +163,47 @@ export function ReviewScreen({ on_exit }: ReviewScreenProps) {
   }, [has_started, round_in_progress, round_status, on_exit, reset_queue]);
 
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <header style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+    <section className="flex flex-col gap-6 text-white">
+      <header className="flex flex-wrap items-center gap-4 rounded-[24px] border border-white/10 bg-white/5 p-5">
         <button
           type="button"
           onClick={() => {
             void handle_start_round();
           }}
           disabled={round_status === 'loading'}
-          style={{
-            padding: '0.6rem 1.6rem',
-            borderRadius: '9999px',
-            border: '1px solid #1d4ed8',
-            backgroundColor: round_status === 'loading' ? '#1e293b' : '#1d4ed8',
-            color: '#f8fafc',
-            cursor: round_status === 'loading' ? 'progress' : 'pointer',
-            fontWeight: 600,
-          }}
+          className="rounded-[999px] bg-gradient-to-r from-emerald-400 to-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_15px_35px_rgba(56,189,248,0.35)] transition hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-progress disabled:opacity-60"
         >
-          {round_status === 'loading' ? 'Preparing...' : 'Start Review'}
+          {round_status === 'loading' ? 'Preparing...' : 'Start review'}
         </button>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-          <span style={{ fontSize: '0.9rem', color: '#94a3b8' }}>
-            Each round draws up to 30 cards with a 1:3:6 memory-level ratio (Well Known / Somewhat Familiar /
-            Needs Reinforcement).
+        <div className="flex flex-1 flex-col text-sm text-white/70">
+          <span>
+            Each round pulls up to 30 cards with a 1:3:6 ratio (Well Known / Somewhat Familiar / Needs Reinforcement).
           </span>
-          {round_error ? (
-            <span style={{ fontSize: '0.85rem', color: '#f87171' }}>Failed to start review: {round_error}</span>
-          ) : null}
+          {round_error ? <span className="text-xs text-red-300">Failed to start review: {round_error}</span> : null}
         </div>
       </header>
 
       {round_in_progress && render_card ? (
-        <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
-          <div style={{ flex: 1 }}>
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="rounded-[32px] border border-white/10 bg-white/5 p-5 shadow-[0_25px_60px_rgba(2,6,23,0.55)] backdrop-blur">
             <SvgCanvas svg_source={render_card.svg_source} on_swipe={handle_swipe} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '280px' }}>
-            <h2>Memory Strength</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Last recorded</span>
+          <div className="flex flex-col gap-4 rounded-[32px] border border-white/10 bg-white/5 p-5 shadow-[0_25px_60px_rgba(2,6,23,0.55)] backdrop-blur">
+            <h2 className="text-xl font-semibold">Memory strength</h2>
+            <div className="space-y-2 text-sm text-white/70">
+              <p>Last recorded</p>
               <MemoryLevelBadge level={render_card.memory_level} />
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Current selection</span>
+            <div className="space-y-2 text-sm text-white/70">
+              <p>Current selection</p>
               <MemoryLevelBadge level={selected_level} />
             </div>
-            <p>Cards remaining in this round: {queue.length}</p>
-            <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-              Choose a memory level and select &ldquo;Log Memory Level.&rdquo; Shortcuts 1/2/3, arrow keys, or swipe
-              gestures submit instantly.
+            <p className="text-sm text-white/70">Cards remaining: {queue.length}</p>
+            <p className="text-xs text-white/50">
+              Keyboard shortcuts 1/2/3 or arrow keys submit instantly. Swiping the card works as well.
             </p>
-            <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <span>Memory Level</span>
+            <label className="flex flex-col gap-2 text-sm">
+              <span className="font-medium text-white/80">Memory level</span>
               <select
                 value={selected_level}
                 disabled={is_submitting}
@@ -224,16 +212,16 @@ export function ReviewScreen({ on_exit }: ReviewScreenProps) {
                   set_submission_status('idle');
                   set_feedback_message(null);
                 }}
-                style={{ padding: '0.5rem' }}
+                className="rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-white/90 focus:border-sky-400 focus:outline-none disabled:opacity-60"
               >
                 {MEMORY_LEVEL_OPTIONS.map((option) => (
-                  <option key={option.level} value={option.level}>
+                  <option key={option.level} value={option.level} className="bg-slate-900 text-slate-100">
                     {option.label} (Shortcut: {[option.shortcut, ...(option.alt_shortcuts ?? [])].join(' / ')})
                   </option>
                 ))}
               </select>
               {selected_option?.description ? (
-                <span style={{ fontSize: '0.75rem', color: '#cbd5f5' }}>{selected_option.description}</span>
+                <span className="text-xs text-white/60">{selected_option.description}</span>
               ) : null}
             </label>
             <button
@@ -244,26 +232,21 @@ export function ReviewScreen({ on_exit }: ReviewScreenProps) {
                 }
               }}
               disabled={is_submitting || !render_card}
-              style={{
-                padding: '0.5rem 1.5rem',
-                borderRadius: '9999px',
-                border: '1px solid #22c55e',
-                backgroundColor: is_submitting ? '#1e293b' : '#22c55e',
-                color: '#0f172a',
-                cursor: is_submitting ? 'not-allowed' : 'pointer',
-              }}
+              className="rounded-[999px] border border-emerald-300/60 bg-emerald-400/80 px-4 py-2 text-sm font-semibold text-slate-900 shadow-[0_12px_30px_rgba(16,185,129,0.45)] transition hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Log Memory Level
+              Log memory level
             </button>
             <SubmissionHint status={submission_status} message={feedback_message} />
           </div>
         </div>
       ) : (
-        <article style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <h2>Ready to Review</h2>
-          <p>No active round yet. Press &ldquo;Start Review&rdquo; to draw a new set of words.</p>
-          <p style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
-            You can begin another round whenever you like; completed cards are removed from the current session.
+        <article className="rounded-[32px] border border-dashed border-white/20 bg-white/5 p-6 text-white">
+          <h2 className="text-xl font-semibold">Ready to review</h2>
+          <p className="mt-2 text-sm text-white/70">
+            No active round yet. Press &ldquo;Start review&rdquo; above to draw a fresh batch of cards.
+          </p>
+          <p className="mt-1 text-xs text-white/50">
+            Completed words drop out of the session automatically so you can focus on what needs reinforcement.
           </p>
         </article>
       )}
@@ -279,15 +262,21 @@ interface SubmissionHintProps {
 function SubmissionHint({ status, message }: SubmissionHintProps) {
   if (!message) {
     return (
-      <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
+      <p className="text-xs text-white/60">
         Keyboard shortcuts or swipe gestures also submit the card instantly.
       </p>
     );
   }
-  const color =
-    status === 'success' ? '#16a34a' : status === 'error' ? '#ef4444' : status === 'saving' ? '#facc15' : '#94a3b8';
+  const color_class =
+    status === 'success'
+      ? 'text-emerald-300'
+      : status === 'error'
+        ? 'text-red-300'
+        : status === 'saving'
+          ? 'text-amber-200'
+          : 'text-white/60';
   return (
-    <p style={{ fontSize: '0.8rem', color }} aria-live="polite">
+    <p className={`text-xs ${color_class}`} aria-live="polite">
       {message}
     </p>
   );

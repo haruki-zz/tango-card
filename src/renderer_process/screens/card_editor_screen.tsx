@@ -117,91 +117,109 @@ export function CardEditorScreen() {
 
   const is_save_disabled = save_status === 'saving' || !fields_populated;
 
+  const field_class =
+    'rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-base text-white placeholder:text-white/40 focus:border-sky-400 focus:outline-none';
   return (
-    <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>Word</span>
-          <input
-            value={word}
-            onChange={(event) => handle_word_change(event.target.value)}
-            placeholder="e.g., study"
-          />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>Hiragana Reading</span>
-          <input
-            value={reading}
-            onChange={(event) => handle_reading_change(event.target.value)}
-            placeholder="e.g., benkyou"
-          />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>Context</span>
-          <textarea
-            rows={3}
-            value={context_text}
-            onChange={(event) => handle_context_change(event.target.value)}
-            placeholder="Describe where the word appears."
-          />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>Scene</span>
-          <textarea
-            rows={3}
-            value={scene_text}
-            onChange={(event) => handle_scene_change(event.target.value)}
-            placeholder="Explain the specific scene or background."
-          />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>Example Sentence</span>
-          <textarea
-            rows={3}
-            value={example_sentence}
-            onChange={(event) => handle_example_change(event.target.value)}
-            placeholder="Provide a sentence using the word."
-          />
-        </label>
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          <span>Memory Level</span>
-          <select
-            value={memory_level}
-            onChange={(event) => handle_memory_level_change(event.target.value as MemoryLevel)}
-            style={{ padding: '0.5rem' }}
-          >
-            {MEMORY_LEVEL_OPTIONS.map((option) => (
-              <option key={option.level} value={option.level}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          {selected_memory_option?.description ? (
-            <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{selected_memory_option.description}</span>
-          ) : null}
-        </label>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button
-            type="button"
-            onClick={handle_save}
-            disabled={is_save_disabled}
-            style={{
-              padding: '0.5rem 1.5rem',
-              borderRadius: '9999px',
-              border: '1px solid #1d4ed8',
-              backgroundColor: is_save_disabled ? '#1e293b' : '#1d4ed8',
-              color: '#f8fafc',
-              cursor: is_save_disabled ? 'not-allowed' : 'pointer',
-            }}
-          >
-            Save Card
-          </button>
-          <SaveStatusHint state={save_status} message={status_message} />
+    <section className="space-y-8 text-white">
+      <div className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
+        <div className="rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-[0_35px_80px_rgba(2,6,23,0.55)] backdrop-blur">
+          <header className="mb-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/60">
+              Create a card
+            </p>
+            <h2 className="mt-3 text-2xl font-semibold">Describe the word you want to remember</h2>
+            <p className="mt-2 text-sm text-white/70">
+              Fill every field to unlock the live SVG preview and save it to your collection.
+            </p>
+          </header>
+          <div className="flex flex-col gap-5">
+            <label className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-white/80">Word</span>
+              <input
+                value={word}
+                onChange={(event) => handle_word_change(event.target.value)}
+                placeholder="e.g., 勉強"
+                className={field_class}
+              />
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-white/80">Hiragana Reading</span>
+              <input
+                value={reading}
+                onChange={(event) => handle_reading_change(event.target.value)}
+                placeholder="e.g., べんきょう"
+                className={field_class}
+              />
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-white/80">Context</span>
+              <textarea
+                rows={3}
+                value={context_text}
+                onChange={(event) => handle_context_change(event.target.value)}
+                placeholder="Where does this word appear?"
+                className={`${field_class} resize-none`}
+              />
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-white/80">Scene</span>
+              <textarea
+                rows={3}
+                value={scene_text}
+                onChange={(event) => handle_scene_change(event.target.value)}
+                placeholder="Describe the moment in detail."
+                className={`${field_class} resize-none`}
+              />
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-white/80">Example Sentence</span>
+              <textarea
+                rows={3}
+                value={example_sentence}
+                onChange={(event) => handle_example_change(event.target.value)}
+                placeholder="Use the word in a complete sentence."
+                className={`${field_class} resize-none`}
+              />
+            </label>
+            <label className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-white/80">Memory Level</span>
+              <select
+                value={memory_level}
+                onChange={(event) => handle_memory_level_change(event.target.value as MemoryLevel)}
+                className={`${field_class} pr-10`}
+              >
+                {MEMORY_LEVEL_OPTIONS.map((option) => (
+                  <option key={option.level} value={option.level} className="bg-slate-900 text-slate-100">
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {selected_memory_option?.description ? (
+                <span className="text-xs text-white/60">{selected_memory_option.description}</span>
+              ) : null}
+            </label>
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={handle_save}
+                disabled={is_save_disabled}
+                className="rounded-[999px] bg-gradient-to-r from-emerald-400 to-sky-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_18px_45px_rgba(16,185,129,0.45)] transition hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {is_save_disabled ? 'Fill all fields' : 'Save card'}
+              </button>
+              <SaveStatusHint state={save_status} message={status_message} />
+            </div>
+          </div>
         </div>
-      </div>
-      <div style={{ border: '1px solid #1f2937', borderRadius: '0.75rem', padding: '1rem' }}>
-        <h2>Live Preview</h2>
-        <SvgCanvas svg_source={preview_svg} />
+        <div className="rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-[0_35px_80px_rgba(2,6,23,0.55)] backdrop-blur">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Live preview</h2>
+            <span className="text-xs uppercase tracking-[0.4em] text-white/60">SVG card</span>
+          </div>
+          <div className="mt-4 rounded-3xl border border-white/10 bg-black/20 p-4">
+            <SvgCanvas svg_source={preview_svg} />
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -213,10 +231,16 @@ interface SaveStatusHintProps {
 }
 
 function SaveStatusHint({ state, message }: SaveStatusHintProps) {
-  const color =
-    state === 'success' ? '#16a34a' : state === 'error' ? '#ef4444' : state === 'saving' ? '#facc15' : '#94a3b8';
+  const color_class =
+    state === 'success'
+      ? 'text-emerald-300'
+      : state === 'error'
+        ? 'text-red-300'
+        : state === 'saving'
+          ? 'text-amber-200'
+          : 'text-white/60';
   return (
-    <p style={{ color, fontSize: '0.875rem' }} aria-live="polite">
+    <p className={`text-sm ${color_class}`} aria-live="polite">
       {message}
     </p>
   );
