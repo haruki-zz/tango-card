@@ -29,19 +29,16 @@ export function HomeSearchBar({
   }, [cards, query]);
 
   return (
-    <section className="relative">
-      <div className="flex flex-wrap items-center gap-3 rounded-[30px] border border-white/10 bg-white/5 px-6 py-5 shadow-[0_20px_45px_rgba(2,6,23,0.45)] backdrop-blur">
-        <div className="flex flex-1 items-center gap-3">
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-white/80">
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+    <section className="relative rounded-[36px] bg-white/[0.08] px-8 py-6 shadow-[0_25px_65px_rgba(2,6,23,0.45)] backdrop-blur">
+      <div className="flex flex-col gap-3">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.45em] text-white/60">
+          Quick search
+        </p>
+        <div className="flex flex-wrap items-center gap-4">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-white/90">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
-                d="M11 4a7 7 0 015.523 11.186l3.646 3.645a1 1 0 01-1.414 1.415l-3.645-3.646A7 7 0 1111 4zm0 2a5 5 0 100 10 5 5 0 000-10z"
+                d="M11 4a7 7 0 015.523 11.186l3.646 3.645a1 1 0 11-1.414 1.415l-3.645-3.646A7 7 0 1111 4zm0 2a5 5 0 100 10 5 5 0 000-10z"
                 fill="currentColor"
               />
             </svg>
@@ -51,29 +48,29 @@ export function HomeSearchBar({
             value={query}
             onChange={(event) => on_query_change(event.target.value)}
             placeholder="Search saved words or readings"
-            className="flex-1 bg-transparent text-lg text-white placeholder:text-white/40 focus:outline-none"
+            className="min-w-[180px] flex-1 bg-transparent text-lg text-white placeholder:text-white/40 focus:outline-none"
             onKeyDown={(event) => {
               if (event.key === 'Enter' && on_open_cards) {
                 on_open_cards();
               }
             }}
           />
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={on_open_cards}
-            className="rounded-2xl border border-white/20 px-4 py-2 text-sm font-semibold text-white/90 transition hover:border-white/50 hover:text-white"
-          >
-            Browse cards
-          </button>
-          <button
-            type="button"
-            onClick={on_create_card}
-            className="rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-900/40 transition hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/70"
-          >
-            Add new card
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={on_open_cards}
+              className="rounded-full px-4 py-2 text-sm font-semibold text-white/90 transition hover:text-white"
+            >
+              Browse cards
+            </button>
+            <button
+              type="button"
+              onClick={on_create_card}
+              className="rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-900/40 transition hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-200/70"
+            >
+              Add new card
+            </button>
+          </div>
         </div>
       </div>
       {suggestions.length > 0 ? (

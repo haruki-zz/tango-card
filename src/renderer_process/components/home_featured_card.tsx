@@ -14,7 +14,7 @@ export function HomeFeaturedCard({
   className,
 }: HomeFeaturedCardProps) {
   const root_class = [
-    'flex flex-col rounded-[32px] border border-white/10 bg-gradient-to-br from-slate-900/85 to-indigo-900/40 px-6 py-6 text-slate-100 shadow-[0_25px_60px_rgba(15,23,42,0.6)] backdrop-blur',
+    'flex flex-col rounded-[40px] bg-gradient-to-br from-slate-900/70 to-indigo-900/30 px-8 py-8 text-slate-100 shadow-[0_30px_80px_rgba(15,23,42,0.6)] backdrop-blur',
     className,
   ]
     .filter(Boolean)

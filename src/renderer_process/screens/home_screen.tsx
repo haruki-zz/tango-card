@@ -224,12 +224,12 @@ export function HomeScreen({
               />
 
               {show_error ? (
-                <p className="rounded-3xl border border-red-400/30 bg-red-500/10 px-5 py-4 text-sm text-red-100 shadow-inner shadow-red-500/10">
+                <p className="rounded-3xl bg-red-500/10 px-5 py-4 text-sm text-red-100 shadow-inner shadow-red-500/10">
                   {show_error}
                 </p>
               ) : null}
 
-              <section className="rounded-[28px] border border-white/10 bg-white/5 p-5 text-sm text-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur">
+              <section className="rounded-[36px] bg-white/[0.05] px-6 py-5 text-sm text-white/80 shadow-[0_20px_50px_rgba(2,6,23,0.4)] backdrop-blur">
                 <h3 className="text-base font-semibold text-white">Review tips</h3>
                 <ul className="mt-3 space-y-2 text-sm">
                   <li className="flex items-start gap-2">

@@ -109,7 +109,7 @@ export function HomeHeatmapCard({
   className,
 }: HomeHeatmapCardProps) {
   const root_class = [
-    'flex h-full flex-col rounded-[28px] border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-900/30 px-6 py-5 text-white shadow-[0_25px_65px_rgba(2,6,23,0.65)] backdrop-blur',
+    'flex h-full flex-col rounded-[36px] bg-gradient-to-br from-slate-950/70 via-slate-900/50 to-slate-900/20 px-8 py-6 text-white shadow-[0_25px_65px_rgba(2,6,23,0.5)] backdrop-blur',
     className,
   ]
     .filter(Boolean)
