@@ -37,8 +37,6 @@ export function register_review_session_handler(storage_context: StorageContext)
       memory_level: payload.memory_level,
     };
     await storage_context.review_session_repository.append_session(record);
-    await storage_context.analytics_tracker.record_card_reviewed(new Date(record.reviewed_at));
-
     return updated_card;
   });
 }

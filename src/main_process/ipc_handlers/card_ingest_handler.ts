@@ -55,9 +55,6 @@ export function register_card_ingest_handler(storage_context: StorageContext): v
     }
 
     await storage_context.card_repository.upsert_card(create_result.data);
-    await storage_context.analytics_tracker.record_card_created(
-      new Date(create_result.data.created_at),
-    );
 
     return create_result.data;
   });

@@ -8,9 +8,6 @@ const api: RendererApi = {
   fetch_review_queue: (request) =>
     ipcRenderer.invoke(APP_CHANNELS.REVIEW_QUEUE, request ?? {}),
   update_review: (payload) => ipcRenderer.invoke(APP_CHANNELS.REVIEW_UPDATE, payload),
-  fetch_analytics_snapshot: () => ipcRenderer.invoke(APP_CHANNELS.ANALYTICS_SNAPSHOT),
-  export_cards: (request) => ipcRenderer.invoke(APP_CHANNELS.CARD_EXPORT, request),
-  import_cards: () => ipcRenderer.invoke(APP_CHANNELS.CARD_IMPORT),
 };
 
 declare global {

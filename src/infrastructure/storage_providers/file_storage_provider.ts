@@ -3,8 +3,6 @@ import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import type { ReviewSessionRecord, StorageDriver } from '../persistence/storage_driver';
 import type { CardEntity } from '../../domain/card/card_entity';
-import type { ActivitySnapshot } from '../../domain/analytics/activity_snapshot';
-import { EMPTY_ACTIVITY_SNAPSHOT } from '../../domain/analytics/activity_snapshot';
 
 export class FileStorageProvider implements StorageDriver {
   private readonly base_path: string;
@@ -32,14 +30,6 @@ export class FileStorageProvider implements StorageDriver {
 
   async write_review_sessions(records: ReviewSessionRecord[]): Promise<void> {
     await this.write_json('review_sessions.json', records);
-  }
-
-  async read_activity_snapshot(): Promise<ActivitySnapshot> {
-    return this.read_json<ActivitySnapshot>('analytics_snapshot.json', EMPTY_ACTIVITY_SNAPSHOT);
-  }
-
-  async write_activity_snapshot(snapshot: ActivitySnapshot): Promise<void> {
-    await this.write_json('analytics_snapshot.json', snapshot);
   }
 
   private async read_json<TSubject>(file_name: string, fallback: TSubject): Promise<TSubject> {

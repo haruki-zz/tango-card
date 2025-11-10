@@ -6,7 +6,6 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import type { CardEntity } from '../../domain/card/card_entity';
 import { CardRepository } from '../../infrastructure/persistence/card_repository';
 import { ReviewSessionRepository } from '../../infrastructure/persistence/review_session_repository';
-import { AnalyticsTracker } from '../../infrastructure/telemetry/analytics_tracker';
 import { create_storage_driver } from '../../infrastructure/persistence/storage_engine';
 import type { FileStorageEngineOptions } from '../../infrastructure/persistence/engines/file_storage_engine';
 import '../../infrastructure/persistence/engines/file_storage_engine';
@@ -14,7 +13,6 @@ import '../../infrastructure/persistence/engines/file_storage_engine';
 export interface StorageContext {
   readonly card_repository: CardRepository;
   readonly review_session_repository: ReviewSessionRepository;
-  readonly analytics_tracker: AnalyticsTracker;
 }
 
 export async function bootstrap_storage(): Promise<StorageContext> {
@@ -33,12 +31,10 @@ export async function bootstrap_storage(): Promise<StorageContext> {
 
   const card_repository = new CardRepository(storage_driver);
   const review_session_repository = new ReviewSessionRepository(storage_driver);
-  const analytics_tracker = new AnalyticsTracker(storage_driver);
 
   const context: StorageContext = {
     card_repository,
     review_session_repository,
-    analytics_tracker,
   };
 
   if (resolved_override) {
