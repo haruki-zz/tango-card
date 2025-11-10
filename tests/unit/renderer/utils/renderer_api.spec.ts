@@ -32,7 +32,7 @@ describe('renderer_api fallback', () => {
     expect(cards).toHaveLength(1);
   });
 
-  it('records review updates and exposes analytics data', async () => {
+  it('records review updates locally when bridge missing', async () => {
     const api = get_renderer_api();
     const created = await api.ingest_card({
       word: '練習',
@@ -43,9 +43,7 @@ describe('renderer_api fallback', () => {
     });
 
     await api.update_review({ card_id: created.id, memory_level: MemoryLevel.NEEDS_REINFORCEMENT });
-    const snapshot = await api.fetch_analytics_snapshot();
-
-    expect(snapshot.total_cards).toBe(1);
-    expect(snapshot.total_reviews).toBe(1);
+    const cards = await api.list_cards();
+    expect(cards[0]?.memory_level).toBe(MemoryLevel.NEEDS_REINFORCEMENT);
   });
 });
