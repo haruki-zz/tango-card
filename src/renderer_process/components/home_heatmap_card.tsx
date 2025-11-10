@@ -29,6 +29,7 @@ const COLOR_SCALE = ['#1e293b', '#fbbf24', '#34d399', '#38bdf8', '#818cf8'];
 const DAY_LABELS: string[] = ['Sun', '', 'Tue', '', 'Thu', '', 'Sat'];
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH_LABEL_HEIGHT = 40;
 
 function to_iso_date(date: Date): string {
   const year = date.getFullYear();
@@ -173,15 +174,21 @@ export function HomeHeatmapCard({
               </span>
             ))}
           </div>
-          <div className="relative pt-[18px]" style={{ width: `${grid_width}px` }}>
-            <div className="pointer-events-none absolute left-0 top-0 h-0 w-full">
+          <div
+            className="relative"
+            style={{ width: `${grid_width}px`, paddingTop: `${MONTH_LABEL_HEIGHT}px` }}
+          >
+            <div
+              className="pointer-events-none absolute left-0 top-0 w-full"
+              style={{ height: `${MONTH_LABEL_HEIGHT}px` }}
+            >
               {month_labels.map((label) => (
                 <span
                   key={`month-${label.column_index}`}
                   className="absolute text-xs font-medium text-white/60"
                   style={{
                     left: `${label.column_index * (CELL_SIZE + CELL_GAP)}px`,
-                    transform: 'translateX(-50%)',
+                    transform: 'translate(-50%, 20%)',
                   }}
                 >
                   {label.text}
