@@ -34,4 +34,4 @@
 - [x] 精简路由与状态层：`AppRouter` 只暴露极简 hub、编辑器、复习视图；移除 analytics/settings 等依赖。
 - [x] 重写 UI：一个最简洁的Neumorphism风格的入口界面（两枚 CTA），朴素的编辑/复习视图。
 - [x] 清理无用服务、hooks、测试、资产，调整文档与 README 描述当前功能范围。
-- [ ] 验证：`npm run lint` + 手动走通“创建 → 复习”流程。
+- [x] 验证：`npm run lint` + 手动走通“创建 → 复习”流程。

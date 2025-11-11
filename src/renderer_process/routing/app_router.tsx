@@ -37,7 +37,7 @@ export function AppRouter() {
   const [active_route, set_active_route] = useState<RouteKey>('hub');
 
   const go_home = useCallback(() => {
-    set_active_route('home');
+    set_active_route('hub');
   }, []);
 
   const screen = useMemo(() => {
