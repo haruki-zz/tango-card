@@ -163,47 +163,44 @@ export function ReviewScreen({ on_exit }: ReviewScreenProps) {
   }, [has_started, round_in_progress, round_status, on_exit, reset_queue]);
 
   return (
-    <section className="flex flex-col gap-6 text-white">
-      <header className="flex flex-wrap items-center gap-4 rounded-[24px] border border-white/10 bg-white/5 p-5">
-        <button
-          type="button"
-          onClick={() => {
-            void handle_start_round();
-          }}
-          disabled={round_status === 'loading'}
-          className="rounded-[999px] bg-gradient-to-r from-emerald-400 to-sky-500 px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_15px_35px_rgba(56,189,248,0.35)] transition hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-progress disabled:opacity-60"
-        >
-          {round_status === 'loading' ? 'Preparing...' : 'Start review'}
-        </button>
-        <div className="flex flex-1 flex-col text-sm text-white/70">
-          <span>
-            Each round pulls up to 30 cards with a 1:3:6 ratio (Well Known / Somewhat Familiar / Needs Reinforcement).
-          </span>
-          {round_error ? <span className="text-xs text-red-300">Failed to start review: {round_error}</span> : null}
+    <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-5xl flex-col gap-6 py-8 text-[#111827]">
+      <div className="rounded-2xl border border-[#e5e7eb] bg-white px-6 py-5 shadow-sm">
+        <div className="flex flex-wrap items-center gap-4">
+          <button
+            type="button"
+            onClick={() => {
+              void handle_start_round();
+            }}
+            disabled={round_status === 'loading'}
+            className="rounded-full border border-[#111827] bg-white px-5 py-2 text-sm font-medium text-[#111827] transition hover:bg-[#111827] hover:text-white"
+          >
+            {round_status === 'loading' ? 'Preparing…' : 'Start review'}
+          </button>
+          <div className="text-sm text-[#4b5563]">
+            <p>Each round pulls a handful of cards, weighted toward the ones you forget most.</p>
+            {round_error ? <p className="text-xs text-red-600">Failed to start: {round_error}</p> : null}
+          </div>
         </div>
-      </header>
+      </div>
 
       {round_in_progress && render_card ? (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="rounded-[32px] border border-white/10 bg-white/5 p-5 shadow-[0_25px_60px_rgba(2,6,23,0.55)] backdrop-blur">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">
+          <div className="rounded-2xl border border-[#e5e7eb] bg-white px-4 py-4 shadow-sm">
             <SvgCanvas svg_source={render_card.svg_source} on_swipe={handle_swipe} />
           </div>
-          <div className="flex flex-col gap-4 rounded-[32px] border border-white/10 bg-white/5 p-5 shadow-[0_25px_60px_rgba(2,6,23,0.55)] backdrop-blur">
-            <h2 className="text-xl font-semibold">Memory strength</h2>
-            <div className="space-y-2 text-sm text-white/70">
-              <p>Last recorded</p>
+          <div className="flex flex-col gap-3 rounded-2xl border border-[#e5e7eb] bg-white px-4 py-4 shadow-sm">
+            <h2 className="text-base font-semibold">Log memory level</h2>
+            <div className="text-sm text-[#4b5563]">
+              <p className="mb-1 text-xs uppercase tracking-[0.15em] text-[#6b7280]">Last recorded</p>
               <MemoryLevelBadge level={render_card.memory_level} />
             </div>
-            <div className="space-y-2 text-sm text-white/70">
-              <p>Current selection</p>
+            <div className="text-sm text-[#4b5563]">
+              <p className="mb-1 text-xs uppercase tracking-[0.15em] text-[#6b7280]">Current selection</p>
               <MemoryLevelBadge level={selected_level} />
             </div>
-            <p className="text-sm text-white/70">Cards remaining: {queue.length}</p>
-            <p className="text-xs text-white/50">
-              Keyboard shortcuts 1/2/3 or arrow keys submit instantly. Swiping the card works as well.
-            </p>
-            <label className="flex flex-col gap-2 text-sm">
-              <span className="font-medium text-white/80">Memory level</span>
+            <p className="text-sm text-[#4b5563]">Cards remaining: {queue.length}</p>
+            <label className="flex flex-col gap-1 text-sm text-[#374151]">
+              Memory level
               <select
                 value={selected_level}
                 disabled={is_submitting}
@@ -212,16 +209,16 @@ export function ReviewScreen({ on_exit }: ReviewScreenProps) {
                   set_submission_status('idle');
                   set_feedback_message(null);
                 }}
-                className="rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-white/90 focus:border-sky-400 focus:outline-none disabled:opacity-60"
+                className="rounded-lg border border-[#d1d5db] bg-white px-3 py-2 focus:border-[#111827] focus:outline-none disabled:opacity-60"
               >
                 {MEMORY_LEVEL_OPTIONS.map((option) => (
-                  <option key={option.level} value={option.level} className="bg-slate-900 text-slate-100">
+                  <option key={option.level} value={option.level}>
                     {option.label} (Shortcut: {[option.shortcut, ...(option.alt_shortcuts ?? [])].join(' / ')})
                   </option>
                 ))}
               </select>
               {selected_option?.description ? (
-                <span className="text-xs text-white/60">{selected_option.description}</span>
+                <span className="text-xs text-[#6b7280]">{selected_option.description}</span>
               ) : null}
             </label>
             <button
@@ -232,22 +229,19 @@ export function ReviewScreen({ on_exit }: ReviewScreenProps) {
                 }
               }}
               disabled={is_submitting || !render_card}
-              className="rounded-[999px] border border-emerald-300/60 bg-emerald-400/80 px-4 py-2 text-sm font-semibold text-slate-900 shadow-[0_12px_30px_rgba(16,185,129,0.45)] transition hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-full bg-[#111827] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
             >
               Log memory level
             </button>
             <SubmissionHint status={submission_status} message={feedback_message} />
+            <p className="text-xs text-[#6b7280]">
+              Shortcuts 1/2/3 or arrow keys submit instantly. Swiping the card also works.
+            </p>
           </div>
         </div>
       ) : (
-        <article className="rounded-[32px] border border-dashed border-white/20 bg-white/5 p-6 text-white">
-          <h2 className="text-xl font-semibold">Ready to review</h2>
-          <p className="mt-2 text-sm text-white/70">
-            No active round yet. Press &ldquo;Start review&rdquo; above to draw a fresh batch of cards.
-          </p>
-          <p className="mt-1 text-xs text-white/50">
-            Completed words drop out of the session automatically so you can focus on what needs reinforcement.
-          </p>
+        <article className="rounded-2xl border border-dashed border-[#d1d5db] bg-white px-6 py-5 text-sm text-[#4b5563] shadow-sm">
+          <p>No active round yet. Press “Start review” to draw a fresh batch of cards.</p>
         </article>
       )}
     </section>
@@ -262,19 +256,19 @@ interface SubmissionHintProps {
 function SubmissionHint({ status, message }: SubmissionHintProps) {
   if (!message) {
     return (
-      <p className="text-xs text-white/60">
+      <p className="text-xs text-[#6b7280]">
         Keyboard shortcuts or swipe gestures also submit the card instantly.
       </p>
     );
   }
   const color_class =
     status === 'success'
-      ? 'text-emerald-300'
+      ? 'text-green-600'
       : status === 'error'
-        ? 'text-red-300'
+        ? 'text-red-600'
         : status === 'saving'
-          ? 'text-amber-200'
-          : 'text-white/60';
+          ? 'text-yellow-600'
+          : 'text-[#6b7280]';
   return (
     <p className={`text-xs ${color_class}`} aria-live="polite">
       {message}

@@ -118,107 +118,92 @@ export function CardEditorScreen() {
   const is_save_disabled = save_status === 'saving' || !fields_populated;
 
   const field_class =
-    'rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-base text-white placeholder:text-white/40 focus:border-sky-400 focus:outline-none';
+    'rounded-xl border border-[#d1d5db] bg-white px-3 py-2 text-base text-[#111827] placeholder:text-[#9ca3af] focus:border-[#111827] focus:outline-none';
   return (
-    <section className="space-y-8 text-white">
-      <div className="grid gap-8 xl:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-[0_35px_80px_rgba(2,6,23,0.55)] backdrop-blur">
-          <header className="mb-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/60">
-              Create a card
-            </p>
-            <h2 className="mt-3 text-2xl font-semibold">Describe the word you want to remember</h2>
-            <p className="mt-2 text-sm text-white/70">
-              Fill every field to unlock the live SVG preview and save it to your collection.
-            </p>
-          </header>
-          <div className="flex flex-col gap-5">
-            <label className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-white/80">Word</span>
-              <input
-                value={word}
-                onChange={(event) => handle_word_change(event.target.value)}
-                placeholder="e.g., 勉強"
-                className={field_class}
-              />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-white/80">Hiragana Reading</span>
-              <input
-                value={reading}
-                onChange={(event) => handle_reading_change(event.target.value)}
-                placeholder="e.g., べんきょう"
-                className={field_class}
-              />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-white/80">Context</span>
-              <textarea
-                rows={3}
-                value={context_text}
-                onChange={(event) => handle_context_change(event.target.value)}
-                placeholder="Where does this word appear?"
-                className={`${field_class} resize-none`}
-              />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-white/80">Scene</span>
-              <textarea
-                rows={3}
-                value={scene_text}
-                onChange={(event) => handle_scene_change(event.target.value)}
-                placeholder="Describe the moment in detail."
-                className={`${field_class} resize-none`}
-              />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-white/80">Example Sentence</span>
-              <textarea
-                rows={3}
-                value={example_sentence}
-                onChange={(event) => handle_example_change(event.target.value)}
-                placeholder="Use the word in a complete sentence."
-                className={`${field_class} resize-none`}
-              />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="text-sm font-medium text-white/80">Memory Level</span>
-              <select
-                value={memory_level}
-                onChange={(event) => handle_memory_level_change(event.target.value as MemoryLevel)}
-                className={`${field_class} pr-10`}
-              >
-                {MEMORY_LEVEL_OPTIONS.map((option) => (
-                  <option key={option.level} value={option.level} className="bg-slate-900 text-slate-100">
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              {selected_memory_option?.description ? (
-                <span className="text-xs text-white/60">{selected_memory_option.description}</span>
-              ) : null}
-            </label>
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <button
-                type="button"
-                onClick={handle_save}
-                disabled={is_save_disabled}
-                className="rounded-[999px] bg-gradient-to-r from-emerald-400 to-sky-500 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_18px_45px_rgba(16,185,129,0.45)] transition hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {is_save_disabled ? 'Fill all fields' : 'Save card'}
-              </button>
-              <SaveStatusHint state={save_status} message={status_message} />
-            </div>
+    <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-5xl flex-col gap-8 py-8 text-[#111827]">
+      <div className="rounded-2xl border border-[#e5e7eb] bg-white px-6 py-7 shadow-sm">
+        <header className="mb-5">
+          <h2 className="text-xl font-semibold">Add a new word</h2>
+          <p className="mt-1 text-sm text-[#4b5563]">Fill the details below and save it to your deck.</p>
+        </header>
+        <div className="grid gap-4">
+          <label className="flex flex-col gap-1 text-sm font-medium text-[#374151]">
+            Word
+            <input
+              value={word}
+              onChange={(event) => handle_word_change(event.target.value)}
+              placeholder="e.g., 勉強"
+              className={field_class}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-medium text-[#374151]">
+            Hiragana reading
+            <input
+              value={reading}
+              onChange={(event) => handle_reading_change(event.target.value)}
+              placeholder="e.g., べんきょう"
+              className={field_class}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-medium text-[#374151]">
+            Context
+            <textarea
+              rows={3}
+              value={context_text}
+              onChange={(event) => handle_context_change(event.target.value)}
+              placeholder="Where does this word appear?"
+              className={`${field_class} resize-none`}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-medium text-[#374151]">
+            Scene
+            <textarea
+              rows={3}
+              value={scene_text}
+              onChange={(event) => handle_scene_change(event.target.value)}
+              placeholder="Describe the situation."
+              className={`${field_class} resize-none`}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-medium text-[#374151]">
+            Example sentence
+            <textarea
+              rows={3}
+              value={example_sentence}
+              onChange={(event) => handle_example_change(event.target.value)}
+              placeholder="Use the word in a sentence."
+              className={`${field_class} resize-none`}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm font-medium text-[#374151]">
+            Memory level
+            <select
+              value={memory_level}
+              onChange={(event) => handle_memory_level_change(event.target.value as MemoryLevel)}
+              className={`${field_class} pr-10`}
+            >
+              {MEMORY_LEVEL_OPTIONS.map((option) => (
+                <option key={option.level} value={option.level}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            {selected_memory_option?.description ? (
+              <span className="text-xs text-[#6b7280]">{selected_memory_option.description}</span>
+            ) : null}
+          </label>
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <button type="button" onClick={handle_save} disabled={is_save_disabled}>
+              {is_save_disabled ? 'Fill all fields' : 'Save card'}
+            </button>
+            <SaveStatusHint state={save_status} message={status_message} />
           </div>
         </div>
-        <div className="rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-[0_35px_80px_rgba(2,6,23,0.55)] backdrop-blur">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Live preview</h2>
-            <span className="text-xs uppercase tracking-[0.4em] text-white/60">SVG card</span>
-          </div>
-          <div className="mt-4 rounded-3xl border border-white/10 bg-black/20 p-4">
-            <SvgCanvas svg_source={preview_svg} />
-          </div>
+      </div>
+      <div className="rounded-2xl border border-[#e5e7eb] bg-white px-6 py-6 shadow-sm">
+        <h3 className="text-sm font-semibold text-[#374151]">Preview</h3>
+        <div className="mt-3 rounded-xl border border-[#e5e7eb] bg-[#f9fafb] p-3">
+          <SvgCanvas svg_source={preview_svg} />
         </div>
       </div>
     </section>
@@ -233,12 +218,12 @@ interface SaveStatusHintProps {
 function SaveStatusHint({ state, message }: SaveStatusHintProps) {
   const color_class =
     state === 'success'
-      ? 'text-emerald-300'
+      ? 'text-green-600'
       : state === 'error'
-        ? 'text-red-300'
+        ? 'text-red-600'
         : state === 'saving'
-          ? 'text-amber-200'
-          : 'text-white/60';
+          ? 'text-yellow-600'
+          : 'text-[#6b7280]';
   return (
     <p className={`text-sm ${color_class}`} aria-live="polite">
       {message}
