@@ -118,16 +118,16 @@ export function CardEditorScreen() {
   const is_save_disabled = save_status === 'saving' || !fields_populated;
 
   const field_class =
-    'rounded-xl border border-[#d1d5db] bg-white px-3 py-2 text-base text-[#111827] placeholder:text-[#9ca3af] focus:border-[#111827] focus:outline-none';
+    'rounded-2xl border border-transparent bg-[#fdfefe] px-3 py-2 text-base text-[#0f172a] placeholder:text-[#9ca3af] shadow-[inset_2px_2px_6px_rgba(15,23,42,0.08)] focus:border-[#94a3b8] focus:outline-none';
   return (
-    <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-5xl flex-col gap-8 py-8 text-[#111827]">
-      <div className="rounded-2xl border border-[#e5e7eb] bg-white px-6 py-7 shadow-sm">
+    <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-5xl flex-col gap-8 py-8 text-[#0f172a]">
+      <div className="rounded-[32px] bg-[#e8ecf5] px-6 py-7 shadow-[15px_15px_35px_#d0d4de,-15px_-15px_35px_#ffffff]">
         <header className="mb-5">
           <h2 className="text-xl font-semibold">Add a new word</h2>
           <p className="mt-1 text-sm text-[#4b5563]">Fill the details below and save it to your deck.</p>
         </header>
         <div className="grid gap-4">
-          <label className="flex flex-col gap-1 text-sm font-medium text-[#374151]">
+          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569]">
             Word
             <input
               value={word}
@@ -136,7 +136,7 @@ export function CardEditorScreen() {
               className={field_class}
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-medium text-[#374151]">
+          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569]">
             Hiragana reading
             <input
               value={reading}
@@ -145,7 +145,7 @@ export function CardEditorScreen() {
               className={field_class}
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-medium text-[#374151]">
+          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569]">
             Context
             <textarea
               rows={3}
@@ -155,7 +155,7 @@ export function CardEditorScreen() {
               className={`${field_class} resize-none`}
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-medium text-[#374151]">
+          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569]">
             Scene
             <textarea
               rows={3}
@@ -165,7 +165,7 @@ export function CardEditorScreen() {
               className={`${field_class} resize-none`}
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-medium text-[#374151]">
+          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569]">
             Example sentence
             <textarea
               rows={3}
@@ -175,7 +175,7 @@ export function CardEditorScreen() {
               className={`${field_class} resize-none`}
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-medium text-[#374151]">
+          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569]">
             Memory level
             <select
               value={memory_level}
@@ -193,16 +193,21 @@ export function CardEditorScreen() {
             ) : null}
           </label>
           <div className="flex flex-wrap items-center gap-3 pt-2">
-            <button type="button" onClick={handle_save} disabled={is_save_disabled}>
+            <button
+              type="button"
+              onClick={handle_save}
+              disabled={is_save_disabled}
+              className="rounded-full border border-transparent bg-[#0f172a] px-6 py-2 text-sm font-medium text-white shadow-[inset_2px_2px_6px_rgba(0,0,0,0.25)] disabled:opacity-60"
+            >
               {is_save_disabled ? 'Fill all fields' : 'Save card'}
             </button>
             <SaveStatusHint state={save_status} message={status_message} />
           </div>
         </div>
       </div>
-      <div className="rounded-2xl border border-[#e5e7eb] bg-white px-6 py-6 shadow-sm">
-        <h3 className="text-sm font-semibold text-[#374151]">Preview</h3>
-        <div className="mt-3 rounded-xl border border-[#e5e7eb] bg-[#f9fafb] p-3">
+      <div className="rounded-[32px] bg-[#e8ecf5] px-6 py-6 shadow-[15px_15px_35px_#d0d4de,-15px_-15px_35px_#ffffff]">
+        <h3 className="text-sm font-semibold text-[#475569]">Preview</h3>
+        <div className="mt-3 rounded-2xl bg-[#e8ecf5] p-3 shadow-[inset_6px_6px_16px_#d0d4de,inset_-6px_-6px_16px_#ffffff]">
           <SvgCanvas svg_source={preview_svg} />
         </div>
       </div>

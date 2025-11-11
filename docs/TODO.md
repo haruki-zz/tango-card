@@ -32,6 +32,6 @@
 ## Refactor: 核心体验聚焦（详见 `docs/refactor_plan.md`）
 - [x] 仅保留“创建单词卡片 / 复习队列”相关代码，删除其他屏幕与组件。
 - [x] 精简路由与状态层：`AppRouter` 只暴露极简 hub、编辑器、复习视图；移除 analytics/settings 等依赖。
-- [x] 重写 UI：一个最简洁的入口界面（两枚 CTA），朴素的编辑/复习视图。
-- [ ] 清理无用服务、hooks、测试、资产，调整文档与 README 描述当前功能范围。
+- [x] 重写 UI：一个最简洁的Neumorphism风格的入口界面（两枚 CTA），朴素的编辑/复习视图。
+- [x] 清理无用服务、hooks、测试、资产，调整文档与 README 描述当前功能范围。
 - [ ] 验证：`npm run lint` + 手动走通“创建 → 复习”流程。

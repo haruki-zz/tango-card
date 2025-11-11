@@ -5,24 +5,24 @@ interface CoreHubScreenProps {
 
 export function CoreHubScreen({ on_create_card, on_start_review }: CoreHubScreenProps) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f4f4f5] px-4">
-      <div className="w-full max-w-md rounded-2xl border border-[#e2e8f0] bg-white px-6 py-8 shadow-sm">
-        <p className="text-xs uppercase tracking-[0.3em] text-[#6b7280]">tango-card</p>
-        <h1 className="mt-2 text-2xl font-semibold text-[#111827]">Your two daily steps</h1>
-        <p className="mt-1 text-sm text-[#4b5563]">Add a word when you learn it, review a few when you have time.</p>
+    <div className="flex min-h-screen items-center justify-center bg-[#e8ecf5] px-4">
+      <div className="w-full max-w-md rounded-[32px] bg-[#e8ecf5] px-8 py-10 shadow-[15px_15px_35px_#d0d4de,-15px_-15px_35px_#ffffff]">
+        <p className="text-xs uppercase tracking-[0.3em] text-[#94a3b8]">tango-card</p>
+        <h1 className="mt-2 text-3xl font-semibold">Two simple actions</h1>
+        <p className="mt-1 text-sm text-[#475569]">Add a word when you meet it. Review a few when you have a minute.</p>
 
         <div className="mt-6 flex flex-col gap-3">
           <button
             type="button"
             onClick={on_create_card}
-            className="w-full rounded-full border border-[#111827] bg-white text-sm font-medium text-[#111827] transition hover:bg-[#111827] hover:text-white"
+            className="w-full rounded-full border border-transparent bg-white text-sm font-medium text-[#0f172a] shadow-[inset_2px_2px_6px_rgba(15,23,42,0.08)] transition hover:-translate-y-0.5"
           >
             Create a card
           </button>
           <button
             type="button"
             onClick={on_start_review}
-            className="w-full rounded-full bg-[#111827] text-sm font-medium text-white transition hover:opacity-85"
+            className="w-full rounded-full border border-transparent bg-[#0f172a] text-sm font-medium text-white shadow-[inset_2px_2px_6px_rgba(0,0,0,0.15)] transition hover:-translate-y-0.5"
           >
             Start a review
           </button>

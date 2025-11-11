@@ -4,8 +4,8 @@
 
 :root {
   font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background-color: #f4f4f5;
-  color: #111827;
+  background-color: #e8ecf5;
+  color: #0f172a;
 }
 
 *,
@@ -17,8 +17,8 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #f4f4f5;
-  color: #111827;
+  background: #e8ecf5;
+  color: #0f172a;
   text-rendering: optimizeLegibility;
 }
 
@@ -29,14 +29,13 @@ body {
 button {
   font: inherit;
   color: inherit;
-  background: #111827;
-  border: 1px solid transparent;
-  padding: 0.5rem 1.25rem;
+  border: none;
+  padding: 0.65rem 1.5rem;
   border-radius: 999px;
   cursor: pointer;
 }
 
 button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }

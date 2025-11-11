@@ -10,7 +10,6 @@
 | `card:list` | Renderer → Main | `void` | `CardEntity[]` | 拉取全部单词卡，供编辑器与复习流程同步状态。 |
 | `review:queue` | Renderer → Main | `{ size?: number }` | `ReviewCandidate[]` | 请求下一批复习卡片。未提供 `size` 时由主进程策略给出默认值。 |
 | `review:update` | Renderer → Main | `{ card_id: string, memory_level: MemoryLevel }` | `CardEntity` | 提交复习结果并回写记忆等级、复习次数、统计数据。 |
-| `analytics:snapshot` | Renderer → Main | `void` | `ActivitySnapshot` | 拉取学习行为聚合数据，用于热力图与统计面板。 |
 
 ## 类型约束
 
