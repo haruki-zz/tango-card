@@ -1,8 +1,6 @@
 import { useCallback, useMemo } from 'react';
-import type { MemoryLevel } from '../../domain/review/memory_level';
 import { review_queue_store } from '../state/review_queue_store';
 import { get_renderer_api } from '../utils/renderer_api';
-import { MEMORY_LEVEL_WEIGHTS } from '../../domain/review/memory_level';
 
 function useReviewCycle() {
   const queue = review_queue_store((state) => state.queue);
@@ -18,15 +16,13 @@ function useReviewCycle() {
     set_queue(queue);
   }, [set_queue]);
 
-  const submit_review = useCallback(async (card_id: string, memory_level: MemoryLevel) => {
+  const submit_review = useCallback(async (card_id: string) => {
     const api = get_renderer_api();
-    const updated_card = await api.update_review({ card_id, memory_level });
+    const updated_card = await api.update_review({ card_id });
     update_card(card_id, (existing) => ({
       ...existing,
-      memory_level: updated_card.memory_level,
       review_count: updated_card.review_count ?? existing.review_count,
       last_reviewed_at: updated_card.last_reviewed_at ?? existing.last_reviewed_at,
-      weight: MEMORY_LEVEL_WEIGHTS[updated_card.memory_level] ?? existing.weight,
     }));
     advance();
   }, [advance, update_card]);

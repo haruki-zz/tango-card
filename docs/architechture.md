@@ -27,7 +27,7 @@ src/
 │  ├─ ipc_channels.ts             # 定义所有 IPC 通道常量
 │  ├─ ipc_handlers/               # 主进程侧的 IPC 处理器
 │  │  ├─ card_ingest_handler.ts   # 接收渲染进程发送的单词卡并调用持久化服务
-│  │  └─ review_session_handler.ts# 提供复习卡片拉取、记忆等级更新接口
+│  │  └─ review_session_handler.ts# 提供复习卡片拉取、复习记录接口
 │  └─ service_bootstrap/          # 主进程服务初始化
 │     ├─ storage_bootstrap.ts     # 启动持久化驱动与仓库实例
 │     └─ settings_loader.ts       # 读取配置文件与环境变量
@@ -42,15 +42,13 @@ src/
 │  │  ├─ card_editor_screen.tsx   # 输入单词/读音/语境/例句并保存
 │  │  └─ review_screen.tsx        # 复习流程视图，展示抽取的卡片
 │  ├─ components/
-│  │  ├─ svg_canvas.tsx           # 自适应窗口尺寸的 SVG 渲染组件
-│  │  └─ memory_level_badge.tsx   # 记忆等级标签展示
+│  │  └─ svg_canvas.tsx           # 自适应窗口尺寸的 SVG 渲染组件
 │  ├─ hooks/
 │  │  ├─ use_card_store.ts        # 管理卡片集合的业务状态钩子
 │  │  ├─ use_review_cycle.ts      # 控制复习队列与权重计算
 │  │  └─ use_element_size.ts      # 监听容器尺寸供 SVG 自适应渲染
 │  ├─ services/
-│  │  ├─ svg_renderer.ts          # 处理 SVG 解析、视口缩放、错误边界（TypeScript 纯函数）
-│  │  └─ memory_scheduler.ts      # 根据记忆等级计算抽取概率（TypeScript 纯函数）
+│  │  └─ svg_renderer.ts          # 处理 SVG 解析、视口缩放、错误边界（TypeScript 纯函数）
 │  ├─ state/
 │  │  ├─ card_store.ts            # 基于 Zustand 的卡片集合状态（列表 / 加载 / 错误）
 │  │  └─ review_queue_store.ts    # 基于 Zustand 的复习队列及指针调度
@@ -61,11 +59,10 @@ src/
 │     └─ svg_sanitizer.ts         # 清理、验证 SVG 源码的工具函数
 ├─ domain/
 │  ├─ card/
-│  │  ├─ card_entity.ts           # 定义卡片领域模型（id、word、reading、context、scene、example、memory_level 等）
+│  │  ├─ card_entity.ts           # 定义卡片领域模型（id、word、reading、context、scene、example 等）
 │  │  └─ card_factory.ts          # 构建卡片实例，封装默认值与验证
 │  ├─ review/
-│  │  ├─ review_policy.ts         # 复习策略接口与具体实现（记忆权重 + 随机抽取）
-│  │  └─ memory_level.ts          # 记忆等级枚举与相关逻辑
+│  │  ├─ review_policy.ts         # 复习策略接口与具体实现（均匀随机抽取）
 │  └─ shared/
 │     └─ result.ts                # 统一的结果类型（成功 / 失败）
 ├─ infrastructure/
@@ -83,7 +80,6 @@ src/
 └─ shared/
    ├─ constants/
    │  ├─ app_channels.ts          # 跨进程通道、事件名称常量
-   │  └─ memory_levels.ts         # 记忆等级标签与描述配置
    ├─ errors/
    │  └─ domain_error.ts          # 标准化错误类型
    └─ utils/
@@ -101,7 +97,6 @@ tests/
 │  │  └─ review_policy.spec.ts
 │  ├─ renderer/
 │  │  ├─ components/
-│  │  │  ├─ memory_level_badge.spec.tsx
 │  │  │  └─ svg_canvas.spec.tsx
 │  │  ├─ screens/
 │  │  │  └─ review_screen.spec.tsx

@@ -1,10 +1,8 @@
 import type { CardEntity } from '../../domain/card/card_entity';
-import type { MemoryLevel } from '../../domain/review/memory_level';
 
 export interface ReviewSessionRecord {
   readonly card_id: string;
   readonly reviewed_at: string;
-  readonly memory_level: MemoryLevel;
 }
 
 export interface StorageDriver {

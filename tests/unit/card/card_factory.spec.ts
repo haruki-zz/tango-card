@@ -1,6 +1,5 @@
 import { create_card, update_card } from '../../../src/domain/card/card_factory';
 import { CardEntity, is_card_entity } from '../../../src/domain/card/card_entity';
-import { MemoryLevel } from '../../../src/domain/review/memory_level';
 
 describe('create_card', () => {
   it('creates a card with defaults', () => {
@@ -13,7 +12,6 @@ describe('create_card', () => {
     });
     expect(result.ok).toBe(true);
     if (result.ok) {
-      expect(result.data.memory_level).toBe(MemoryLevel.SOMEWHAT_FAMILIAR);
       expect(result.data.word).toBe('学ぶ');
       expect(is_card_entity(result.data)).toBe(true);
       expect(typeof result.data.created_at).toBe('string');
@@ -40,7 +38,6 @@ describe('create_card', () => {
       scene: 'スケジュールを調整しながらの勉強時間。',
       example: '毎朝30分学ぶ習慣を続けています。',
       created_at: '2024-01-01T00:00:00.000Z',
-      memory_level: MemoryLevel.SOMEWHAT_FAMILIAR,
       review_count: 0,
       last_reviewed_at: undefined,
     };

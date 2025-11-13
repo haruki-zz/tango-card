@@ -2,8 +2,6 @@ import { useMemo, useState } from 'react';
 import { SvgCanvas } from '../components/svg_canvas';
 import { use_card_store } from '../hooks/use_card_store';
 import { get_renderer_api } from '../utils/renderer_api';
-import { MEMORY_LEVEL_DEFAULT, MemoryLevel } from '../../domain/review/memory_level';
-import { MEMORY_LEVEL_OPTIONS } from '../../shared/constants/memory_levels';
 import { render_card_svg } from '../../shared/templates/card_svg_template';
 
 type SaveStatus = 'idle' | 'dirty' | 'saving' | 'success' | 'error';
@@ -14,17 +12,11 @@ export function CardEditorScreen() {
   const [context_text, set_context_text] = useState('');
   const [scene_text, set_scene_text] = useState('');
   const [example_sentence, set_example_sentence] = useState('');
-  const [memory_level, set_memory_level] = useState<MemoryLevel>(MEMORY_LEVEL_DEFAULT);
   const [save_status, set_save_status] = useState<SaveStatus>('idle');
   const [status_message, set_status_message] = useState('Not saved yet');
   const [active_card_id, set_active_card_id] = useState<string | undefined>(undefined);
   const api = useMemo(() => get_renderer_api(), []);
   const { refresh_cards } = use_card_store();
-
-  const selected_memory_option = useMemo(
-    () => MEMORY_LEVEL_OPTIONS.find((option) => option.level === memory_level),
-    [memory_level],
-  );
 
   const mark_dirty = () => {
     if (save_status !== 'dirty') {
@@ -64,11 +56,6 @@ export function CardEditorScreen() {
     mark_dirty();
   };
 
-  const handle_memory_level_change = (value: MemoryLevel) => {
-    set_memory_level(value);
-    mark_dirty();
-  };
-
   const fields_populated =
     word.trim().length > 0 &&
     reading.trim().length > 0 &&
@@ -83,7 +70,6 @@ export function CardEditorScreen() {
         context: context_text,
         scene: scene_text,
         example: example_sentence,
-        memory_level,
       })
     : '';
 
@@ -103,7 +89,6 @@ export function CardEditorScreen() {
         context: context_text,
         scene: scene_text,
         example: example_sentence,
-        memory_level,
       });
       set_active_card_id(saved_card.id);
       set_save_status('success');
@@ -174,23 +159,6 @@ export function CardEditorScreen() {
               placeholder="Use the word in a sentence."
               className={`${field_class} resize-none`}
             />
-          </label>
-          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569]">
-            Memory level
-            <select
-              value={memory_level}
-              onChange={(event) => handle_memory_level_change(event.target.value as MemoryLevel)}
-              className={`${field_class} pr-10`}
-            >
-              {MEMORY_LEVEL_OPTIONS.map((option) => (
-                <option key={option.level} value={option.level}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            {selected_memory_option?.description ? (
-              <span className="text-xs text-[#6b7280]">{selected_memory_option.description}</span>
-            ) : null}
           </label>
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button

@@ -1,12 +1,9 @@
-import { MemoryLevel } from '../../domain/review/memory_level';
-
 export interface CardTemplateInput {
   readonly word: string;
   readonly reading: string;
   readonly context: string;
   readonly scene: string;
   readonly example: string;
-  readonly memory_level?: MemoryLevel;
 }
 
 const CARD_WIDTH = 390;

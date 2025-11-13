@@ -1,6 +1,5 @@
 import { create_failure_result, create_success_result, Result } from '../shared/result';
 import type { CardDraft, CardEntity } from './card_entity';
-import { MEMORY_LEVEL_DEFAULT } from '../review/memory_level';
 import { create_uuid } from '../../shared/utils/uuid';
 import { create_domain_error } from '../../shared/errors/domain_error';
 import { get_iso_timestamp } from '../../shared/utils/date_utils';
@@ -14,13 +13,11 @@ export function create_card(input: CardDraft): Result<CardEntity, Error> {
   }
 
   const created_at = input.created_at ?? get_iso_timestamp();
-  const memory_level = input.memory_level ?? MEMORY_LEVEL_DEFAULT;
 
   const card: CardEntity = {
     id: create_uuid(),
     ...normalized.data,
     created_at,
-    memory_level,
     review_count: 0,
     last_reviewed_at: undefined,
   };
@@ -34,13 +31,11 @@ export function update_card(existing: CardEntity, patch: CardDraft): Result<Card
     return normalized;
   }
 
-  const memory_level = patch.memory_level ?? existing.memory_level;
   const created_at = patch.created_at ?? existing.created_at;
 
   const updated_card: CardEntity = {
     ...existing,
     ...normalized.data,
-    memory_level,
     created_at,
   };
 

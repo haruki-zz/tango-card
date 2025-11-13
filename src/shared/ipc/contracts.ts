@@ -1,7 +1,6 @@
 import { APP_CHANNELS } from '../constants/app_channels';
 import type { CardDraft, CardEntity } from '../../domain/card/card_entity';
 import type { ReviewCandidate } from '../../domain/review/review_policy';
-import type { MemoryLevel } from '../../domain/review/memory_level';
 export interface CardIngestRequest extends CardDraft {
   readonly card_id?: string;
 }
@@ -19,7 +18,6 @@ export type ReviewQueueResponse = ReviewCandidate[];
 
 export interface ReviewUpdateRequest {
   readonly card_id: string;
-  readonly memory_level: MemoryLevel;
 }
 
 export type ReviewUpdateResponse = CardEntity;

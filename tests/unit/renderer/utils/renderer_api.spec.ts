@@ -1,4 +1,3 @@
-import { MemoryLevel } from '../../../../src/domain/review/memory_level';
 import { get_renderer_api, reset_renderer_api_mock } from '../../../../src/renderer_process/utils/renderer_api';
 
 describe('renderer_api fallback', () => {
@@ -26,8 +25,6 @@ describe('renderer_api fallback', () => {
     });
 
     expect(card.id).toBeDefined();
-    expect(card.memory_level).toBe(MemoryLevel.SOMEWHAT_FAMILIAR);
-
     const cards = await api.list_cards();
     expect(cards).toHaveLength(1);
   });
@@ -42,8 +39,8 @@ describe('renderer_api fallback', () => {
       example: '本番の前に何度も練習した方がいい。',
     });
 
-    await api.update_review({ card_id: created.id, memory_level: MemoryLevel.NEEDS_REINFORCEMENT });
+    await api.update_review({ card_id: created.id });
     const cards = await api.list_cards();
-    expect(cards[0]?.memory_level).toBe(MemoryLevel.NEEDS_REINFORCEMENT);
+    expect(cards[0]?.review_count).toBe(1);
   });
 });

@@ -46,7 +46,6 @@ export function register_card_ingest_handler(storage_context: StorageContext): v
       context: payload.context,
       scene: payload.scene,
       example: payload.example,
-      memory_level: payload.memory_level,
       created_at: payload.created_at,
     });
 

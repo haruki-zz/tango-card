@@ -5,13 +5,7 @@ import type {
   ReviewUpdateRequest,
 } from '../../shared/ipc/contracts';
 import type { CardEntity } from '../../domain/card/card_entity';
-import { WeightedMemoryReviewPolicy } from '../../domain/review/review_policy';
-import {
-  build_review_round,
-  DEFAULT_REVIEW_RATIO,
-  DEFAULT_REVIEW_ROUND_SIZE,
-} from '../../domain/review/review_round_builder';
-import { MEMORY_LEVEL_DEFAULT } from '../../domain/review/memory_level';
+import { SimpleReviewPolicy } from '../../domain/review/review_policy';
 import { create_card, update_card } from '../../domain/card/card_factory';
 import { create_domain_error } from '../../shared/errors/domain_error';
 
@@ -21,7 +15,7 @@ declare global {
   }
 }
 
-const weighted_policy = new WeightedMemoryReviewPolicy();
+const review_policy = new SimpleReviewPolicy();
 const in_memory_cards: Map<string, CardEntity> = new Map();
 
 function clone_card(card: CardEntity): CardEntity {
@@ -30,7 +24,6 @@ function clone_card(card: CardEntity): CardEntity {
 
 const fallback_api: RendererApi = {
   async ingest_card(payload: CardIngestRequest) {
-    const memory_level = payload.memory_level ?? MEMORY_LEVEL_DEFAULT;
     const created_at = payload.created_at ?? new Date().toISOString();
 
     if (payload.card_id && in_memory_cards.has(payload.card_id)) {
@@ -41,7 +34,6 @@ const fallback_api: RendererApi = {
         context: payload.context,
         scene: payload.scene,
         example: payload.example,
-        memory_level,
         created_at,
       });
       if (!update_result.ok) {
@@ -78,7 +70,6 @@ const fallback_api: RendererApi = {
       context: payload.context,
       scene: payload.scene,
       example: payload.example,
-      memory_level,
       created_at,
     });
 
@@ -97,8 +88,7 @@ const fallback_api: RendererApi = {
 
   async fetch_review_queue(request?: ReviewQueueRequest) {
     const cards = Array.from(in_memory_cards.values());
-    const size = request?.size ?? DEFAULT_REVIEW_ROUND_SIZE;
-    return build_review_round(cards, { size, ratio: DEFAULT_REVIEW_RATIO });
+    return review_policy.generate_review_queue(cards, request?.size);
   },
 
   async update_review(payload: ReviewUpdateRequest) {
@@ -107,7 +97,7 @@ const fallback_api: RendererApi = {
       throw new Error(`Card ${payload.card_id} not found.`);
     }
 
-    const updated = weighted_policy.update_memory_level(card, payload.memory_level);
+    const updated = review_policy.mark_reviewed(card);
     in_memory_cards.set(payload.card_id, updated);
 
     return clone_card(updated);

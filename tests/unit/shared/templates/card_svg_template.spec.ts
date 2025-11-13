@@ -41,17 +41,15 @@ describe('render_card_svg', () => {
     });
   });
 
-  it('omits memory level label and applies Yu Mincho font', () => {
+  it('applies Yu Mincho font styling', () => {
     const svg = render_card_svg({
       word: '記憶',
       reading: 'きおく',
       context: '復習計画を整えています。',
       scene: '勉強時間をスケジュールに組み込みました。',
       example: '毎日少しずつ繰り返して覚えます。',
-      memory_level: 'WELL_KNOWN',
     });
 
-    expect(svg).not.toContain('memory-label');
     expect(svg).toContain('font-family: "游明朝", "Yu Mincho", "YuMincho", serif;');
 
     const title_matches = Array.from(svg.matchAll(/<text class="section-title"[^>]*style="font-size:(\d+)px"[^>]*>([^<]+)<\/text>/g));

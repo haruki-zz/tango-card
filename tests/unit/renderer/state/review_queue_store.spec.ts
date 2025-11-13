@@ -1,5 +1,4 @@
 import type { ReviewCandidate } from '../../../../src/domain/review/review_policy';
-import { MemoryLevel } from '../../../../src/domain/review/memory_level';
 import { review_queue_store } from '../../../../src/renderer_process/state/review_queue_store';
 
 const create_candidate = (id: string): ReviewCandidate => ({
@@ -11,9 +10,7 @@ const create_candidate = (id: string): ReviewCandidate => ({
   example: 'example',
   svg_source: '<svg></svg>',
   created_at: new Date().toISOString(),
-  memory_level: MemoryLevel.SOMEWHAT_FAMILIAR,
   review_count: 0,
-  weight: 1,
 });
 
 describe('review_queue_store', () => {
@@ -42,9 +39,9 @@ describe('review_queue_store', () => {
     review_queue_store.getState().set_queue([create_candidate('1')]);
     review_queue_store.getState().update_card('1', (card) => ({
       ...card,
-      memory_level: MemoryLevel.NEEDS_REINFORCEMENT,
+      review_count: card.review_count + 1,
     }));
     const state = review_queue_store.getState();
-    expect(state.queue[0].memory_level).toBe(MemoryLevel.NEEDS_REINFORCEMENT);
+    expect(state.queue[0].review_count).toBe(1);
   });
 });
