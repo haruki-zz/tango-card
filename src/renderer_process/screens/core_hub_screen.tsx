@@ -31,9 +31,9 @@ export function CoreHubScreen({ on_create_card, on_start_review }: CoreHubScreen
             </div>
           </dl>
         </section>
-        <section className="flex flex-col gap-5 rounded-[32px] bg-[#e8ecf5] p-6 shadow-[18px_18px_45px_#caced8,-12px_-12px_35px_#ffffff]">
-          <div className="rounded-[28px] bg-white p-6 shadow-[inset_4px_4px_16px_rgba(15,23,42,0.04)]">
-            <h2 className="text-lg font-semibold text-[#0f172a]">Quick actions</h2>
+        <section className="flex flex-col gap-6 p-1 text-[#0f172a]">
+          <div>
+            <h2 className="text-lg font-semibold">Quick actions</h2>
             <p className="mt-1 text-sm text-[#475569]">Choose the flow you want to run for your desktop session.</p>
             <div className="mt-5 grid gap-3">
               <button

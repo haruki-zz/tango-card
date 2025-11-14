@@ -4,9 +4,10 @@ import { use_review_cycle } from '../hooks/use_review_cycle';
 
 interface ReviewScreenProps {
   on_exit(): void;
+  auto_start_round?: boolean;
 }
 
-export function ReviewScreen({ on_exit }: ReviewScreenProps) {
+export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreenProps) {
   const { queue, active_card, start_round, submit_review, reset_queue } = use_review_cycle();
   const [round_status, set_round_status] = useState<'idle' | 'loading' | 'error'>('idle');
   const [round_error, set_round_error] = useState<string | null>(null);
@@ -44,6 +45,18 @@ export function ReviewScreen({ on_exit }: ReviewScreenProps) {
       set_submission_error((error as Error).message);
     }
   }, [render_card, submission_state, submit_review]);
+
+  useEffect(() => {
+    if (!auto_start_round || has_started || round_status === 'loading') {
+      return;
+    }
+    const timeout = window.setTimeout(() => {
+      void handle_start_round();
+    }, 0);
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [auto_start_round, handle_start_round, has_started, round_status]);
 
   useEffect(() => {
     if (!has_started) {

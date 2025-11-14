@@ -38,9 +38,16 @@ function ScreenContainer({ title, on_back, children }: ScreenContainerProps) {
 
 export function AppRouter() {
   const [active_route, set_active_route] = useState<RouteKey>('hub');
+  const [review_auto_start, set_review_auto_start] = useState(false);
 
   const go_home = useCallback(() => {
     set_active_route('hub');
+    set_review_auto_start(false);
+  }, []);
+
+  const launch_review = useCallback(() => {
+    set_review_auto_start(true);
+    set_active_route('review');
   }, []);
 
   const screen = useMemo(() => {
@@ -49,7 +56,7 @@ export function AppRouter() {
         return (
           <CoreHubScreen
             on_create_card={() => set_active_route('editor')}
-            on_start_review={() => set_active_route('review')}
+            on_start_review={launch_review}
           />
         );
       case 'editor':
@@ -61,13 +68,13 @@ export function AppRouter() {
       case 'review':
         return (
           <ScreenContainer title="Review Words" on_back={go_home}>
-            <ReviewScreen on_exit={go_home} />
+            <ReviewScreen on_exit={go_home} auto_start_round={review_auto_start} />
           </ScreenContainer>
         );
       default:
         return null;
     }
-  }, [active_route, go_home]);
+  }, [active_route, go_home, launch_review, review_auto_start]);
 
   return screen;
 }
