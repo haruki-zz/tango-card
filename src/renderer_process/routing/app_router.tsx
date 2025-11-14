@@ -14,18 +14,21 @@ interface ScreenContainerProps {
 
 function ScreenContainer({ title, on_back, children }: ScreenContainerProps) {
   return (
-    <div className="min-h-screen bg-slate-950 px-4 py-6 text-white">
-      <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-4xl flex-col gap-4 rounded-[24px] border border-white/15 bg-slate-900/70 px-6 pb-8 pt-6 shadow-[0_20px_60px_rgba(15,23,42,0.65)]">
-        <header className="flex items-center gap-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 py-8 text-white">
+      <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-6xl flex-col gap-6 rounded-[32px] border border-white/12 bg-slate-900/70 px-4 pb-10 pt-6 shadow-[0_30px_75px_rgba(15,23,42,0.75)] lg:px-10">
+        <header className="flex flex-wrap items-center gap-4">
           <button
             type="button"
             onClick={on_back}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 text-lg text-white transition hover:border-white/60"
+            className="flex h-12 w-12 items-center justify-center rounded-full border border-white/30 text-lg text-white transition hover:border-white/60"
             aria-label="Return"
           >
             ←
           </button>
-          <h1 className="text-xl font-semibold">{title}</h1>
+          <div>
+            <h1 className="text-2xl font-semibold">{title}</h1>
+            <p className="text-sm text-white/70">Optimized for keyboard + mouse flow on larger screens.</p>
+          </div>
         </header>
         <div className="flex-1 overflow-auto">{children}</div>
       </div>

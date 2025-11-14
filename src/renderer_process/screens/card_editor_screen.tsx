@@ -105,13 +105,16 @@ export function CardEditorScreen() {
   const field_class =
     'rounded-2xl border border-transparent bg-[#fdfefe] px-3 py-2 text-base text-[#0f172a] placeholder:text-[#9ca3af] shadow-[inset_2px_2px_6px_rgba(15,23,42,0.08)] focus:border-[#94a3b8] focus:outline-none';
   return (
-    <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-5xl flex-col gap-8 py-8 text-[#0f172a]">
-      <div className="rounded-[32px] bg-[#e8ecf5] px-6 py-7 shadow-[15px_15px_35px_#d0d4de,-15px_-15px_35px_#ffffff]">
-        <header className="mb-5">
-          <h2 className="text-xl font-semibold">Add a new word</h2>
-          <p className="mt-1 text-sm text-[#4b5563]">Fill the details below and save it to your deck.</p>
+    <section className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl gap-6 py-8 text-[#0f172a] lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,1fr)]">
+      <article className="rounded-[32px] bg-[#e8ecf5] px-6 py-7 shadow-[18px_18px_45px_#cfd3dd,-12px_-12px_35px_#ffffff]">
+        <header className="mb-6 flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h2 className="text-2xl font-semibold">Add a new word</h2>
+            <p className="mt-1 text-sm text-[#4b5563]">The desktop editor leaves plenty of room for context.</p>
+          </div>
+          <p className="text-xs uppercase tracking-[0.3em] text-[#94a3b8]">Card details</p>
         </header>
-        <div className="grid gap-4">
+        <div className="grid gap-4 lg:grid-cols-2">
           <label className="flex flex-col gap-1 text-sm font-medium text-[#475569]">
             Word
             <input
@@ -150,7 +153,7 @@ export function CardEditorScreen() {
               className={`${field_class} resize-none`}
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569]">
+          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569] lg:col-span-2">
             Example sentence
             <textarea
               rows={3}
@@ -160,7 +163,12 @@ export function CardEditorScreen() {
               className={`${field_class} resize-none`}
             />
           </label>
-          <div className="flex flex-wrap items-center gap-3 pt-2">
+        </div>
+        <div className="mt-6 flex flex-col gap-3 border-t border-white/70 pt-4 lg:flex-row lg:items-center lg:justify-between">
+          <p className="text-sm text-[#475569]">
+            Keep the preview open on the right to confirm spacing, or dock the window alongside other study tools.
+          </p>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
             <button
               type="button"
               onClick={handle_save}
@@ -172,13 +180,17 @@ export function CardEditorScreen() {
             <SaveStatusHint state={save_status} message={status_message} />
           </div>
         </div>
-      </div>
-      <div className="rounded-[32px] bg-[#e8ecf5] px-6 py-6 shadow-[15px_15px_35px_#d0d4de,-15px_-15px_35px_#ffffff]">
-        <h3 className="text-sm font-semibold text-[#475569]">Preview</h3>
-        <div className="mt-3 rounded-2xl bg-[#e8ecf5] p-3 shadow-[inset_6px_6px_16px_#d0d4de,inset_-6px_-6px_16px_#ffffff]">
+      </article>
+      <aside className="rounded-[32px] bg-[#e8ecf5] px-6 py-6 shadow-[18px_18px_45px_#cfd3dd,-12px_-12px_35px_#ffffff] lg:sticky lg:top-8">
+        <h3 className="text-sm font-semibold text-[#475569]">Live preview</h3>
+        <p className="mt-1 text-xs text-[#6b7280]">Scales to the actual export size while you type.</p>
+        <div className="mt-4 rounded-2xl bg-[#e8ecf5] p-3 shadow-[inset_6px_6px_16px_#d0d4de,inset_-6px_-6px_16px_#ffffff]">
           <SvgCanvas svg_source={preview_svg} />
         </div>
-      </div>
+        <div className="mt-4 rounded-2xl border border-dashed border-white/70 px-4 py-3 text-xs text-[#6b7280]">
+          <p>All inputs must be filled before saving. Desktop writers often batch cards—watch the status indicator.</p>
+        </div>
+      </aside>
     </section>
   );
 }
