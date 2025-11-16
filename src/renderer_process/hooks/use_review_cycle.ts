@@ -7,6 +7,7 @@ function useReviewCycle() {
   const active_index = review_queue_store((state) => state.active_index);
   const set_queue = review_queue_store((state) => state.set_queue);
   const advance = review_queue_store((state) => state.advance);
+  const move = review_queue_store((state) => state.move);
   const reset_queue = review_queue_store((state) => state.reset);
   const update_card = review_queue_store((state) => state.update_card);
 
@@ -29,6 +30,14 @@ function useReviewCycle() {
 
   const active_card = useMemo(() => queue[active_index], [active_index, queue]);
 
+  const move_next = useCallback(() => {
+    move('next');
+  }, [move]);
+
+  const move_previous = useCallback(() => {
+    move('previous');
+  }, [move]);
+
   return {
     queue,
     active_index,
@@ -36,6 +45,8 @@ function useReviewCycle() {
     start_round,
     reset_queue,
     submit_review,
+    move_next,
+    move_previous,
   };
 }
 

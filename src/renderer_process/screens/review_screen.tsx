@@ -8,7 +8,7 @@ interface ReviewScreenProps {
 }
 
 export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreenProps) {
-  const { queue, active_card, start_round, submit_review, reset_queue } = use_review_cycle();
+  const { queue, active_card, start_round, submit_review, reset_queue, move_next, move_previous } = use_review_cycle();
   const [round_status, set_round_status] = useState<'idle' | 'loading' | 'error'>('idle');
   const [round_error, set_round_error] = useState<string | null>(null);
   const [has_started, set_has_started] = useState(false);
@@ -71,6 +71,32 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
     }
   }, [has_started, round_in_progress, round_status, on_exit, reset_queue]);
 
+  useEffect(() => {
+    if (!round_in_progress) {
+      return;
+    }
+    const handle_keydown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) {
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        move_next();
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        move_previous();
+      }
+    };
+    window.addEventListener('keydown', handle_keydown);
+    return () => {
+      window.removeEventListener('keydown', handle_keydown);
+    };
+  }, [move_next, move_previous, round_in_progress]);
+
   return (
     <section className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-6xl flex-col gap-6 py-8 text-[#0f172a] lg:grid lg:grid-cols-[320px_minmax(0,1fr)]">
       <aside className="rounded-[32px] bg-[#e8ecf5] px-6 py-6 shadow-[18px_18px_45px_#cfd3dd,-12px_-12px_35px_#ffffff]">
@@ -79,6 +105,7 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
         <p className="mt-2 text-sm text-[#475569]">
           Start a focused batch, keep the preview docked, and mark each card as you work through it.
         </p>
+        <p className="text-xs text-[#94a3b8]">Use ← → arrow keys (or trackpad swipe) to browse queued cards.</p>
         <button
           type="button"
           onClick={() => {
@@ -101,7 +128,16 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
         {round_in_progress && render_card ? (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px]">
             <div className="rounded-[32px] bg-[#e8ecf5] px-4 py-4 shadow-[15px_15px_35px_#d0d4de,-15px_-15px_35px_#ffffff]">
-              <SvgCanvas svg_source={render_card.svg_source} />
+              <SvgCanvas
+                svg_source={render_card.svg_source}
+                on_swipe={(direction) => {
+                  if (direction === 'left') {
+                    move_next();
+                  } else if (direction === 'right') {
+                    move_previous();
+                  }
+                }}
+              />
             </div>
             <div className="flex flex-col gap-3 rounded-[32px] bg-[#e8ecf5] px-4 py-4 shadow-[15px_15px_35px_#d0d4de,-15px_-15px_35px_#ffffff]">
               <h2 className="text-base font-semibold">One card at a time</h2>

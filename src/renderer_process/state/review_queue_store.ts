@@ -9,6 +9,7 @@ export interface ReviewQueueState {
 export interface ReviewQueueActions {
   set_queue(queue: ReviewCandidate[]): void;
   advance(): void;
+  move(direction: 'next' | 'previous'): void;
   reset(): void;
   update_card(card_id: string, updater: (card: ReviewCandidate) => ReviewCandidate): void;
 }
@@ -37,6 +38,19 @@ export const review_queue_store = create<ReviewQueueStore>((set) => ({
       return {
         queue: next_queue,
         active_index: next_index,
+      };
+    }),
+  move: (direction: 'next' | 'previous') =>
+    set((state) => {
+      if (state.queue.length <= 1) {
+        return state;
+      }
+      const delta = direction === 'next' ? 1 : -1;
+      const normalized_index =
+        (state.active_index + delta + state.queue.length) % state.queue.length;
+      return {
+        ...state,
+        active_index: normalized_index,
       };
     }),
   reset: () => set(INITIAL_STATE),
