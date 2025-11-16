@@ -103,19 +103,19 @@ export function CardEditorScreen() {
   const is_save_disabled = save_status === 'saving' || !fields_populated;
 
   const field_class =
-    'rounded-2xl border border-transparent bg-[#fdfefe] px-3 py-2 text-base text-[#0f172a] placeholder:text-[#9ca3af] shadow-[inset_2px_2px_6px_rgba(15,23,42,0.08)] focus:border-[#94a3b8] focus:outline-none';
+    'border border-[#32384b] bg-[#05070d] px-3 py-2 text-sm text-[#e2e8f0] placeholder:text-[#6b7280] focus:border-[#22d3ee] focus:outline-none focus:ring-1 focus:ring-[#22d3ee]';
   return (
-    <section className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl gap-6 py-8 text-[#0f172a] lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,1fr)]">
-      <article className="rounded-[32px] bg-[#e8ecf5] px-6 py-7 shadow-[18px_18px_45px_#cfd3dd,-12px_-12px_35px_#ffffff]">
-        <header className="mb-6 flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold">Add a new word</h2>
-            <p className="mt-1 text-sm text-[#4b5563]">The desktop editor leaves plenty of room for context.</p>
+    <section className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl gap-6 py-2 text-[#e2e8f0] lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,1fr)]">
+      <article className="border border-[#1f2433] bg-[#090c14] px-5 py-6">
+        <header className="mb-6 border-b border-[#1f2433] pb-4">
+          <p className="text-xs uppercase tracking-[0.4em] text-[#94a3b8]">editor</p>
+          <div className="mt-2 flex flex-col gap-1 text-sm text-[#a5b4fc] lg:flex-row lg:items-end lg:justify-between">
+            <h2 className="text-2xl font-semibold text-[#f8fafc]">card.new()</h2>
+            <span>sequence: word → reading → scene → example</span>
           </div>
-          <p className="text-xs uppercase tracking-[0.3em] text-[#94a3b8]">Card details</p>
         </header>
         <div className="grid gap-4 lg:grid-cols-2">
-          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569]">
+          <label className="flex flex-col gap-1 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
             Word
             <input
               value={word}
@@ -124,7 +124,7 @@ export function CardEditorScreen() {
               className={field_class}
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569]">
+          <label className="flex flex-col gap-1 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
             Hiragana reading
             <input
               value={reading}
@@ -133,62 +133,62 @@ export function CardEditorScreen() {
               className={field_class}
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569]">
+          <label className="flex flex-col gap-1 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
             Context
             <textarea
               rows={3}
               value={context_text}
               onChange={(event) => handle_context_change(event.target.value)}
               placeholder="Where does this word appear?"
-              className={`${field_class} resize-none`}
+              className={`${field_class} min-h-[110px] resize-none`}
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569]">
+          <label className="flex flex-col gap-1 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
             Scene
             <textarea
               rows={3}
               value={scene_text}
               onChange={(event) => handle_scene_change(event.target.value)}
               placeholder="Describe the situation."
-              className={`${field_class} resize-none`}
+              className={`${field_class} min-h-[110px] resize-none`}
             />
           </label>
-          <label className="flex flex-col gap-1 text-sm font-medium text-[#475569] lg:col-span-2">
+          <label className="flex flex-col gap-1 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8] lg:col-span-2">
             Example sentence
             <textarea
               rows={3}
               value={example_sentence}
               onChange={(event) => handle_example_change(event.target.value)}
               placeholder="Use the word in a sentence."
-              className={`${field_class} resize-none`}
+              className={`${field_class} min-h-[110px] resize-none`}
             />
           </label>
         </div>
-        <div className="mt-6 flex flex-col gap-3 border-t border-white/70 pt-4 lg:flex-row lg:items-center lg:justify-between">
-          <p className="text-sm text-[#475569]">
-            Keep the preview open on the right to confirm spacing, or dock the window alongside other study tools.
+        <div className="mt-6 flex flex-col gap-3 border-t border-[#1f2433] pt-4 text-sm text-[#94a3b8] lg:flex-row lg:items-center lg:justify-between">
+          <p>
+            Hint: shift + enter saves immediately. Keep preview pinned to verify kerning + wrapping.
           </p>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
             <button
               type="button"
               onClick={handle_save}
               disabled={is_save_disabled}
-              className="rounded-full border border-transparent bg-[#0f172a] px-6 py-2 text-sm font-medium text-white shadow-[inset_2px_2px_6px_rgba(0,0,0,0.25)] disabled:opacity-60"
+              className="border border-[#3f475d] bg-[#111827] px-6 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-[#f8fafc] transition hover:bg-[#1f2937] disabled:opacity-40"
             >
-              {is_save_disabled ? 'Fill all fields' : 'Save card'}
+              {is_save_disabled ? 'complete fields' : 'save card'}
             </button>
             <SaveStatusHint state={save_status} message={status_message} />
           </div>
         </div>
       </article>
-      <aside className="rounded-[32px] bg-[#e8ecf5] px-6 py-6 shadow-[18px_18px_45px_#cfd3dd,-12px_-12px_35px_#ffffff] lg:sticky lg:top-8">
-        <h3 className="text-sm font-semibold text-[#475569]">Live preview</h3>
-        <p className="mt-1 text-xs text-[#6b7280]">Scales to the actual export size while you type.</p>
-        <div className="mt-4 rounded-2xl bg-[#e8ecf5] p-3 shadow-[inset_6px_6px_16px_#d0d4de,inset_-6px_-6px_16px_#ffffff]">
+      <aside className="border border-[#1f2433] bg-[#060910] px-5 py-5 lg:sticky lg:top-6">
+        <h3 className="text-xs uppercase tracking-[0.4em] text-[#94a3b8]">preview</h3>
+        <p className="mt-1 text-xs text-[#94a3b8]">scales to export ratio (21:12). sanitized before save.</p>
+        <div className="mt-4 border border-[#1f2433] bg-[#030507] p-3">
           <SvgCanvas svg_source={preview_svg} />
         </div>
-        <div className="mt-4 rounded-2xl border border-dashed border-white/70 px-4 py-3 text-xs text-[#6b7280]">
-          <p>All inputs must be filled before saving. Desktop writers often batch cards—watch the status indicator.</p>
+        <div className="mt-4 border border-dashed border-[#2f3647] px-4 py-3 text-xs text-[#94a3b8]">
+          <p>All inputs must be filled before saving. Batch authors keep this panel in view to check spacing.</p>
         </div>
       </aside>
     </section>
@@ -203,12 +203,12 @@ interface SaveStatusHintProps {
 function SaveStatusHint({ state, message }: SaveStatusHintProps) {
   const color_class =
     state === 'success'
-      ? 'text-green-600'
+      ? 'text-green-400'
       : state === 'error'
-        ? 'text-red-600'
+        ? 'text-red-400'
         : state === 'saving'
-          ? 'text-yellow-600'
-          : 'text-[#6b7280]';
+          ? 'text-yellow-300'
+          : 'text-[#94a3b8]';
   return (
     <p className={`text-sm ${color_class}`} aria-live="polite">
       {message}
