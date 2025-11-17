@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import { prepare_svg_markup } from '../services/svg_renderer';
 import { use_element_size } from '../hooks/use_element_size';
@@ -6,6 +6,7 @@ import { use_element_size } from '../hooks/use_element_size';
 interface SvgCanvasProps {
   readonly svg_source: string;
   readonly on_swipe?: (direction: 'left' | 'right' | 'up' | 'down') => void;
+  readonly orientation?: 'landscape' | 'portrait';
 }
 
 type PreviewStatus = 'initializing' | 'empty' | 'error' | 'ready';
@@ -17,6 +18,7 @@ interface SwipeTracker {
 }
 
 const SWIPE_THRESHOLD = 60;
+const FALLBACK_HEIGHT = 200;
 
 function resolve_pointer_position(event: ReactPointerEvent<HTMLDivElement>): {
   readonly x: number;
@@ -44,28 +46,75 @@ function resolve_pointer_position(event: ReactPointerEvent<HTMLDivElement>): {
   return { x, y };
 }
 
-export function SvgCanvas({ svg_source, on_swipe }: SvgCanvasProps) {
+export function SvgCanvas({ svg_source, on_swipe, orientation = 'landscape' }: SvgCanvasProps) {
   const { attach_ref, size } = use_element_size();
   const swipe_tracker = useRef<SwipeTracker | null>(null);
+  const [viewport, set_viewport] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const update_viewport = () => {
+      if (typeof window === 'undefined') {
+        return;
+      }
+      set_viewport({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+    update_viewport();
+    window.addEventListener('resize', update_viewport);
+    return () => {
+      window.removeEventListener('resize', update_viewport);
+    };
+  }, []);
 
   const trimmed_source = svg_source.trim();
+  const aspect_ratio = orientation === 'portrait' ? 12 / 21 : 21 / 12;
+
+  const dimensions = useMemo(() => {
+    const width_limit_candidates = [
+      size.width > 0 ? size.width : Number.POSITIVE_INFINITY,
+      viewport.width > 0 ? viewport.width - 64 : Number.POSITIVE_INFINITY,
+    ];
+    const height_limit_candidates = [viewport.height > 0 ? viewport.height - 220 : Number.POSITIVE_INFINITY];
+    const max_width = Math.min(...width_limit_candidates);
+    const max_height = Math.min(...height_limit_candidates);
+
+    let width = Number.isFinite(max_width) && max_width > 0 ? max_width : FALLBACK_HEIGHT * aspect_ratio;
+    let height = width / aspect_ratio;
+
+    if (Number.isFinite(max_height) && max_height > 0 && height > max_height) {
+      height = max_height;
+      width = height * aspect_ratio;
+    }
+
+    if (width <= 0 || height <= 0) {
+      height = FALLBACK_HEIGHT;
+      width = height * aspect_ratio;
+    }
+
+    return {
+      width: Math.floor(width),
+      height: Math.floor(height),
+    };
+  }, [aspect_ratio, size.width, viewport.height, viewport.width]);
 
   const preview_state = useMemo((): { status: PreviewStatus; markup: string } => {
     if (trimmed_source.length === 0) {
       return { status: 'empty', markup: '' };
     }
-    if (size.width === 0 || size.height === 0) {
+    if (dimensions.width === 0 || dimensions.height === 0) {
       return { status: 'initializing', markup: '' };
     }
     const markup = prepare_svg_markup(trimmed_source, {
-      container_width: size.width,
-      container_height: size.height,
+      container_width: dimensions.width,
+      container_height: dimensions.height,
     });
     if (!markup) {
       return { status: 'error', markup: '' };
     }
     return { status: 'ready', markup };
-  }, [trimmed_source, size.height, size.width]);
+  }, [dimensions.height, dimensions.width, trimmed_source]);
 
   const handle_pointer_down = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
     const position = resolve_pointer_position(event);
@@ -109,14 +158,19 @@ export function SvgCanvas({ svg_source, on_swipe }: SvgCanvasProps) {
   return (
     <div
       ref={attach_ref}
-      className="svg-canvas w-full min-h-[240px] touch-none border border-[#272b3a] bg-[#06090f] p-4 text-[#94a3b8] [aspect-ratio:21/12]"
-      style={{ touchAction: 'none' }}
+      className="svg-canvas flex w-full items-center justify-center touch-none border border-[#272b3a] bg-[#06090f] p-4 text-[#94a3b8]"
+      style={{ touchAction: 'none', minHeight: 160 }}
       onPointerDown={handle_pointer_down}
       onPointerCancel={handle_pointer_cancel}
       onPointerUp={handle_pointer_up}
     >
       {preview_state.status === 'ready' ? (
-        <div aria-label="svg-preview" dangerouslySetInnerHTML={{ __html: preview_state.markup }} />
+        <div
+          aria-label="svg-preview"
+          className="mx-auto"
+          style={{ width: dimensions.width, height: dimensions.height }}
+          dangerouslySetInnerHTML={{ __html: preview_state.markup }}
+        />
       ) : null}
       {preview_state.status === 'empty' ? (
         <p className="text-sm text-[#94a3b8]">Fill in the card details to preview it here.</p>

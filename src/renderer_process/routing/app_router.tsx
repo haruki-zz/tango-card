@@ -10,9 +10,11 @@ interface ScreenContainerProps {
   readonly title: string;
   readonly on_back: () => void;
   readonly children: ReactNode;
+  readonly content_padding?: string;
 }
 
-function ScreenContainer({ title, on_back, children }: ScreenContainerProps) {
+function ScreenContainer({ title, on_back, children, content_padding }: ScreenContainerProps) {
+  const padding_class = content_padding ?? 'px-4 py-6';
   return (
     <div className="min-h-screen bg-[#05060b] px-4 py-6 text-[#e2e8f0]">
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-6xl flex-col border border-[#272b3a] bg-[#090c14] shadow-[0_0_30px_rgba(0,0,0,0.6)]">
@@ -38,7 +40,7 @@ function ScreenContainer({ title, on_back, children }: ScreenContainerProps) {
             Back
           </button>
         </header>
-        <div className="flex-1 overflow-auto px-4 py-6">{children}</div>
+        <div className={`flex-1 overflow-auto ${padding_class}`}>{children}</div>
       </div>
     </div>
   );
@@ -75,7 +77,7 @@ export function AppRouter() {
         );
       case 'review':
         return (
-          <ScreenContainer title="Review Words" on_back={go_home}>
+          <ScreenContainer title="Review Words" on_back={go_home} content_padding="px-4 py-2">
             <ReviewScreen on_exit={go_home} auto_start_round={review_auto_start} />
           </ScreenContainer>
         );

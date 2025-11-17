@@ -98,7 +98,7 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
   }, [handle_mark_reviewed, move_previous, round_in_progress]);
 
   return (
-    <section className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-4xl items-center justify-center py-4 text-[#e2e8f0]">
+    <section className="mx-auto w-full max-w-4xl py-0 text-[#e2e8f0]">
       {round_in_progress && render_card ? (
         <div className="w-full border border-[#1f2433] bg-[#05070d] p-4">
           <SvgCanvas
