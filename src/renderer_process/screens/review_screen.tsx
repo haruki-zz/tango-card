@@ -8,7 +8,7 @@ interface ReviewScreenProps {
 }
 
 export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreenProps) {
-  const { queue, active_card, start_round, submit_review, reset_queue } = use_review_cycle();
+  const { queue, active_card, start_round, submit_review, reset_queue, move_previous } = use_review_cycle();
   const [round_status, set_round_status] = useState<'idle' | 'loading' | 'error'>('idle');
   const [round_error, set_round_error] = useState<string | null>(null);
   const [has_started, set_has_started] = useState(false);
@@ -86,13 +86,16 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
       if (event.key === 'ArrowRight') {
         event.preventDefault();
         void handle_mark_reviewed();
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        move_previous();
       }
     };
     window.addEventListener('keydown', handle_keydown);
     return () => {
       window.removeEventListener('keydown', handle_keydown);
     };
-  }, [handle_mark_reviewed, round_in_progress]);
+  }, [handle_mark_reviewed, move_previous, round_in_progress]);
 
   return (
     <section className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-4xl items-center justify-center py-4 text-[#e2e8f0]">
@@ -103,11 +106,13 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
             on_swipe={(direction) => {
               if (direction === 'left') {
                 void handle_mark_reviewed();
+              } else if (direction === 'right') {
+                move_previous();
               }
             }}
           />
           <div className="mt-3 border-t border-[#1f2433] pt-2 text-xs text-[#94a3b8]">
-            Press → or swipe left when you are done with this card. ({queue.length} remaining)
+            Press ← to revisit previous, → (or swipe left) to mark done. ({queue.length} remaining)
           </div>
           {submission_state === 'saving' ? (
             <p className="mt-2 text-xs text-[#fcd34d]">Recording progress…</p>
