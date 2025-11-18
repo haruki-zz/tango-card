@@ -9,8 +9,8 @@ export interface CardTemplateInput {
 const CARD_WIDTH = 390;
 const CARD_HEIGHT = 844;
 const CONTENT_PADDING = 32;
-const HEADER_BOTTOM = 200;
-const TITLE_GAP = 22;
+const HEADER_BOTTOM = 228;
+const TITLE_GAP = 32;
 const SECTION_GAP = 32;
 const CONTEXT_BOX_HEIGHT = 150;
 const SCENE_BOX_HEIGHT = 140;
