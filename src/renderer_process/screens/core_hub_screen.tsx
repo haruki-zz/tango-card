@@ -25,10 +25,6 @@ export function CoreHubScreen({ on_create_card, on_start_review }: CoreHubScreen
               <p>{`last_action  : ${total_cards === 0 ? 'none' : 'ready'}`}</p>
             </div>
             <div className="mt-4 font-mono text-xs text-[#4c5369]">───────────────────────────────</div>
-            <div className="mt-3 space-y-2 text-xs text-[#94a3b8]">
-              <p>保持双列布局：左侧指标，右侧命令。其余内容延迟加载。</p>
-              <p>若需统计详情，使用 docs 命令（在命令面板中）。</p>
-            </div>
           </section>
           <section className="flex flex-col gap-4 border border-[#1f2433] bg-[#0b0f19] p-4 text-sm text-[#cbd5f5]">
             <p className="text-xs uppercase tracking-[0.4em] text-[#94a3b8]">commands</p>

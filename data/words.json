@@ -18,8 +18,8 @@
     "scene": "Preparing slides before the client call.",
     "example": "本番の前に何度も練習しておきましょう。",
     "created_at": "2025-02-22T18:15:00.000Z",
-    "review_count": 28,
-    "last_reviewed_at": "2025-11-17T11:34:46.077Z"
+    "review_count": 29,
+    "last_reviewed_at": "2025-11-20T06:50:33.716Z"
   },
   "挑戦": {
     "id": "sample-card-san",
@@ -29,8 +29,8 @@
     "scene": "Late-night coding session with teammates.",
     "example": "新しい挑戦はいつも少し怖いけれど、成長のチャンスです。",
     "created_at": "2025-02-24T06:50:00.000Z",
-    "review_count": 24,
-    "last_reviewed_at": "2025-11-17T11:31:07.328Z"
+    "review_count": 25,
+    "last_reviewed_at": "2025-11-20T06:40:50.757Z"
   },
   "初々しい": {
     "id": "b15d635e-da2c-4735-8208-b4175dd0e296",
@@ -40,7 +40,7 @@
     "scene": "面接で緊張しながらも一生懸命に話す新入社員。言葉に詰まりながらも、目は真っすぐ前を向いている。その不器用さが「初々しい」と感じさせる。",
     "example": "新郎新婦初々しい姿に、会場中が温かい笑顔に包まれた。",
     "created_at": "2025-11-05T12:51:00.712Z",
-    "review_count": 19,
-    "last_reviewed_at": "2025-11-17T11:16:35.361Z"
+    "review_count": 20,
+    "last_reviewed_at": "2025-11-20T06:50:34.467Z"
   }
 }
