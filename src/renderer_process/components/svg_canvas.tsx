@@ -168,7 +168,11 @@ export function SvgCanvas({ svg_source, on_swipe, orientation = 'landscape' }: S
         <div
           aria-label="svg-preview"
           className="mx-auto"
-          style={{ width: dimensions.width, height: dimensions.height }}
+          style={{
+            width: dimensions.width,
+            height: dimensions.height,
+            fontFamily: '"游明朝", "Yu Mincho", "YuMincho", serif',
+          }}
           dangerouslySetInnerHTML={{ __html: preview_state.markup }}
         />
       ) : null}
