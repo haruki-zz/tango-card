@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react';
-import { SvgCanvas } from '../components/svg_canvas';
 import { use_card_store } from '../hooks/use_card_store';
 import { get_renderer_api } from '../utils/renderer_api';
-import { render_card_svg } from '../../shared/templates/card_svg_template';
 
 type SaveStatus = 'idle' | 'dirty' | 'saving' | 'success' | 'error';
 
@@ -63,16 +61,6 @@ export function CardEditorScreen() {
     scene_text.trim().length > 0 &&
     example_sentence.trim().length > 0;
 
-  const preview_svg = fields_populated
-    ? render_card_svg({
-        word,
-        reading,
-        context: context_text,
-        scene: scene_text,
-        example: example_sentence,
-      })
-    : '';
-
   const handle_save = async () => {
     if (!fields_populated) {
       set_save_status('error');
@@ -105,7 +93,7 @@ export function CardEditorScreen() {
   const field_class =
     'border border-[#32384b] bg-[#05070d] px-3 py-2 text-sm text-[#e2e8f0] placeholder:text-[#6b7280] focus:border-[#22d3ee] focus:outline-none focus:ring-1 focus:ring-[#22d3ee]';
   return (
-    <section className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl gap-6 py-2 text-[#e2e8f0] lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,1fr)]">
+    <section className="mx-auto min-h-[calc(100vh-4rem)] w-full max-w-4xl py-2 text-[#e2e8f0]">
       <article className="border border-[#1f2433] bg-[#090c14] px-5 py-6">
         <header className="mb-6 border-b border-[#1f2433] pb-4">
           <p className="text-xs uppercase tracking-[0.4em] text-[#94a3b8]">editor</p>
@@ -174,11 +162,7 @@ export function CardEditorScreen() {
             </label>
           </div>
         </div>
-        <div className="mt-6 grid gap-4 border-t border-[#1f2433] pt-4 text-sm text-[#94a3b8] lg:grid-cols-[1.2fr_auto] lg:items-center">
-          <div className="font-mono text-xs text-[#94a3b8]">
-            <p>⇧ + Enter → 保存当前卡片</p>
-            <p>填写完 5 步后执行，预览区域实时更新。</p>
-          </div>
+        <div className="mt-6 border-t border-[#1f2433] pt-4">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
             <button
               type="button"
@@ -186,22 +170,12 @@ export function CardEditorScreen() {
               disabled={is_save_disabled}
               className="border border-[#3f475d] bg-[#111827] px-6 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-[#f8fafc] transition hover:bg-[#1f2937] disabled:opacity-40"
             >
-              {is_save_disabled ? 'complete fields' : 'save card'}
+              save card
             </button>
             <SaveStatusHint state={save_status} message={status_message} />
           </div>
         </div>
       </article>
-      <aside className="border border-[#1f2433] bg-[#060910] px-5 py-5 lg:sticky lg:top-6">
-        <h3 className="text-xs uppercase tracking-[0.4em] text-[#94a3b8]">preview</h3>
-        <p className="mt-1 font-mono text-xs text-[#94a3b8]">ratio 21:12 · live render</p>
-        <div className="mt-4 border border-[#1f2433] bg-[#030507] p-3">
-          <SvgCanvas svg_source={preview_svg} />
-        </div>
-        <div className="mt-4 border border-dashed border-[#2f3647] px-4 py-3 font-mono text-xs text-[#94a3b8]">
-          <p>{fields_populated ? 'READY · all fields complete' : 'WAITING · fill every step to save'}</p>
-        </div>
-      </aside>
     </section>
   );
 }
