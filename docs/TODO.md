@@ -39,6 +39,6 @@
 ## UI 精简迭代（Add / Review 两大核心）
 - [x] Hub 只保留“创建 / 复习”操作与关键指标：在 `src/renderer_process/screens/core_hub_screen.tsx` 中将介绍性段落改为两列布局（左侧展示已保存卡片数、待复习卡片数，右侧仅保留两个命令按钮），并使用简洁 ASCII 分隔线提示状态。
 - [x] 卡片编辑界面增加步骤提示与分隔符：在 `src/renderer_process/screens/card_editor_screen.tsx` 为四个输入区添加 `[1] Word` 等编号，使用淡色虚线/边框划分段落，同时在保存区域将快捷键提示和按钮/状态拆成左右两列。
-- [ ] Preview 面板保持纯净：在编辑界面的预览旁只保留“比例 21:12 / 实时渲染”单行提示，删除冗余描述，把状态改成 monospace 小条幅。
+- [x] Preview 面板保持纯净：在编辑界面的预览旁只保留“比例 21:12 / 实时渲染”单行提示，删除冗余描述，把状态改成 monospace 小条幅。
 - [ ] 复习界面提供极简操作提示：在 `src/renderer_process/screens/review_screen.tsx` 的卡片下方增设 “[← 返回上一张 | → 标记完成] (剩余 n)” 提示，并添加一个极简“[R] 重置”链接以重新拉取队列。
 - [ ] SVG 卡片加上分隔视觉元素：在 `src/shared/templates/card_svg_template.ts` 中为 Context/Scene/Example 标题上方绘制 1px 线段或细边框，强化区块层次，同时保持现有 TUI 主题。

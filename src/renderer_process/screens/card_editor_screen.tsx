@@ -194,12 +194,12 @@ export function CardEditorScreen() {
       </article>
       <aside className="border border-[#1f2433] bg-[#060910] px-5 py-5 lg:sticky lg:top-6">
         <h3 className="text-xs uppercase tracking-[0.4em] text-[#94a3b8]">preview</h3>
-        <p className="mt-1 text-xs text-[#94a3b8]">scales to export ratio (21:12). sanitized before save.</p>
+        <p className="mt-1 font-mono text-xs text-[#94a3b8]">ratio 21:12 · live render</p>
         <div className="mt-4 border border-[#1f2433] bg-[#030507] p-3">
           <SvgCanvas svg_source={preview_svg} />
         </div>
-        <div className="mt-4 border border-dashed border-[#2f3647] px-4 py-3 text-xs text-[#94a3b8]">
-          <p>All inputs must be filled before saving. Batch authors keep this panel in view to check spacing.</p>
+        <div className="mt-4 border border-dashed border-[#2f3647] px-4 py-3 font-mono text-xs text-[#94a3b8]">
+          <p>{fields_populated ? 'READY · all fields complete' : 'WAITING · fill every step to save'}</p>
         </div>
       </aside>
     </section>
