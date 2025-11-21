@@ -111,8 +111,37 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
               }
             }}
           />
-          <div className="mt-3 border-t border-[#1f2433] pt-2 text-xs text-[#94a3b8]">
-            Press ← to revisit previous, → (or swipe left) to mark done. ({queue.length} remaining)
+          <div className="mt-3 border-t border-[#1f2433] pt-2 font-mono text-xs text-[#94a3b8]">
+            [← prev] [→ mark done] · 剩余 {queue.length}
+          </div>
+          <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.3em]">
+            <button
+              type="button"
+              onClick={() => {
+                move_previous();
+              }}
+              className="border border-[#394155] bg-[#0f131f] px-3 py-1 text-[#94a3b8]"
+            >
+              [←] prev
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                void handle_start_round();
+              }}
+              className="border border-[#394155] bg-[#0f131f] px-3 py-1 text-[#22d3ee]"
+            >
+              [R] reset
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                void handle_mark_reviewed();
+              }}
+              className="border border-[#394155] bg-[#0f131f] px-3 py-1 text-[#f8fafc]"
+            >
+              [→] done
+            </button>
           </div>
           {submission_state === 'saving' ? (
             <p className="mt-2 text-xs text-[#fcd34d]">Recording progress…</p>
@@ -123,6 +152,15 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
       ) : (
         <article className="border border-dashed border-[#2f3647] bg-[#05070d] px-6 py-5 text-xs text-[#94a3b8]">
           <p>No cards queued. Return to the hub to capture more words.</p>
+          <button
+            type="button"
+            onClick={() => {
+              void handle_start_round();
+            }}
+            className="mt-3 border border-[#394155] bg-[#0f131f] px-3 py-1 text-[10px] uppercase tracking-[0.35em] text-[#22d3ee]"
+          >
+            [R] reset queue
+          </button>
         </article>
       )}
     </section>
