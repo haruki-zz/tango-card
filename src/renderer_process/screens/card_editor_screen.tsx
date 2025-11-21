@@ -114,61 +114,72 @@ export function CardEditorScreen() {
             <span>sequence: word → reading → scene → example</span>
           </div>
         </header>
-        <div className="grid gap-4 lg:grid-cols-2">
-          <label className="flex flex-col gap-1 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
-            Word
-            <input
-              value={word}
-              onChange={(event) => handle_word_change(event.target.value)}
-              placeholder="e.g., 勉強"
-              className={field_class}
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
-            Hiragana reading
-            <input
-              value={reading}
-              onChange={(event) => handle_reading_change(event.target.value)}
-              placeholder="e.g., べんきょう"
-              className={field_class}
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
-            Context
-            <textarea
-              rows={3}
-              value={context_text}
-              onChange={(event) => handle_context_change(event.target.value)}
-              placeholder="Where does this word appear?"
-              className={`${field_class} min-h-[110px] resize-none`}
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
-            Scene
-            <textarea
-              rows={3}
-              value={scene_text}
-              onChange={(event) => handle_scene_change(event.target.value)}
-              placeholder="Describe the situation."
-              className={`${field_class} min-h-[110px] resize-none`}
-            />
-          </label>
-          <label className="flex flex-col gap-1 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8] lg:col-span-2">
-            Example sentence
-            <textarea
-              rows={3}
-              value={example_sentence}
-              onChange={(event) => handle_example_change(event.target.value)}
-              placeholder="Use the word in a sentence."
-              className={`${field_class} min-h-[110px] resize-none`}
-            />
-          </label>
+        <div className="grid gap-4">
+          <div>
+            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
+              <span className="font-mono text-sm text-[#f8fafc]">[1] Word</span>
+              <input
+                value={word}
+                onChange={(event) => handle_word_change(event.target.value)}
+                placeholder="e.g., 勉強"
+                className={field_class}
+              />
+            </label>
+          </div>
+          <div className="pt-4 lg:border-l lg:border-dashed lg:border-[#1f2433] lg:pl-4">
+            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
+              <span className="font-mono text-sm text-[#f8fafc]">[2] Hiragana reading</span>
+              <input
+                value={reading}
+                onChange={(event) => handle_reading_change(event.target.value)}
+                placeholder="e.g., べんきょう"
+                className={field_class}
+              />
+            </label>
+          </div>
+          <div className="border-t border-dashed border-[#1f2433] pt-4">
+            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
+              <span className="font-mono text-sm text-[#f8fafc]">[3] Context</span>
+              <textarea
+                rows={3}
+                value={context_text}
+                onChange={(event) => handle_context_change(event.target.value)}
+                placeholder="Where does this word appear?"
+                className={`${field_class} min-h-[110px] resize-none`}
+              />
+            </label>
+          </div>
+          <div className="border-t border-dashed border-[#1f2433] pt-4">
+            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
+              <span className="font-mono text-sm text-[#f8fafc]">[4] Scene</span>
+              <textarea
+                rows={3}
+                value={scene_text}
+                onChange={(event) => handle_scene_change(event.target.value)}
+                placeholder="Describe the situation."
+                className={`${field_class} min-h-[110px] resize-none`}
+              />
+            </label>
+          </div>
+          <div className="border-t border-dashed border-[#1f2433] pt-4 lg:col-span-2">
+            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
+              <span className="font-mono text-sm text-[#f8fafc]">[5] Example sentence</span>
+              <textarea
+                rows={3}
+                value={example_sentence}
+                onChange={(event) => handle_example_change(event.target.value)}
+                placeholder="Use the word in a sentence."
+                className={`${field_class} min-h-[110px] resize-none`}
+              />
+            </label>
+          </div>
         </div>
-        <div className="mt-6 flex flex-col gap-3 border-t border-[#1f2433] pt-4 text-sm text-[#94a3b8] lg:flex-row lg:items-center lg:justify-between">
-          <p>
-            Hint: shift + enter saves immediately. Keep preview pinned to verify kerning + wrapping.
-          </p>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+        <div className="mt-6 grid gap-4 border-t border-[#1f2433] pt-4 text-sm text-[#94a3b8] lg:grid-cols-[1.2fr_auto] lg:items-center">
+          <div className="font-mono text-xs text-[#94a3b8]">
+            <p>⇧ + Enter → 保存当前卡片</p>
+            <p>填写完 5 步后执行，预览区域实时更新。</p>
+          </div>
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
             <button
               type="button"
               onClick={handle_save}
