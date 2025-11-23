@@ -6,6 +6,7 @@ function useCardStore() {
   const cards = card_store((state) => state.cards);
   const is_loading = card_store((state) => state.is_loading);
   const error_message = card_store((state) => state.error_message);
+  const daily_activity = card_store((state) => state.daily_activity);
   const set_loading = card_store((state) => state.set_loading);
   const set_cards = card_store((state) => state.set_cards);
   const set_error = card_store((state) => state.set_error);
@@ -30,6 +31,7 @@ function useCardStore() {
     cards,
     is_loading,
     error_message,
+    daily_activity,
     refresh_cards,
   };
 }
