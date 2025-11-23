@@ -15,6 +15,7 @@ export interface CardStoreState {
   readonly is_loading: boolean;
   readonly error_message?: string;
   readonly daily_activity: DailyActivityPoint[];
+  readonly activity_window_days: number;
 }
 
 export interface CardStoreActions {
@@ -22,6 +23,9 @@ export interface CardStoreActions {
   set_cards(cards: CardEntity[]): void;
   set_error(message: string): void;
   reset(): void;
+  set_activity_window(days: number): void;
+  increment_created(date: string): void;
+  increment_reviewed(date: string): void;
 }
 
 export type CardStore = CardStoreState & CardStoreActions;
@@ -31,6 +35,7 @@ const INITIAL_STATE: CardStoreState = {
   is_loading: false,
   error_message: undefined,
   daily_activity: [],
+  activity_window_days: DEFAULT_ACTIVITY_WINDOW_DAYS,
 };
 
 export const card_store = create<CardStore>((set) => ({
@@ -53,6 +58,25 @@ export const card_store = create<CardStore>((set) => ({
       ...state,
       is_loading: false,
       error_message: message,
+    })),
+  set_activity_window: (days: number) =>
+    set((state) => {
+      const normalized = Math.max(7, Math.min(365, days));
+      return {
+        ...state,
+        activity_window_days: normalized,
+        daily_activity: compute_daily_activity(state.cards, normalized),
+      };
+    }),
+  increment_created: (date: string) =>
+    set((state) => ({
+      ...state,
+      daily_activity: upsert_activity(state.daily_activity, date, 'created'),
+    })),
+  increment_reviewed: (date: string) =>
+    set((state) => ({
+      ...state,
+      daily_activity: upsert_activity(state.daily_activity, date, 'reviewed'),
     })),
   reset: () => set(INITIAL_STATE),
 }));
@@ -108,4 +132,28 @@ function format_date(date: Date): string {
   const month = `${date.getUTCMonth() + 1}`.padStart(2, '0');
   const day = `${date.getUTCDate()}`.padStart(2, '0');
   return `${year}-${month}-${day}`;
+}
+
+function upsert_activity(
+  current: DailyActivityPoint[],
+  date: string,
+  field: 'created' | 'reviewed',
+): DailyActivityPoint[] {
+  const next = [...current];
+  const index = next.findIndex((point) => point.date === date);
+  if (index >= 0) {
+    const target = next[index];
+    next[index] = {
+      ...target,
+      created_count: field === 'created' ? target.created_count + 1 : target.created_count,
+      reviewed_count: field === 'reviewed' ? target.reviewed_count + 1 : target.reviewed_count,
+    };
+    return next;
+  }
+  const point: DailyActivityPoint = {
+    date,
+    created_count: field === 'created' ? 1 : 0,
+    reviewed_count: field === 'reviewed' ? 1 : 0,
+  };
+  return [...next.slice(1), point];
 }
