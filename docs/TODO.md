@@ -46,6 +46,6 @@
 ## Heat Map 活跃度面板（Hub 下方区域）
 - [x] **数据准备**：在 `src/renderer_process/state/card_store.ts` / 新的统计层中，新增每日新增/复习次数的聚合接口，传给 Hub 层以便绘制热力图；必要时拓展持久化格式（考虑 `created_at`、`last_reviewed_at`）。
 - [x] **控件设计**：在 `src/renderer_process/screens/core_hub_screen.tsx` 中 commands 区域下方插入一个 GitHub 风格 heat map 容器（7 行 * ~20 列），覆写样式以适配 TUI 主题（深色背景、方格圆角、渐变色阶）。
-- [ ] **渲染组件**：在 `src/renderer_process/components` 下新增 `heat_map.tsx`（或复用现有可视化组件），负责根据每日计数渲染矩阵，支持 hover 提示/键盘 focus。
+- [x] **渲染组件**：在 `src/renderer_process/components` 下新增 `heat_map.tsx`（或复用现有可视化组件），负责根据每日计数渲染矩阵，支持 hover 提示/键盘 focus。
 - [ ] **交互与刷新**：提供“最近 30/60 天”切换或滚动视图，根据卡片增删/复习事件自动刷新数据（监听 `use_card_store` 与 `use_review_cycle`），并在无数据时显示空状态。
 - [ ] **文档与测试**：更新 `docs/README_cn.md` 的界面说明，补充 heat map 统计来源与使用说明；为新组件编写最小单元测试（判断色阶映射逻辑）。
