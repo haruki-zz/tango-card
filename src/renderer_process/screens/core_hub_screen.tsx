@@ -1,4 +1,5 @@
 import { use_card_store } from '../hooks/use_card_store';
+import { HeatMap } from '../components/heat_map';
 
 interface CoreHubScreenProps {
   on_create_card(): void;
@@ -6,7 +7,7 @@ interface CoreHubScreenProps {
 }
 
 export function CoreHubScreen({ on_create_card, on_start_review }: CoreHubScreenProps) {
-  const { cards, is_loading } = use_card_store();
+  const { cards, is_loading, daily_activity, activity_window_days, set_activity_window } = use_card_store();
   const total_cards = cards.length;
   const pending_reviews = cards.filter((card) => card.review_count === 0).length;
 
@@ -44,6 +45,43 @@ export function CoreHubScreen({ on_create_card, on_start_review }: CoreHubScreen
               <span>&gt; review_session --start</span>
               <span className="text-xs text-[#94a3b8]">SHIFT+ENTER</span>
             </button>
+          </section>
+          <section className="lg:col-span-2 border border-[#1f2433] bg-[#090c14] p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs uppercase tracking-[0.3em] text-[#94a3b8]">activity heat map</p>
+              <div className="flex items-center gap-2 text-xs font-mono text-[#94a3b8]">
+                <button
+                  type="button"
+                  onClick={() => set_activity_window(30)}
+                  className={`border px-2 py-0.5 ${
+                    activity_window_days === 30 ? 'border-[#38bdf8] text-[#38bdf8]' : 'border-[#394155]'
+                  }`}
+                >
+                  30d
+                </button>
+                <button
+                  type="button"
+                  onClick={() => set_activity_window(60)}
+                  className={`border px-2 py-0.5 ${
+                    activity_window_days === 60 ? 'border-[#38bdf8] text-[#38bdf8]' : 'border-[#394155]'
+                  }`}
+                >
+                  60d
+                </button>
+                <button
+                  type="button"
+                  onClick={() => set_activity_window(84)}
+                  className={`border px-2 py-0.5 ${
+                    activity_window_days === 84 ? 'border-[#38bdf8] text-[#38bdf8]' : 'border-[#394155]'
+                  }`}
+                >
+                  12w
+                </button>
+              </div>
+            </div>
+            <div className="mt-3">
+              <HeatMap data={daily_activity} columns={21} rows={7} />
+            </div>
           </section>
         </div>
       </div>

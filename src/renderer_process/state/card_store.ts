@@ -47,12 +47,12 @@ export const card_store = create<CardStore>((set) => ({
       error_message: undefined,
     })),
   set_cards: (cards: CardEntity[]) =>
-    set({
+    set((state) => ({
       cards,
       is_loading: false,
       error_message: undefined,
-      daily_activity: compute_daily_activity(cards),
-    }),
+      daily_activity: compute_daily_activity(cards, state.activity_window_days),
+    })),
   set_error: (message: string) =>
     set((state) => ({
       ...state,

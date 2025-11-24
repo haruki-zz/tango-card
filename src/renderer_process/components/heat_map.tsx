@@ -6,29 +6,30 @@ interface HeatMapProps {
   readonly rows?: number;
 }
 
-const COLOR_SCALE = ['#0f172a', '#152238', '#1a3b5f', '#2563eb', '#38bdf8', '#a5f3fc'];
+const COLOR_SCALE = ['#1c2843', '#233659', '#2a4871', '#2563eb', '#38bdf8', '#a5f3fc'];
+const EMPTY_MESSAGE = 'No activity yet. Create or review cards to see your streak.';
 
 export function HeatMap({ data, columns = 21, rows = 7 }: HeatMapProps) {
-  if (data.length === 0) {
-    return (
-      <div className="font-mono text-xs text-[#94a3b8]">
-        No activity yet. Create or review cards to see your streak.
-      </div>
-    );
-  }
-
   const weekly_blocks = build_blocks(data, columns, rows);
+  const has_activity = data.some(
+    (point) => point.created_count > 0 || point.reviewed_count > 0,
+  );
 
   return (
-    <div className="overflow-auto">
-      <div className="flex gap-1">
-        {weekly_blocks.map((column, column_index) => (
-          <div key={`col-${column_index}`} className="flex flex-col gap-1">
-            {column.map((point, row_index) => (
-              <Cell key={`${column_index}-${row_index}`} point={point} />
-            ))}
-          </div>
-        ))}
+    <div className="rounded-sm bg-[#0b111c] p-2">
+      {!has_activity && (
+        <p className="mb-2 font-mono text-xs text-[#94a3b8]">{EMPTY_MESSAGE}</p>
+      )}
+      <div className="overflow-auto">
+        <div className="flex gap-1">
+          {weekly_blocks.map((column, column_index) => (
+            <div key={`col-${column_index}`} className="flex flex-col gap-1">
+              {column.map((point, row_index) => (
+                <Cell key={`${column_index}-${row_index}`} point={point} />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -44,7 +45,7 @@ function Cell({ point }: CellProps) {
 
   return (
     <div
-      className="h-4 w-4 rounded-[2px] border border-[#1f2433]"
+      className="h-4 w-4 shrink-0 rounded-[2px] border border-[#26334a] shadow-[0_0_0_1px_rgba(255,255,255,0.04)]"
       style={{ backgroundColor: color }}
       title={point ? `${point.date}: +${point.created_count} / ↺${point.reviewed_count}` : 'No data'}
     />
