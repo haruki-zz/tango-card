@@ -7,8 +7,8 @@
     "scene": "Preparing a demo for the team.",
     "example": "私は毎朝新しい知識を学ぶ時間を作っています。",
     "created_at": "2025-02-20T09:30:00.000Z",
-    "review_count": 35,
-    "last_reviewed_at": "2025-11-23T08:53:25.914Z"
+    "review_count": 36,
+    "last_reviewed_at": "2025-11-25T14:25:19.751Z"
   },
   "練習": {
     "id": "sample-card-ni",
@@ -18,8 +18,8 @@
     "scene": "Preparing slides before the client call.",
     "example": "本番の前に何度も練習しておきましょう。",
     "created_at": "2025-02-22T18:15:00.000Z",
-    "review_count": 35,
-    "last_reviewed_at": "2025-11-23T08:53:26.044Z"
+    "review_count": 36,
+    "last_reviewed_at": "2025-11-25T14:25:20.065Z"
   },
   "挑戦": {
     "id": "sample-card-san",
@@ -29,8 +29,8 @@
     "scene": "Late-night coding session with teammates.",
     "example": "新しい挑戦はいつも少し怖いけれど、成長のチャンスです。",
     "created_at": "2025-02-24T06:50:00.000Z",
-    "review_count": 30,
-    "last_reviewed_at": "2025-11-23T08:53:26.364Z"
+    "review_count": 31,
+    "last_reviewed_at": "2025-11-25T14:25:20.227Z"
   },
   "初々しい": {
     "id": "b15d635e-da2c-4735-8208-b4175dd0e296",
@@ -40,7 +40,7 @@
     "scene": "面接で緊張しながらも一生懸命に話す新入社員。言葉に詰まりながらも、目は真っすぐ前を向いている。その不器用さが「初々しい」と感じさせる。",
     "example": "新郎新婦初々しい姿に、会場中が温かい笑顔に包まれた。",
     "created_at": "2025-11-05T12:51:00.712Z",
-    "review_count": 25,
-    "last_reviewed_at": "2025-11-23T08:53:26.209Z"
+    "review_count": 26,
+    "last_reviewed_at": "2025-11-25T14:25:19.899Z"
   }
 }

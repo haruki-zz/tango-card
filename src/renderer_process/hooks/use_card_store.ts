@@ -6,14 +6,9 @@ function useCardStore() {
   const cards = card_store((state) => state.cards);
   const is_loading = card_store((state) => state.is_loading);
   const error_message = card_store((state) => state.error_message);
-  const daily_activity = card_store((state) => state.daily_activity);
-  const activity_window_days = card_store((state) => state.activity_window_days);
   const set_loading = card_store((state) => state.set_loading);
   const set_cards = card_store((state) => state.set_cards);
   const set_error = card_store((state) => state.set_error);
-  const set_activity_window = card_store((state) => state.set_activity_window);
-  const increment_created = card_store((state) => state.increment_created);
-  const increment_reviewed = card_store((state) => state.increment_reviewed);
 
   const refresh_cards = useCallback(async () => {
     try {
@@ -35,12 +30,7 @@ function useCardStore() {
     cards,
     is_loading,
     error_message,
-    daily_activity,
-    activity_window_days,
     refresh_cards,
-    set_activity_window,
-    increment_created,
-    increment_reviewed,
   };
 }
 
