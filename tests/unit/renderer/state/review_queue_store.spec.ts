@@ -11,6 +11,7 @@ const create_candidate = (id: string): ReviewCandidate => ({
   svg_source: '<svg></svg>',
   created_at: new Date().toISOString(),
   review_count: 0,
+  familiarity: 'normal',
 });
 
 describe('review_queue_store', () => {

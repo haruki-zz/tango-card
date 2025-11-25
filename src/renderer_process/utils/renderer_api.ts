@@ -1,5 +1,6 @@
 import type {
   CardIngestRequest,
+  FamiliarityUpdateRequest,
   RendererApi,
   ReviewQueueRequest,
   ReviewUpdateRequest,
@@ -19,7 +20,7 @@ const review_policy = new SimpleReviewPolicy();
 const in_memory_cards: Map<string, CardEntity> = new Map();
 
 function clone_card(card: CardEntity): CardEntity {
-  return { ...card };
+  return { ...card, familiarity: card.familiarity ?? 'normal' };
 }
 
 const fallback_api: RendererApi = {
@@ -35,6 +36,7 @@ const fallback_api: RendererApi = {
         scene: payload.scene,
         example: payload.example,
         created_at,
+        familiarity: payload.familiarity,
       });
       if (!update_result.ok) {
         throw update_result.error;
@@ -71,6 +73,7 @@ const fallback_api: RendererApi = {
       scene: payload.scene,
       example: payload.example,
       created_at,
+      familiarity: payload.familiarity,
     });
 
     if (!create_result.ok) {
@@ -100,6 +103,19 @@ const fallback_api: RendererApi = {
     const updated = review_policy.mark_reviewed(card);
     in_memory_cards.set(payload.card_id, updated);
 
+    return clone_card(updated);
+  },
+
+  async update_familiarity(payload: FamiliarityUpdateRequest) {
+    const card = in_memory_cards.get(payload.card_id);
+    if (!card) {
+      throw new Error(`Card ${payload.card_id} not found.`);
+    }
+    const updated: CardEntity = {
+      ...card,
+      familiarity: payload.familiarity,
+    };
+    in_memory_cards.set(payload.card_id, updated);
     return clone_card(updated);
   },
 };

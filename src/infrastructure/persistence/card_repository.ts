@@ -25,16 +25,24 @@ export class CardRepository {
 
   async upsert_card(card: CardEntity): Promise<void> {
     const cards = await this.storage_driver.read_cards();
+    const normalized = this.normalize_card(card);
     const existing_index = cards.findIndex((item) => item.id === card.id);
     if (existing_index >= 0) {
-      cards[existing_index] = card;
+      cards[existing_index] = normalized;
     } else {
-      cards.push(card);
+      cards.push(normalized);
     }
     await this.storage_driver.write_cards(cards);
   }
 
   async replace_cards(cards: CardEntity[]): Promise<void> {
-    await this.storage_driver.write_cards(cards);
+    await this.storage_driver.write_cards(cards.map((card) => this.normalize_card(card)));
+  }
+
+  private normalize_card(card: CardEntity): CardEntity {
+    return {
+      ...card,
+      familiarity: card.familiarity ?? 'normal',
+    };
   }
 }

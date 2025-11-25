@@ -13,6 +13,7 @@ function create_card(id: string, review_count = 0): CardEntity {
     example: `example-${id}`,
     created_at: new Date().toISOString(),
     review_count,
+    familiarity: 'normal',
     last_reviewed_at: undefined,
   };
 }

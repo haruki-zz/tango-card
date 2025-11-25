@@ -13,6 +13,7 @@ describe('create_card', () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.data.word).toBe('学ぶ');
+      expect(result.data.familiarity).toBe('normal');
       expect(is_card_entity(result.data)).toBe(true);
       expect(typeof result.data.created_at).toBe('string');
     }
@@ -39,6 +40,7 @@ describe('create_card', () => {
       example: '毎朝30分学ぶ習慣を続けています。',
       created_at: '2024-01-01T00:00:00.000Z',
       review_count: 0,
+      familiarity: 'normal',
       last_reviewed_at: undefined,
     };
 

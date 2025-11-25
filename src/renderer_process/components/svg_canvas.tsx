@@ -69,6 +69,7 @@ export function SvgCanvas({ svg_source, on_swipe, orientation = 'landscape' }: S
   }, []);
 
   const trimmed_source = svg_source.trim();
+  const is_container_measured = size.width > 0 && size.height > 0;
   const aspect_ratio = orientation === 'portrait' ? 12 / 21 : 21 / 12;
 
   const dimensions = useMemo(() => {
@@ -103,6 +104,9 @@ export function SvgCanvas({ svg_source, on_swipe, orientation = 'landscape' }: S
     if (trimmed_source.length === 0) {
       return { status: 'empty', markup: '' };
     }
+    if (!is_container_measured) {
+      return { status: 'initializing', markup: '' };
+    }
     if (dimensions.width === 0 || dimensions.height === 0) {
       return { status: 'initializing', markup: '' };
     }
@@ -114,7 +118,7 @@ export function SvgCanvas({ svg_source, on_swipe, orientation = 'landscape' }: S
       return { status: 'error', markup: '' };
     }
     return { status: 'ready', markup };
-  }, [dimensions.height, dimensions.width, trimmed_source]);
+  }, [dimensions.height, dimensions.width, is_container_measured, trimmed_source]);
 
   const handle_pointer_down = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
     const position = resolve_pointer_position(event);

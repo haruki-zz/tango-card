@@ -47,6 +47,7 @@ export function register_card_ingest_handler(storage_context: StorageContext): v
       scene: payload.scene,
       example: payload.example,
       created_at: payload.created_at,
+      familiarity: payload.familiarity,
     });
 
     if (!create_result.ok) {

@@ -13,12 +13,14 @@ export function create_card(input: CardDraft): Result<CardEntity, Error> {
   }
 
   const created_at = input.created_at ?? get_iso_timestamp();
+  const familiarity = input.familiarity ?? 'normal';
 
   const card: CardEntity = {
     id: create_uuid(),
     ...normalized.data,
     created_at,
     review_count: 0,
+    familiarity,
     last_reviewed_at: undefined,
   };
 
@@ -32,11 +34,13 @@ export function update_card(existing: CardEntity, patch: CardDraft): Result<Card
   }
 
   const created_at = patch.created_at ?? existing.created_at;
+  const familiarity = patch.familiarity ?? existing.familiarity ?? 'normal';
 
   const updated_card: CardEntity = {
     ...existing,
     ...normalized.data,
     created_at,
+    familiarity,
   };
 
   return create_success_result(updated_card);

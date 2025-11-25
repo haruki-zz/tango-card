@@ -60,12 +60,16 @@ export class FileStorageProvider implements StorageDriver {
   }
 
   private normalize_cards_payload(subject: unknown): CardEntity[] {
+    const apply_defaults = (card: CardEntity): CardEntity => ({
+      ...card,
+      familiarity: card.familiarity ?? 'normal',
+    });
     if (Array.isArray(subject)) {
-      return subject as CardEntity[];
+      return (subject as CardEntity[]).map(apply_defaults);
     }
     if (subject && typeof subject === 'object') {
       const record = subject as Record<string, CardEntity>;
-      return Object.values(record);
+      return Object.values(record).map(apply_defaults);
     }
     return [];
   }

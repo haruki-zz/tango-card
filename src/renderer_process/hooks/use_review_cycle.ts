@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { review_queue_store } from '../state/review_queue_store';
 import { get_renderer_api } from '../utils/renderer_api';
+import type { Familiarity } from '../../domain/card/card_entity';
 
 function useReviewCycle() {
   const queue = review_queue_store((state) => state.queue);
@@ -28,6 +29,15 @@ function useReviewCycle() {
     advance();
   }, [advance, update_card]);
 
+  const update_familiarity = useCallback(async (card_id: string, familiarity: Familiarity) => {
+    const api = get_renderer_api();
+    const updated_card = await api.update_familiarity({ card_id, familiarity });
+    update_card(card_id, (existing) => ({
+      ...existing,
+      familiarity: updated_card.familiarity,
+    }));
+  }, [update_card]);
+
   const active_card = useMemo(() => queue[active_index], [active_index, queue]);
 
   const move_next = useCallback(() => {
@@ -45,6 +55,7 @@ function useReviewCycle() {
     start_round,
     reset_queue,
     submit_review,
+    update_familiarity,
     move_next,
     move_previous,
   };

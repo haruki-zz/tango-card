@@ -1,5 +1,5 @@
 import { APP_CHANNELS } from '../constants/app_channels';
-import type { CardDraft, CardEntity } from '../../domain/card/card_entity';
+import type { CardDraft, CardEntity, Familiarity } from '../../domain/card/card_entity';
 import type { ReviewCandidate } from '../../domain/review/review_policy';
 export interface CardIngestRequest extends CardDraft {
   readonly card_id?: string;
@@ -22,6 +22,13 @@ export interface ReviewUpdateRequest {
 
 export type ReviewUpdateResponse = CardEntity;
 
+export interface FamiliarityUpdateRequest {
+  readonly card_id: string;
+  readonly familiarity: Familiarity;
+}
+
+export type FamiliarityUpdateResponse = CardEntity;
+
 export type RendererToMainContract = {
   [APP_CHANNELS.CARD_INGEST]: {
     readonly request: CardIngestRequest;
@@ -39,6 +46,10 @@ export type RendererToMainContract = {
     readonly request: ReviewUpdateRequest;
     readonly response: ReviewUpdateResponse;
   };
+  [APP_CHANNELS.CARD_FAMILIARITY]: {
+    readonly request: FamiliarityUpdateRequest;
+    readonly response: FamiliarityUpdateResponse;
+  };
 };
 
 export type RendererToMainChannel = keyof RendererToMainContract;
@@ -54,4 +65,5 @@ export interface RendererApi {
   list_cards(): Promise<CardListResponse>;
   fetch_review_queue(request?: ReviewQueueRequest): Promise<ReviewQueueResponse>;
   update_review(payload: ReviewUpdateRequest): Promise<ReviewUpdateResponse>;
+  update_familiarity(payload: FamiliarityUpdateRequest): Promise<FamiliarityUpdateResponse>;
 }

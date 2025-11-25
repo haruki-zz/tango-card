@@ -43,4 +43,21 @@ describe('renderer_api fallback', () => {
     const cards = await api.list_cards();
     expect(cards[0]?.review_count).toBe(1);
   });
+
+  it('updates familiarity when toggled in the fallback api', async () => {
+    const api = get_renderer_api();
+    const created = await api.ingest_card({
+      word: '読む',
+      reading: 'よむ',
+      context: '本を読む',
+      scene: '図書館',
+      example: '毎週新しい本を読む。',
+    });
+
+    const updated = await api.update_familiarity({ card_id: created.id, familiarity: 'not_familiar' });
+    expect(updated.familiarity).toBe('not_familiar');
+
+    const [persisted] = await api.list_cards();
+    expect(persisted?.familiarity).toBe('not_familiar');
+  });
 });
