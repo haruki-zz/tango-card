@@ -3,7 +3,7 @@ import type { CardEntity } from '../../../src/domain/card/card_entity';
 
 const policy = new SimpleReviewPolicy();
 
-function create_card(id: string, review_count = 0): CardEntity {
+function create_card(id: string, review_count = 0, familiarity: CardEntity['familiarity'] = 'normal'): CardEntity {
   return {
     id,
     word: `word-${id}`,
@@ -13,7 +13,7 @@ function create_card(id: string, review_count = 0): CardEntity {
     example: `example-${id}`,
     created_at: new Date().toISOString(),
     review_count,
-    familiarity: 'normal',
+    familiarity,
     last_reviewed_at: undefined,
   };
 }
@@ -26,6 +26,20 @@ describe('SimpleReviewPolicy', () => {
     );
     expect(queue).toHaveLength(2);
     expect(queue[0].svg_source).toContain('<svg');
+  });
+
+  it('prioritizes not-familiar cards roughly 2:1 when generating a round', () => {
+    const not_familiar_cards = Array.from({ length: 30 }, (_, index) =>
+      create_card(`nf-${index}`, 0, 'not_familiar'),
+    );
+    const familiar_cards = Array.from({ length: 30 }, (_, index) =>
+      create_card(`f-${index}`, 0, 'normal'),
+    );
+    const queue = policy.generate_review_queue([...not_familiar_cards, ...familiar_cards], 30);
+    const not_familiar_count = queue.filter((card) => card.familiarity === 'not_familiar').length;
+    expect(queue).toHaveLength(30);
+    expect(not_familiar_count).toBeGreaterThanOrEqual(18);
+    expect(not_familiar_count).toBeLessThanOrEqual(30);
   });
 
   it('marks cards as reviewed', () => {
