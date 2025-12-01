@@ -6,11 +6,12 @@ import type { Familiarity } from '../../domain/card/card_entity';
 function useReviewCycle() {
   const queue = review_queue_store((state) => state.queue);
   const active_index = review_queue_store((state) => state.active_index);
+  const reviewed_ids = review_queue_store((state) => state.reviewed_ids);
   const set_queue = review_queue_store((state) => state.set_queue);
-  const advance = review_queue_store((state) => state.advance);
   const move = review_queue_store((state) => state.move);
   const reset_queue = review_queue_store((state) => state.reset);
   const update_card = review_queue_store((state) => state.update_card);
+  const mark_reviewed = review_queue_store((state) => state.mark_reviewed);
 
   const start_round = useCallback(async (size?: number) => {
     const api = get_renderer_api();
@@ -19,6 +20,9 @@ function useReviewCycle() {
   }, [set_queue]);
 
   const submit_review = useCallback(async (card_id: string) => {
+    if (reviewed_ids.includes(card_id)) {
+      return;
+    }
     const api = get_renderer_api();
     const updated_card = await api.update_review({ card_id });
     update_card(card_id, (existing) => ({
@@ -26,8 +30,8 @@ function useReviewCycle() {
       review_count: updated_card.review_count ?? existing.review_count,
       last_reviewed_at: updated_card.last_reviewed_at ?? existing.last_reviewed_at,
     }));
-    advance();
-  }, [advance, update_card]);
+    mark_reviewed(card_id);
+  }, [mark_reviewed, reviewed_ids, update_card]);
 
   const update_familiarity = useCallback(async (card_id: string, familiarity: Familiarity) => {
     const api = get_renderer_api();
@@ -52,6 +56,7 @@ function useReviewCycle() {
     queue,
     active_index,
     active_card,
+    reviewed_ids,
     start_round,
     reset_queue,
     submit_review,

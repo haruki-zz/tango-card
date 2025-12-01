@@ -25,15 +25,17 @@ describe('review_queue_store', () => {
     const state = review_queue_store.getState();
     expect(state.queue).toHaveLength(2);
     expect(state.active_index).toBe(0);
+    expect(state.reviewed_ids).toHaveLength(0);
   });
 
-  it('removes the active card when advancing', () => {
+  it('moves forward and backward without wrapping', () => {
     review_queue_store.getState().set_queue([create_candidate('1'), create_candidate('2')]);
-    review_queue_store.getState().advance();
-    const state = review_queue_store.getState();
-    expect(state.queue).toHaveLength(1);
-    expect(state.queue[0].id).toBe('2');
-    expect(state.active_index).toBe(0);
+    review_queue_store.getState().move('previous');
+    expect(review_queue_store.getState().active_index).toBe(0);
+    review_queue_store.getState().move('next');
+    expect(review_queue_store.getState().active_index).toBe(1);
+    review_queue_store.getState().move('next');
+    expect(review_queue_store.getState().active_index).toBe(1);
   });
 
   it('updates a card in place when instructed', () => {
@@ -44,5 +46,12 @@ describe('review_queue_store', () => {
     }));
     const state = review_queue_store.getState();
     expect(state.queue[0].review_count).toBe(1);
+  });
+
+  it('marks cards as reviewed without duplicates', () => {
+    review_queue_store.getState().set_queue([create_candidate('1')]);
+    review_queue_store.getState().mark_reviewed('1');
+    review_queue_store.getState().mark_reviewed('1');
+    expect(review_queue_store.getState().reviewed_ids).toEqual(['1']);
   });
 });

@@ -8,8 +8,17 @@ interface ReviewScreenProps {
 }
 
 export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreenProps) {
-  const { queue, active_card, start_round, submit_review, reset_queue, move_previous, update_familiarity } =
-    use_review_cycle();
+  const {
+    queue,
+    active_card,
+    active_index,
+    start_round,
+    submit_review,
+    reset_queue,
+    move_previous,
+    move_next,
+    update_familiarity,
+  } = use_review_cycle();
   const [round_status, set_round_status] = useState<'idle' | 'loading' | 'error'>('idle');
   const [round_error, set_round_error] = useState<string | null>(null);
   const [has_started, set_has_started] = useState(false);
@@ -42,12 +51,20 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
     set_submission_error(null);
     try {
       await submit_review(render_card.id);
+      const is_last_card = active_index >= queue.length - 1;
       set_submission_state('idle');
+      if (is_last_card) {
+        set_has_started(false);
+        reset_queue();
+        on_exit();
+        return;
+      }
+      move_next();
     } catch (error) {
       set_submission_state('error');
       set_submission_error((error as Error).message);
     }
-  }, [render_card, submission_state, submit_review]);
+  }, [active_index, move_next, on_exit, queue.length, render_card, reset_queue, submission_state, submit_review]);
 
   const handle_toggle_familiarity = useCallback(async () => {
     if (!render_card || familiarity_state === 'saving') {
@@ -136,7 +153,7 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
             }}
           />
           <div className="mt-3 border-t border-[#1f2433] pt-2 font-mono text-xs text-[#94a3b8]">
-            [← prev] [→ mark done] · 剩余 {queue.length}
+            [← prev] [→ next/done] · {queue.length === 0 ? 0 : active_index + 1}/{queue.length}
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.3em]">
             <button
