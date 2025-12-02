@@ -141,7 +141,7 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
   return (
     <section className="mx-auto w-full max-w-4xl py-0 text-[#e2e8f0]">
       {round_in_progress && render_card ? (
-        <div className="w-full border border-[#1f2433] bg-[#05070d] p-4">
+        <div className="w-full rounded-sm border border-[#1f2433] bg-[#05070d] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
           <SvgCanvas
             svg_source={render_card.svg_source}
             on_swipe={(direction) => {
@@ -155,7 +155,7 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
           <div className="mt-3 border-t border-[#1f2433] pt-2 font-mono text-xs text-[#94a3b8]">
             [← prev] [→ next/done] · {queue.length === 0 ? 0 : active_index + 1}/{queue.length}
           </div>
-          <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.3em]">
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.25em]">
             <button
               type="button"
               onClick={() => {

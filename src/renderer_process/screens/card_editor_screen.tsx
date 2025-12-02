@@ -91,10 +91,10 @@ export function CardEditorScreen() {
   const is_save_disabled = save_status === 'saving' || !fields_populated;
 
   const field_class =
-    'border border-[#32384b] bg-[#05070d] px-3 py-2 text-sm text-[#e2e8f0] placeholder:text-[#6b7280] focus:border-[#22d3ee] focus:outline-none focus:ring-1 focus:ring-[#22d3ee]';
+    'border border-[#2c3242] bg-[#05070d] px-3 py-2 text-sm text-[#e2e8f0] placeholder:text-[#6b7280] focus:border-[#22d3ee] focus:outline-none focus:ring-1 focus:ring-[#22d3ee] rounded-[3px]';
   return (
     <section className="mx-auto min-h-[calc(100vh-4rem)] w-full max-w-4xl py-2 text-[#e2e8f0]">
-      <article className="border border-[#1f2433] bg-[#090c14] px-5 py-6">
+      <article className="rounded-sm border border-[#1f2433] bg-[#0a0d17] px-5 py-6 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
         <header className="mb-6 border-b border-[#1f2433] pb-4">
           <p className="text-xs uppercase tracking-[0.4em] text-[#94a3b8]">editor</p>
           <div className="mt-2 flex flex-col gap-1 text-sm text-[#a5b4fc] lg:flex-row lg:items-end lg:justify-between">
