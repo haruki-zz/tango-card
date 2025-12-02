@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { review_queue_store } from '../state/review_queue_store';
 import { get_renderer_api } from '../utils/renderer_api';
 import type { Familiarity } from '../../domain/card/card_entity';
+import { card_store } from '../state/card_store';
 
 function useReviewCycle() {
   const queue = review_queue_store((state) => state.queue);
@@ -31,6 +32,7 @@ function useReviewCycle() {
       last_reviewed_at: updated_card.last_reviewed_at ?? existing.last_reviewed_at,
     }));
     mark_reviewed(card_id);
+    card_store.getState().increment_reviewed(new Date().toISOString().slice(0, 10));
   }, [mark_reviewed, reviewed_ids, update_card]);
 
   const update_familiarity = useCallback(async (card_id: string, familiarity: Familiarity) => {

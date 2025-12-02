@@ -12,6 +12,7 @@ tango-card 是一款基于 TypeScript、React 与 Electron 的桌面应用，帮
 - **统一的 SVG 模板**：`src/shared/templates/card_svg_template.ts` 将四项输入渲染为固定画布，保证复习界面始终使用一致的尺寸与排版。
 - **复习策略**：`src/domain/review` 中的策略将所有卡片均等看待，随机抽取一小批进行复习。
 - **复习交互**：复习界面支持点击按钮、键盘快捷键（1/2/3 与方向键）以及滑动手势，方便在桌面设备或触控板上快速录入；复习时可以为单词添加/移除“不太熟悉”标签，突出薄弱词汇。
+- **活跃度热力图**：主页底部提供 GitHub 风格的 Heat Map，可切换 30/60/84 天窗口，实时统计新增/复习的每日次数，填充空白区域避免大面积留黑。
 - **本地持久化**：Electron 主进程通过文件存储的仓库 (`CardRepository` / `ReviewSessionRepository`) 同步数据，渲染层使用 IPC 调用 API。
 
 ## 界面结构

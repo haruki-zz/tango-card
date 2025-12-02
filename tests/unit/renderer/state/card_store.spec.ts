@@ -11,6 +11,7 @@ describe('card_store', () => {
     const state = card_store.getState();
     expect(state.is_loading).toBe(true);
     expect(state.error_message).toBeUndefined();
+    expect(Array.isArray(state.daily_activity)).toBe(true);
   });
 
   it('stores cards and resets loading/error flags', () => {
@@ -19,5 +20,16 @@ describe('card_store', () => {
     const state = card_store.getState();
     expect(state.is_loading).toBe(false);
     expect(state.error_message).toBeUndefined();
+    expect(state.daily_activity.length).toBeGreaterThan(0);
+  });
+
+  it('increments activity counts', () => {
+    card_store.getState().reset();
+    const today = '2024-02-01';
+    card_store.getState().increment_created(today);
+    card_store.getState().increment_reviewed(today);
+    const day = card_store.getState().daily_activity.find((point) => point.date === today);
+    expect(day?.created_count).toBe(1);
+    expect(day?.reviewed_count).toBe(1);
   });
 });

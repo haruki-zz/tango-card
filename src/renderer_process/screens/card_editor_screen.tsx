@@ -14,7 +14,7 @@ export function CardEditorScreen() {
   const [status_message, set_status_message] = useState('Not saved yet');
   const [active_card_id, set_active_card_id] = useState<string | undefined>(undefined);
   const api = useMemo(() => get_renderer_api(), []);
-  const { refresh_cards } = use_card_store();
+  const { refresh_cards, increment_created } = use_card_store();
 
   const mark_dirty = () => {
     if (save_status !== 'dirty') {
@@ -81,6 +81,7 @@ export function CardEditorScreen() {
       set_active_card_id(saved_card.id);
       set_save_status('success');
       set_status_message('Saved successfully.');
+      increment_created(new Date().toISOString().slice(0, 10));
       await refresh_cards();
     } catch (error) {
       set_save_status('error');
