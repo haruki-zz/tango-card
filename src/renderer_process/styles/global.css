@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+.theme-dark,
 :root {
   --bg: #05060b;
   --surface: #090c14;

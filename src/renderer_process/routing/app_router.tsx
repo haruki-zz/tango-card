@@ -86,6 +86,11 @@ export function AppRouter() {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('tango_theme', theme);
     }
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      root.classList.remove('theme-dark', 'theme-light');
+      root.classList.add(`theme-${theme}`);
+    }
   }, [theme]);
 
   const screen = useMemo(() => {
