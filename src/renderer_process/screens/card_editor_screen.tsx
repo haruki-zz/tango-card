@@ -92,21 +92,21 @@ export function CardEditorScreen() {
   const is_save_disabled = save_status === 'saving' || !fields_populated;
 
   const field_class =
-    'border border-[#2c3242] bg-[#05070d] px-3 py-2 text-sm text-[#e2e8f0] placeholder:text-[#6b7280] focus:border-[#22d3ee] focus:outline-none focus:ring-1 focus:ring-[#22d3ee] rounded-[3px]';
+    'border border-soft bg-surface px-3 py-2 text-sm text-primary placeholder:text-subtle focus:border-accent-cyan focus:outline-none focus:ring-1 focus:ring-[var(--accent-cyan)] rounded-[3px]';
   return (
-    <section className="mx-auto min-h-[calc(100vh-4rem)] w-full max-w-4xl py-2 text-[#e2e8f0]">
-      <article className="rounded-sm border border-[#1f2433] bg-[#0a0d17] px-5 py-6 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-        <header className="mb-6 border-b border-[#1f2433] pb-4">
-          <p className="text-xs uppercase tracking-[0.4em] text-[#94a3b8]">editor</p>
-          <div className="mt-2 flex flex-col gap-1 text-sm text-[#a5b4fc] lg:flex-row lg:items-end lg:justify-between">
-            <h2 className="text-2xl font-semibold text-[#f8fafc]">card.new()</h2>
+    <section className="mx-auto min-h-[calc(100vh-4rem)] w-full max-w-4xl py-2 text-primary">
+      <article className="rounded-sm border border-app bg-surface-strong px-5 py-6 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+        <header className="mb-6 border-b border-app pb-4">
+          <p className="text-xs uppercase tracking-[0.4em] text-muted">editor</p>
+          <div className="mt-2 flex flex-col gap-1 text-sm text-muted lg:flex-row lg:items-end lg:justify-between">
+            <h2 className="text-2xl font-semibold text-primary">card.new()</h2>
             <span>sequence: word → reading → scene → example</span>
           </div>
         </header>
         <div className="grid gap-4">
           <div>
-            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
-              <span className="font-mono text-sm text-[#f8fafc]">[1] Word</span>
+            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-muted">
+              <span className="font-mono text-sm text-primary">[1] Word</span>
               <input
                 value={word}
                 onChange={(event) => handle_word_change(event.target.value)}
@@ -115,9 +115,9 @@ export function CardEditorScreen() {
               />
             </label>
           </div>
-          <div className="pt-4 lg:border-l lg:border-dashed lg:border-[#1f2433] lg:pl-4">
-            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
-              <span className="font-mono text-sm text-[#f8fafc]">[2] Hiragana reading</span>
+          <div className="pt-4 lg:border-l lg:border-dashed lg:border-app lg:pl-4">
+            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-muted">
+              <span className="font-mono text-sm text-primary">[2] Hiragana reading</span>
               <input
                 value={reading}
                 onChange={(event) => handle_reading_change(event.target.value)}
@@ -126,9 +126,9 @@ export function CardEditorScreen() {
               />
             </label>
           </div>
-          <div className="border-t border-dashed border-[#1f2433] pt-4">
-            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
-              <span className="font-mono text-sm text-[#f8fafc]">[3] Context</span>
+          <div className="border-t border-dashed border-app pt-4">
+            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-muted">
+              <span className="font-mono text-sm text-primary">[3] Context</span>
               <textarea
                 rows={3}
                 value={context_text}
@@ -138,9 +138,9 @@ export function CardEditorScreen() {
               />
             </label>
           </div>
-          <div className="border-t border-dashed border-[#1f2433] pt-4">
-            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
-              <span className="font-mono text-sm text-[#f8fafc]">[4] Scene</span>
+          <div className="border-t border-dashed border-app pt-4">
+            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-muted">
+              <span className="font-mono text-sm text-primary">[4] Scene</span>
               <textarea
                 rows={3}
                 value={scene_text}
@@ -150,9 +150,9 @@ export function CardEditorScreen() {
               />
             </label>
           </div>
-          <div className="border-t border-dashed border-[#1f2433] pt-4 lg:col-span-2">
-            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-[#94a3b8]">
-              <span className="font-mono text-sm text-[#f8fafc]">[5] Example sentence</span>
+          <div className="border-t border-dashed border-app pt-4 lg:col-span-2">
+            <label className="flex flex-col gap-2 text-xs font-medium uppercase tracking-[0.3em] text-muted">
+              <span className="font-mono text-sm text-primary">[5] Example sentence</span>
               <textarea
                 rows={3}
                 value={example_sentence}
@@ -163,13 +163,13 @@ export function CardEditorScreen() {
             </label>
           </div>
         </div>
-        <div className="mt-6 border-t border-[#1f2433] pt-4">
+        <div className="mt-6 border-t border-app pt-4">
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
             <button
               type="button"
               onClick={handle_save}
               disabled={is_save_disabled}
-              className="border border-[#3f475d] bg-[#111827] px-6 py-2 text-xs font-semibold uppercase tracking-[0.35em] text-[#f8fafc] transition hover:bg-[#1f2937] disabled:opacity-40"
+              className="btn-ghost bg-card px-6 py-2 text-xs font-semibold uppercase tracking-[0.35em] disabled:opacity-40"
             >
               save card
             </button>
@@ -189,12 +189,12 @@ interface SaveStatusHintProps {
 function SaveStatusHint({ state, message }: SaveStatusHintProps) {
   const color_class =
     state === 'success'
-      ? 'text-green-400'
+      ? 'text-green-500'
       : state === 'error'
-        ? 'text-red-400'
+        ? 'text-red-500'
         : state === 'saving'
-          ? 'text-yellow-300'
-          : 'text-[#94a3b8]';
+          ? 'text-accent-amber'
+          : 'text-muted';
   return (
     <p className={`text-sm ${color_class}`} aria-live="polite">
       {message}

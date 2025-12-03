@@ -162,7 +162,7 @@ export function SvgCanvas({ svg_source, on_swipe, orientation = 'landscape' }: S
   return (
     <div
       ref={attach_ref}
-      className="svg-canvas flex w-full items-center justify-center touch-none border border-[#272b3a] bg-[#06090f] p-4 text-[#94a3b8]"
+      className="svg-canvas flex w-full items-center justify-center touch-none border border-app bg-surface p-4 text-muted"
       style={{ touchAction: 'none', minHeight: 160 }}
       onPointerDown={handle_pointer_down}
       onPointerCancel={handle_pointer_cancel}

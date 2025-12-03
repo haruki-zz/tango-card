@@ -16,7 +16,7 @@ export function HeatMap({ data, columns = 21, rows = 7 }: HeatMapProps) {
   );
 
   return (
-    <div className="flex h-full flex-col rounded-sm bg-[#0c101a] p-3">
+    <div className="flex h-full flex-col rounded-sm bg-heat p-3">
       {!has_activity && (
         <p className="mb-2 font-mono text-xs text-[#94a3b8]">{EMPTY_MESSAGE}</p>
       )}

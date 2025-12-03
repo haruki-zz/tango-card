@@ -6,9 +6,11 @@ import { use_element_size } from '../hooks/use_element_size';
 interface CoreHubScreenProps {
   on_create_card(): void;
   on_start_review(): void;
+  theme: 'dark' | 'light';
+  on_toggle_theme(): void;
 }
 
-export function CoreHubScreen({ on_create_card, on_start_review }: CoreHubScreenProps) {
+export function CoreHubScreen({ on_create_card, on_start_review, theme, on_toggle_theme }: CoreHubScreenProps) {
   const { cards, is_loading, daily_activity, set_activity_window, activity_window_days } = use_card_store();
   const { attach_ref, size } = use_element_size();
   const total_cards = cards.length;
@@ -26,70 +28,78 @@ export function CoreHubScreen({ on_create_card, on_start_review }: CoreHubScreen
   }, [activity_window_days, set_activity_window, target_window_days]);
 
   return (
-    <div className="min-h-screen w-full bg-[#05060b] px-4 py-6 text-[#e2e8f0]">
-      <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-6xl flex-col rounded-sm border border-[#1f2433] bg-gradient-to-b from-[#06080f] to-[#090c14] shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-        <header className="border-b border-[#1f2433] px-4 py-3 text-xs uppercase tracking-[0.3em] text-[#94a3b8]">
-          tango-card // two commands
+    <div className={`min-h-screen w-full app-bg px-4 py-6 text-primary theme-${theme}`}>
+      <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-6xl flex-col rounded-sm border border-app bg-surface app-frame">
+        <header className="flex items-center justify-between border-b border-app px-4 py-3 text-xs uppercase tracking-[0.3em] text-muted">
+          <span>tango-card // two commands</span>
+          <button
+            type="button"
+            onClick={on_toggle_theme}
+            className="btn-ghost px-3 py-1 text-[11px] uppercase tracking-[0.2em]"
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          </button>
         </header>
         <div className="flex flex-1 flex-col">
           <div className="grid shrink-0 gap-5 px-5 py-6 lg:grid-cols-[1.1fr_0.9fr]">
-            <section className="rounded-sm border border-[#1f2433] bg-[#0a0d17] p-4">
-              <p className="text-xs uppercase tracking-[0.3em] text-[#22d3ee]">status</p>
-              <div className="mt-4 grid gap-2 font-mono text-sm text-[#cbd5f5]">
-                <div className="flex items-center justify-between rounded-sm bg-[#0f1220] px-3 py-2">
-                  <span className="text-[#6b7280]">cards_saved</span>
-                  <span className="text-[#f8fafc]">
+            <section className="rounded-sm border border-app bg-surface-strong p-4">
+              <p className="text-xs uppercase tracking-[0.3em] text-accent-cyan">status</p>
+              <div className="mt-4 grid gap-2 font-mono text-sm text-primary">
+                <div className="flex items-center justify-between rounded-sm bg-muted-panel px-3 py-2">
+                  <span className="text-subtle">cards_saved</span>
+                  <span className="text-primary">
                     {is_loading ? '···' : total_cards.toString().padStart(3, '0')}
                   </span>
                 </div>
-                <div className="flex items-center justify-between rounded-sm bg-[#0f1220] px-3 py-2">
-                  <span className="text-[#6b7280]">pending_revs</span>
-                  <span className="text-[#f8fafc]">
+                <div className="flex items-center justify-between rounded-sm bg-muted-panel px-3 py-2">
+                  <span className="text-subtle">pending_revs</span>
+                  <span className="text-primary">
                     {is_loading ? '···' : pending_reviews.toString().padStart(3, '0')}
                   </span>
                 </div>
-                <div className="flex items-center justify-between rounded-sm bg-[#0f1220] px-3 py-2">
-                  <span className="text-[#6b7280]">state</span>
-                  <span className="text-[#38bdf8]">{total_cards === 0 ? 'idle' : 'ready'}</span>
+                <div className="flex items-center justify-between rounded-sm bg-muted-panel px-3 py-2">
+                  <span className="text-subtle">state</span>
+                  <span className="text-accent-cyan">{total_cards === 0 ? 'idle' : 'ready'}</span>
                 </div>
               </div>
             </section>
-            <section className="flex flex-col gap-3 rounded-sm border border-[#1f2433] bg-[#0b0f19] p-4 text-sm text-[#cbd5f5]">
-              <p className="text-xs uppercase tracking-[0.35em] text-[#94a3b8]">commands</p>
+            <section className="flex flex-col gap-3 rounded-sm border border-app bg-card p-4 text-sm text-primary">
+              <p className="text-xs uppercase tracking-[0.35em] text-muted">commands</p>
               <div className="flex flex-col gap-2">
                 <button
                   type="button"
                   onClick={on_create_card}
-                  className="flex w-full items-center justify-between rounded-[3px] border border-[#2f3647] bg-[#0f131f] px-4 py-3 text-left font-mono tracking-wide text-[#22d3ee] transition hover:border-[#38bdf8] hover:text-[#38bdf8]"
+                  className="flex w-full items-center justify-between rounded-[3px] border border-soft bg-card px-4 py-3 text-left font-mono tracking-wide text-accent-cyan transition hover:border-accent hover:text-accent-cyan"
                 >
                   <span>&gt; create_card --new</span>
-                  <span className="text-[10px] text-[#6b7280]">ENTER</span>
+                  <span className="text-[10px] text-subtle">ENTER</span>
                 </button>
                 <button
                   type="button"
                   onClick={on_start_review}
-                  className="flex w-full items-center justify-between rounded-[3px] border border-[#2f3647] bg-[#0f131f] px-4 py-3 text-left font-mono tracking-wide text-[#fcd34d] transition hover:border-[#f59e0b]"
+                  className="flex w-full items-center justify-between rounded-[3px] border border-soft bg-card px-4 py-3 text-left font-mono tracking-wide text-accent-amber transition hover:border-accent"
                 >
                   <span>&gt; review_session --start</span>
-                  <span className="text-[10px] text-[#6b7280]">SHIFT + ENTER</span>
+                  <span className="text-[10px] text-subtle">SHIFT + ENTER</span>
                 </button>
               </div>
-              <p className="text-[11px] text-[#6b7280]">
+              <p className="text-[11px] text-subtle">
                 stay minimal: focus on add / review and keep streak in motion.
               </p>
             </section>
           </div>
-          <section className="flex flex-1 min-h-0 flex-col gap-3 border-t border-[#13182a] bg-[#080b13] px-5 pb-6 pt-2">
+          <section className="flex flex-1 min-h-0 flex-col gap-3 border-t border-app bg-surface px-5 pb-6 pt-2">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-[#94a3b8]">activity heat map</p>
-                <p className="mt-1 text-[11px] text-[#6b7280]">auto-scales with window size</p>
+                <p className="text-xs uppercase tracking-[0.3em] text-muted">activity heat map</p>
+                <p className="mt-1 text-[11px] text-subtle">auto-scales with window size</p>
               </div>
-              <p className="text-[11px] font-mono text-[#38bdf8]">{target_window_days} days</p>
+              <p className="text-[11px] font-mono text-accent-cyan">{target_window_days} days</p>
             </div>
             <div
               ref={attach_ref}
-              className="flex-1 min-h-[420px] rounded-sm border border-[#1f2433] bg-[#0b101a] p-3"
+              className="flex-1 min-h-[420px] rounded-sm border border-app bg-heat p-3"
             >
               <HeatMap data={daily_activity} columns={columns} rows={7} />
             </div>

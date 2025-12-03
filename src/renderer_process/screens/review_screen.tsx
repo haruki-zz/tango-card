@@ -139,9 +139,9 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
   }, [render_card?.id]);
 
   return (
-    <section className="mx-auto w-full max-w-4xl py-0 text-[#e2e8f0]">
+    <section className="mx-auto w-full max-w-4xl py-0 text-primary">
       {round_in_progress && render_card ? (
-        <div className="w-full rounded-sm border border-[#1f2433] bg-[#05070d] p-4 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+        <div className="w-full rounded-sm border border-app bg-surface p-4 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
           <SvgCanvas
             svg_source={render_card.svg_source}
             on_swipe={(direction) => {
@@ -152,16 +152,16 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
               }
             }}
           />
-          <div className="mt-3 border-t border-[#1f2433] pt-2 font-mono text-xs text-[#94a3b8]">
+          <div className="mt-3 border-t border-app pt-2 font-mono text-xs text-muted">
             [← prev] [→ next/done] · {queue.length === 0 ? 0 : active_index + 1}/{queue.length}
           </div>
-          <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.25em]">
+          <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-muted">
             <button
               type="button"
               onClick={() => {
                 move_previous();
               }}
-              className="border border-[#394155] bg-[#0f131f] px-3 py-1 text-[#94a3b8]"
+              className="btn-ghost px-3 py-1 text-muted"
             >
               [←] prev
             </button>
@@ -170,7 +170,7 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
               onClick={() => {
                 void handle_start_round();
               }}
-              className="border border-[#394155] bg-[#0f131f] px-3 py-1 text-[#22d3ee]"
+              className="btn-ghost px-3 py-1 text-accent-cyan"
             >
               [R] reset
             </button>
@@ -179,7 +179,7 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
               onClick={() => {
                 void handle_mark_reviewed();
               }}
-              className="border border-[#394155] bg-[#0f131f] px-3 py-1 text-[#f8fafc]"
+              className="btn-ghost px-3 py-1 text-primary"
             >
               [→] done
             </button>
@@ -191,37 +191,37 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
               disabled={familiarity_state === 'saving'}
               className={`border px-3 py-1 ${
                 render_card.familiarity === 'not_familiar'
-                  ? 'border-[#ea580c] bg-[#1c0f08] text-[#fb923c]'
-                  : 'border-[#394155] bg-[#0f131f] text-[#fcd34d]'
+                  ? 'border-accent bg-card text-accent-amber'
+                  : 'btn-ghost text-accent-amber'
               } ${familiarity_state === 'saving' ? 'opacity-60' : ''}`}
             >
               {render_card.familiarity === 'not_familiar' ? 'clear not familiar' : 'mark not familiar'}
             </button>
           </div>
-          <div className="mt-2 text-[11px] font-mono uppercase tracking-[0.25em] text-[#f97316]">
+          <div className="mt-2 text-[11px] font-mono uppercase tracking-[0.25em] text-accent-amber">
             familiarity: {render_card.familiarity === 'not_familiar' ? 'not familiar' : 'normal'}
           </div>
           {submission_state === 'saving' ? (
-            <p className="mt-2 text-xs text-[#fcd34d]">Recording progress…</p>
+            <p className="mt-2 text-xs text-accent-amber">Recording progress…</p>
           ) : null}
-          {submission_error ? <p className="mt-2 text-xs text-red-400">Error: {submission_error}</p> : null}
+          {submission_error ? <p className="mt-2 text-xs text-red-500">Error: {submission_error}</p> : null}
           {familiarity_state === 'saving' ? (
-            <p className="mt-1 text-[11px] text-[#fb923c]">Updating familiarity…</p>
+            <p className="mt-1 text-[11px] text-accent-amber">Updating familiarity…</p>
           ) : null}
           {familiarity_error ? (
-            <p className="mt-1 text-xs text-red-400">Familiarity update failed: {familiarity_error}</p>
+            <p className="mt-1 text-xs text-red-500">Familiarity update failed: {familiarity_error}</p>
           ) : null}
-          {round_error ? <p className="mt-2 text-xs text-red-400">Failed to start: {round_error}</p> : null}
+          {round_error ? <p className="mt-2 text-xs text-red-500">Failed to start: {round_error}</p> : null}
         </div>
       ) : (
-        <article className="border border-dashed border-[#2f3647] bg-[#05070d] px-6 py-5 text-xs text-[#94a3b8]">
+        <article className="border border-dashed border-soft bg-surface px-6 py-5 text-xs text-muted">
           <p>No cards queued. Return to the hub to capture more words.</p>
           <button
             type="button"
             onClick={() => {
               void handle_start_round();
             }}
-            className="mt-3 border border-[#394155] bg-[#0f131f] px-3 py-1 text-[10px] uppercase tracking-[0.35em] text-[#22d3ee]"
+            className="mt-3 btn-ghost px-3 py-1 text-[10px] uppercase tracking-[0.35em] text-accent-cyan"
           >
             [R] reset queue
           </button>
