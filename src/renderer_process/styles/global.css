@@ -23,6 +23,11 @@
   --accent-amber: #f59e0b;
   --accent-amber-soft: #fcd34d;
   --shadow-frame: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --card-svg-bg: #0f172a;
+  --card-svg-word: #f8fafc;
+  --card-svg-reading: #94a3b8;
+  --card-svg-title: #38bdf8;
+  --card-svg-body: #e2e8f0;
 
   font-family: 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Menlo, monospace;
   background-color: var(--bg);
@@ -52,6 +57,11 @@
   --accent-amber: #d97706;
   --accent-amber-soft: #f4b41a;
   --shadow-frame: 0 10px 30px rgba(15, 23, 42, 0.15);
+  --card-svg-bg: #ffffff;
+  --card-svg-word: #0f172a;
+  --card-svg-reading: #334155;
+  --card-svg-title: #0ea5e9;
+  --card-svg-body: #0f172a;
 }
 
 .app-bg {
