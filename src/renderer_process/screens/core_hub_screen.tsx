@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { use_card_store } from '../hooks/use_card_store';
 import { HeatMap } from '../components/heat_map';
 import { use_element_size } from '../hooks/use_element_size';
+import { use_window_size } from '../hooks/use_window_size';
 
 interface CoreHubScreenProps {
   on_create_card(): void;
@@ -13,12 +14,14 @@ interface CoreHubScreenProps {
 export function CoreHubScreen({ on_create_card, on_start_review, theme, on_toggle_theme }: CoreHubScreenProps) {
   const { cards, is_loading, daily_activity, set_activity_window, activity_window_days } = use_card_store();
   const { attach_ref, size } = use_element_size();
+  const { width: viewport_width } = use_window_size();
   const total_cards = cards.length;
   const pending_reviews = cards.filter((card) => card.review_count === 0).length;
-  const columns = useMemo(
-    () => Math.max(10, Math.floor(Math.max(size.width - 24, 0) / 12)),
-    [size.width],
-  );
+  const columns = useMemo(() => {
+    const cell_block = 14; // 10px cell + 4px gap
+    const available = Math.max(size.width, viewport_width);
+    return Math.max(10, Math.floor(available / cell_block));
+  }, [size.width, viewport_width]);
   const target_window_days = useMemo(() => Math.min(365, columns * 7), [columns]);
 
   useEffect(() => {
@@ -52,7 +55,7 @@ export function CoreHubScreen({ on_create_card, on_start_review, theme, on_toggl
 
   return (
     <div className={`min-h-screen w-full app-bg px-4 py-6 text-primary theme-${theme}`}>
-      <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-6xl flex-col rounded-sm border border-app bg-surface app-frame">
+      <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full flex-col rounded-sm border border-app bg-surface app-frame">
         <header className="flex items-center justify-between border-b border-app px-4 py-3 text-xs uppercase tracking-[0.3em] text-muted">
           <span>tango-card // two commands</span>
           <button
@@ -122,7 +125,7 @@ export function CoreHubScreen({ on_create_card, on_start_review, theme, on_toggl
             </div>
             <div
               ref={attach_ref}
-              className="flex-1 min-h-[420px] rounded-sm border border-app bg-heat p-3"
+              className="flex-1 min-h-[420px] w-full rounded-sm border border-app bg-heat p-3"
             >
               <HeatMap data={daily_activity} columns={columns} rows={7} />
             </div>
