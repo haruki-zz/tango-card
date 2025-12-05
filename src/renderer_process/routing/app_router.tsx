@@ -125,7 +125,7 @@ export function AppRouter() {
       default:
         return null;
     }
-  }, [active_route, go_home, launch_review, review_auto_start]);
+  }, [active_route, go_home, launch_review, review_auto_start, theme, toggle_theme]);
 
   useEffect(() => {
     if (active_route === 'hub') {
