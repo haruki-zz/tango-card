@@ -27,6 +27,29 @@ export function CoreHubScreen({ on_create_card, on_start_review, theme, on_toggl
     }
   }, [activity_window_days, set_activity_window, target_window_days]);
 
+  useEffect(() => {
+    const handle_keydown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) {
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      if (event.key === 'Enter' && event.shiftKey) {
+        event.preventDefault();
+        on_start_review();
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        on_create_card();
+      }
+    };
+    window.addEventListener('keydown', handle_keydown);
+    return () => {
+      window.removeEventListener('keydown', handle_keydown);
+    };
+  }, [on_create_card, on_start_review]);
+
   return (
     <div className={`min-h-screen w-full app-bg px-4 py-6 text-primary theme-${theme}`}>
       <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-6xl flex-col rounded-sm border border-app bg-surface app-frame">
