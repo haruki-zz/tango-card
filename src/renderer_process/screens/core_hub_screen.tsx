@@ -127,7 +127,7 @@ export function CoreHubScreen({ on_create_card, on_start_review, theme, on_toggl
               ref={attach_ref}
               className="flex-1 min-h-[420px] w-full rounded-sm border border-app bg-heat p-3"
             >
-              <HeatMap data={daily_activity} columns={columns} rows={7} />
+              <HeatMap data={daily_activity} columns={columns} rows={7} theme={theme} />
             </div>
           </section>
         </div>

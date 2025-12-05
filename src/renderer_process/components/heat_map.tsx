@@ -4,28 +4,31 @@ interface HeatMapProps {
   readonly data: DailyActivityPoint[];
   readonly columns?: number;
   readonly rows?: number;
+  readonly theme?: 'dark' | 'light';
 }
 
-const COLOR_SCALE = ['#0f172a', '#1b2642', '#233557', '#2563eb', '#38bdf8', '#a5f3fc'];
+const DARK_COLOR_SCALE = ['#0f172a', '#1b2642', '#233557', '#2563eb', '#38bdf8', '#a5f3fc'];
+const LIGHT_COLOR_SCALE = ['#e2e8f0', '#cbd5e1', '#94a3b8', '#93c5fd', '#60a5fa', '#2563eb'];
 const EMPTY_MESSAGE = 'No activity yet. Create or review cards to see your streak.';
 
-export function HeatMap({ data, columns = 21, rows = 7 }: HeatMapProps) {
+export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMapProps) {
   const weekly_blocks = build_blocks(data, columns, rows);
   const has_activity = data.some(
     (point) => point.created_count > 0 || point.reviewed_count > 0,
   );
+  const color_scale = theme === 'light' ? LIGHT_COLOR_SCALE : DARK_COLOR_SCALE;
 
   return (
     <div className="flex h-full flex-col rounded-sm bg-heat p-3">
       {!has_activity && (
-        <p className="mb-2 font-mono text-xs text-[#94a3b8]">{EMPTY_MESSAGE}</p>
+        <p className="mb-2 font-mono text-xs text-muted">{EMPTY_MESSAGE}</p>
       )}
       <div className="flex-1 overflow-auto">
         <div className="flex gap-[7px]">
           {weekly_blocks.map((column, column_index) => (
             <div key={`col-${column_index}`} className="flex flex-col gap-[7px]">
               {column.map((point, row_index) => (
-                <Cell key={`${column_index}-${row_index}`} point={point} />
+                <Cell key={`${column_index}-${row_index}`} point={point} color_scale={color_scale} />
               ))}
             </div>
           ))}
@@ -37,30 +40,31 @@ export function HeatMap({ data, columns = 21, rows = 7 }: HeatMapProps) {
 
 interface CellProps {
   readonly point: DailyActivityPoint | null;
+  readonly color_scale: string[];
 }
 
-function Cell({ point }: CellProps) {
+function Cell({ point, color_scale }: CellProps) {
   const summary = point ? point.created_count + point.reviewed_count : 0;
-  const color = pick_color(summary);
+  const color = pick_color(summary, color_scale);
 
   return (
     <div
       data-testid="heat-map-cell"
-      className="h-[20px] w-[20px] shrink-0 rounded-[3px] border border-[#1f2637] shadow-[0_0_0_1px_rgba(255,255,255,0.04)]"
-      style={{ backgroundColor: color }}
+      className="h-[20px] w-[20px] shrink-0 rounded-[3px] border border-app shadow-[0_0_0_1px_rgba(255,255,255,0.04)]"
+      style={{ backgroundColor: color, borderColor: 'var(--border)' }}
       title={point ? `${point.date}: +${point.created_count} / ↺${point.reviewed_count}` : 'No data'}
     />
   );
 }
 
-function pick_color(value: number): string {
+function pick_color(value: number, scale: string[]): string {
   if (value <= 0) {
-    return COLOR_SCALE[0];
+    return scale[0];
   }
-  if (value >= COLOR_SCALE.length) {
-    return COLOR_SCALE[COLOR_SCALE.length - 1];
+  if (value >= scale.length) {
+    return scale[scale.length - 1];
   }
-  return COLOR_SCALE[value];
+  return scale[value];
 }
 
 function build_blocks(
