@@ -21,9 +21,9 @@ export function HeatMap({ data, columns = 21, rows = 7 }: HeatMapProps) {
         <p className="mb-2 font-mono text-xs text-[#94a3b8]">{EMPTY_MESSAGE}</p>
       )}
       <div className="flex-1 overflow-auto">
-        <div className="flex gap-1">
+        <div className="flex gap-[7px]">
           {weekly_blocks.map((column, column_index) => (
-            <div key={`col-${column_index}`} className="flex flex-col gap-1">
+            <div key={`col-${column_index}`} className="flex flex-col gap-[7px]">
               {column.map((point, row_index) => (
                 <Cell key={`${column_index}-${row_index}`} point={point} />
               ))}
@@ -46,7 +46,7 @@ function Cell({ point }: CellProps) {
   return (
     <div
       data-testid="heat-map-cell"
-      className="h-2.5 w-2.5 shrink-0 rounded-[2px] border border-[#1f2637] shadow-[0_0_0_1px_rgba(255,255,255,0.04)]"
+      className="h-[20px] w-[20px] shrink-0 rounded-[3px] border border-[#1f2637] shadow-[0_0_0_1px_rgba(255,255,255,0.04)]"
       style={{ backgroundColor: color }}
       title={point ? `${point.date}: +${point.created_count} / ↺${point.reviewed_count}` : 'No data'}
     />

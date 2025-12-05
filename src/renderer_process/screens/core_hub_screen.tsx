@@ -18,7 +18,7 @@ export function CoreHubScreen({ on_create_card, on_start_review, theme, on_toggl
   const total_cards = cards.length;
   const pending_reviews = cards.filter((card) => card.review_count === 0).length;
   const columns = useMemo(() => {
-    const cell_block = 14; // 10px cell + 4px gap
+    const cell_block = 27; // 20px cell + 7px gap
     const available = Math.max(size.width, viewport_width);
     return Math.max(10, Math.floor(available / cell_block));
   }, [size.width, viewport_width]);
