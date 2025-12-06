@@ -38,22 +38,20 @@ export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMa
             ))}
           </div>
           <div className="flex gap-[7px]">
-            <div className="flex shrink-0 flex-col gap-[7px] pr-[7px]">
-              {['Mon', 'Wed', 'Fri'].map((day) => (
-                <span
-                  key={day}
-                  className="text-[10px] font-mono uppercase tracking-[0.1em] text-subtle"
-                  style={{ height: 20 }}
-                >
-                  {day}
-                </span>
-              ))}
-            </div>
             <div className="flex gap-[7px]">
               {weekly_blocks.map((column, column_index) => (
                 <div key={`col-${column_index}`} className="flex flex-col gap-[7px]">
                   {column.map((point, row_index) => (
-                    <Cell key={`${column_index}-${row_index}`} point={point} color_scale={color_scale} />
+                    <div className="flex items-center gap-[7px]" key={`${column_index}-${row_index}`}>
+                      {column_index === 0 && row_index % 2 === 1 && row_index <= 5 ? (
+                        <span className="w-8 text-[10px] font-mono uppercase tracking-[0.1em] text-subtle">
+                          {['Tue', 'Thu', 'Sat'][Math.floor(row_index / 2)]}
+                        </span>
+                      ) : (
+                        <span className="w-8" />
+                      )}
+                      <Cell point={point} color_scale={color_scale} />
+                    </div>
                   ))}
                 </div>
               ))}
