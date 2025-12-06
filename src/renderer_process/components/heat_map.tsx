@@ -17,6 +17,7 @@ export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMa
     (point) => point.created_count > 0 || point.reviewed_count > 0,
   );
   const color_scale = theme === 'light' ? LIGHT_COLOR_SCALE : DARK_COLOR_SCALE;
+  const month_labels = build_month_labels(data, weekly_blocks.length, rows);
 
   return (
     <div className="flex h-full flex-col rounded-sm bg-heat p-4">
@@ -24,14 +25,40 @@ export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMa
         <p className="mb-2 font-mono text-xs text-muted">{EMPTY_MESSAGE}</p>
       )}
       <div className="flex-1 overflow-auto">
-        <div className="flex gap-[7px] p-3">
-          {weekly_blocks.map((column, column_index) => (
-            <div key={`col-${column_index}`} className="flex flex-col gap-[7px]">
-              {column.map((point, row_index) => (
-                <Cell key={`${column_index}-${row_index}`} point={point} color_scale={color_scale} />
+        <div className="flex flex-col gap-2 p-3">
+          <div className="flex items-center gap-[7px] pl-[32px]">
+            {month_labels.map((label) => (
+              <span
+                key={label.index}
+                className="text-[10px] font-mono uppercase tracking-[0.1em] text-subtle"
+                style={{ minWidth: label.span * 27 }}
+              >
+                {label.name}
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-[7px]">
+            <div className="flex shrink-0 flex-col gap-[7px] pr-[7px]">
+              {['Mon', 'Wed', 'Fri'].map((day) => (
+                <span
+                  key={day}
+                  className="text-[10px] font-mono uppercase tracking-[0.1em] text-subtle"
+                  style={{ height: 20 }}
+                >
+                  {day}
+                </span>
               ))}
             </div>
-          ))}
+            <div className="flex gap-[7px]">
+              {weekly_blocks.map((column, column_index) => (
+                <div key={`col-${column_index}`} className="flex flex-col gap-[7px]">
+                  {column.map((point, row_index) => (
+                    <Cell key={`${column_index}-${row_index}`} point={point} color_scale={color_scale} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -97,4 +124,34 @@ function pad_to_multiple(data: DailyActivityPoint[], size: number): Array<DailyA
     padded[padded.length - slice.length + i] = slice[i];
   }
   return padded;
+}
+
+function build_month_labels(
+  data: DailyActivityPoint[],
+  column_count: number,
+  rows: number,
+): Array<{ index: number; name: string; span: number }> {
+  if (data.length === 0) {
+    return [];
+  }
+  const by_week: Array<DailyActivityPoint | null>[] = build_blocks(data, column_count, rows);
+  const labels: Array<{ index: number; name: string; span: number }> = [];
+  let current_label: { index: number; name: string; span: number } | null = null;
+
+  for (let col = 0; col < by_week.length; col += 1) {
+    const first_point = by_week[col].find((point) => point !== null);
+    const label = first_point ? first_point.date.slice(5, 7) : '';
+    if (!current_label || current_label.name !== label) {
+      if (current_label) {
+        labels.push(current_label);
+      }
+      current_label = { index: col, name: label, span: 1 };
+    } else {
+      current_label.span += 1;
+    }
+  }
+  if (current_label) {
+    labels.push(current_label);
+  }
+  return labels;
 }
