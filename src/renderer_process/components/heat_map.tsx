@@ -19,12 +19,12 @@ export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMa
   const color_scale = theme === 'light' ? LIGHT_COLOR_SCALE : DARK_COLOR_SCALE;
 
   return (
-    <div className="flex h-full flex-col rounded-sm bg-heat p-3">
+    <div className="flex h-full flex-col rounded-sm bg-heat p-4">
       {!has_activity && (
         <p className="mb-2 font-mono text-xs text-muted">{EMPTY_MESSAGE}</p>
       )}
       <div className="flex-1 overflow-auto">
-        <div className="flex gap-[7px]">
+        <div className="flex gap-[7px] p-3">
           {weekly_blocks.map((column, column_index) => (
             <div key={`col-${column_index}`} className="flex flex-col gap-[7px]">
               {column.map((point, row_index) => (
