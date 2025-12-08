@@ -12,12 +12,12 @@ const LIGHT_COLOR_SCALE = ['#ffffff', '#e2f5df', '#c7e8c0', '#9edf8f', '#63c861'
 const EMPTY_MESSAGE = 'No activity yet. Create or review cards to see your streak.';
 
 export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMapProps) {
-  const weekly_blocks = build_blocks(data, columns, rows);
+  const weekly_blocks = trim_empty_columns(build_blocks(data, columns, rows));
   const has_activity = data.some(
     (point) => point.created_count > 0 || point.reviewed_count > 0,
   );
   const color_scale = theme === 'light' ? LIGHT_COLOR_SCALE : DARK_COLOR_SCALE;
-  const month_labels = build_month_labels(data, weekly_blocks.length, rows);
+  const month_labels = build_month_labels(weekly_blocks);
 
   return (
     <div className="flex h-full flex-col rounded-sm bg-heat p-4">
@@ -113,20 +113,15 @@ function pad_to_multiple(data: DailyActivityPoint[], size: number): Array<DailyA
   return padded;
 }
 
-function build_month_labels(
-  data: DailyActivityPoint[],
-  column_count: number,
-  rows: number,
-): Array<{ index: number; name: string; span: number }> {
-  if (data.length === 0) {
+function build_month_labels(blocks: Array<Array<DailyActivityPoint | null>>): Array<{ index: number; name: string; span: number }> {
+  if (blocks.length === 0) {
     return [];
   }
-  const by_week: Array<DailyActivityPoint | null>[] = build_blocks(data, column_count, rows);
   const labels: Array<{ index: number; name: string; span: number }> = [];
   let current_label: { index: number; name: string; span: number } | null = null;
 
-  for (let col = 0; col < by_week.length; col += 1) {
-    const first_point = by_week[col].find((point) => point !== null);
+  for (let col = 0; col < blocks.length; col += 1) {
+    const first_point = blocks[col].find((point) => point !== null);
     const label = first_point ? first_point.date.slice(5, 7) : '';
     if (!current_label || current_label.name !== label) {
       if (current_label) {
@@ -141,4 +136,12 @@ function build_month_labels(
     labels.push(current_label);
   }
   return labels;
+}
+
+function trim_empty_columns(blocks: Array<Array<DailyActivityPoint | null>>): Array<Array<DailyActivityPoint | null>> {
+  const first_filled_index = blocks.findIndex((column) => column.some((point) => point !== null));
+  if (first_filled_index <= 0) {
+    return blocks;
+  }
+  return blocks.slice(first_filled_index);
 }
