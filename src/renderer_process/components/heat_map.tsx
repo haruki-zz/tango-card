@@ -26,7 +26,7 @@ export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMa
       )}
       <div className="flex-1 overflow-auto">
         <div className="flex flex-col gap-2 p-3">
-          <div className="flex items-center gap-[7px] pl-[32px]">
+          <div className="flex items-center gap-[7px] pl-[8px]">
             {month_labels.map((label) => (
               <span
                 key={label.index}
@@ -38,24 +38,13 @@ export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMa
             ))}
           </div>
           <div className="flex gap-[7px]">
-            <div className="flex gap-[7px]">
-              {weekly_blocks.map((column, column_index) => (
-                <div key={`col-${column_index}`} className="flex flex-col gap-[7px]">
-                  {column.map((point, row_index) => (
-                    <div className="flex items-center gap-[7px]" key={`${column_index}-${row_index}`}>
-                      {column_index === 0 && row_index % 2 === 1 && row_index <= 5 ? (
-                        <span className="w-8 text-[10px] font-mono uppercase tracking-[0.1em] text-subtle">
-                          {['Tue', 'Thu', 'Sat'][Math.floor(row_index / 2)]}
-                        </span>
-                      ) : (
-                        <span className="w-8" />
-                      )}
-                      <Cell point={point} color_scale={color_scale} />
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
+            {weekly_blocks.map((column, column_index) => (
+              <div key={`col-${column_index}`} className="flex flex-col gap-[7px]">
+                {column.map((point, row_index) => (
+                  <Cell key={`${column_index}-${row_index}`} point={point} color_scale={color_scale} />
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       </div>
