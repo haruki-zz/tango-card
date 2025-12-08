@@ -7,8 +7,8 @@ interface HeatMapProps {
   readonly theme?: 'dark' | 'light';
 }
 
-const DARK_COLOR_SCALE = ['#0f172a', '#1b2642', '#233557', '#2563eb', '#38bdf8', '#a5f3fc'];
-const LIGHT_COLOR_SCALE = ['#e2e8f0', '#cbd5e1', '#94a3b8', '#93c5fd', '#60a5fa', '#2563eb'];
+const DARK_COLOR_SCALE = ['#ffffff', '#e2f5df', '#c7e8c0', '#9edf8f', '#63c861', '#2f9e47'];
+const LIGHT_COLOR_SCALE = ['#ffffff', '#e2f5df', '#c7e8c0', '#9edf8f', '#63c861', '#2f9e47'];
 const EMPTY_MESSAGE = 'No activity yet. Create or review cards to see your streak.';
 
 export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMapProps) {

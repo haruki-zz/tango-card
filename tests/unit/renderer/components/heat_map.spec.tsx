@@ -30,7 +30,7 @@ describe('HeatMap component', () => {
 
     const last_cell = cells[cells.length - 1];
     expect(last_cell).toHaveAttribute('title', expect.stringContaining('2024-01-06'));
-    expect(last_cell).toHaveStyle({ backgroundColor: '#a5f3fc' });
+    expect(last_cell).toHaveStyle({ backgroundColor: '#2f9e47' });
   });
 
   it('keeps the grid visible when activity counts are zero', () => {
@@ -44,7 +44,6 @@ describe('HeatMap component', () => {
 
     const cells = screen.getAllByTestId('heat-map-cell');
     expect(cells).toHaveLength(3);
-    expect(cells[0]).toHaveStyle({ backgroundColor: '#0f172a' });
+    expect(cells[0]).toHaveStyle({ backgroundColor: '#ffffff' });
   });
 });
-
