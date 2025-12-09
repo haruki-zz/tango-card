@@ -54,7 +54,7 @@ export function CoreHubScreen({ on_create_card, on_start_review, theme, on_toggl
   }, [on_create_card, on_start_review]);
 
   return (
-    <div className={`min-h-screen w-full app-bg px-4 py-6 text-primary theme-${theme}`}>
+    <div className={`min-h-screen w-full app-bg px-6 py-6 text-primary theme-${theme}`}>
       <div className="mx-auto flex min-h-[calc(100vh-3rem)] w-full flex-col rounded-sm border border-app bg-surface app-frame">
         <header className="flex items-center justify-between border-b border-app px-4 py-3 text-xs uppercase tracking-[0.3em] text-muted">
           <span>tango-card // two commands</span>

@@ -19,7 +19,7 @@ interface ScreenContainerProps {
 function ScreenContainer({ title, on_back, children, content_padding, theme, on_toggle_theme }: ScreenContainerProps) {
   const padding_class = content_padding ?? 'px-4 py-6';
   return (
-    <div className={`min-h-screen app-bg px-4 py-6 text-primary theme-${theme}`}>
+    <div className={`min-h-screen app-bg px-6 py-6 text-primary theme-${theme}`}>
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-6xl flex-col border border-app bg-surface app-frame">
         <div className="flex items-center justify-between border-b border-app bg-surface px-4 py-3 text-xs tracking-[0.25em] uppercase text-muted">
           <span>tango-card · {title}</span>
