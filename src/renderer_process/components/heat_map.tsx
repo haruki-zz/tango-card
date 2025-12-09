@@ -12,7 +12,7 @@ const LIGHT_COLOR_SCALE = ['#ffffff', '#e2f5df', '#c7e8c0', '#9edf8f', '#63c861'
 const EMPTY_MESSAGE = 'No activity yet. Create or review cards to see your streak.';
 
 export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMapProps) {
-  const weekly_blocks = trim_empty_columns(build_blocks(data, columns, rows));
+  const weekly_blocks = insert_month_gaps(trim_empty_columns(build_blocks(data, columns, rows)));
   const has_activity = data.some(
     (point) => point.created_count > 0 || point.reviewed_count > 0,
   );
@@ -41,23 +41,18 @@ export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMa
               </span>
             ))}
           </div>
-          <div className="relative">
-            {month_labels.map((label) => (
-              <div
-                key={`line-${label.index}`}
-                className="absolute left-0 top-0 h-full border-l border-dashed border-soft opacity-50"
-                style={{ left: label.index * cell_block }}
-              />
-            ))}
-            <div className="flex gap-[7px]">
-              {weekly_blocks.map((column, column_index) => (
-                <div key={`col-${column_index}`} className="flex flex-col gap-[7px]">
-                  {column.map((point, row_index) => (
+          <div className="flex gap-[7px]">
+            {weekly_blocks.map((column, column_index) => (
+              <div key={`col-${column_index}`} className="flex flex-col gap-[7px]">
+                {column.map((point, row_index) =>
+                  point ? (
                     <Cell key={`${column_index}-${row_index}`} point={point} color_scale={color_scale} />
-                  ))}
-                </div>
-              ))}
-            </div>
+                  ) : (
+                    <span key={`${column_index}-${row_index}`} className="h-[20px] w-[20px] shrink-0" />
+                  ),
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -157,4 +152,24 @@ function trim_empty_columns(blocks: Array<Array<DailyActivityPoint | null>>): Ar
     return blocks;
   }
   return blocks.slice(first_filled_index);
+}
+
+function insert_month_gaps(blocks: Array<Array<DailyActivityPoint | null>>): Array<Array<DailyActivityPoint | null>> {
+  if (blocks.length === 0) {
+    return blocks;
+  }
+  const with_gaps: Array<Array<DailyActivityPoint | null>> = [];
+  let previous_month: string | null = null;
+
+  blocks.forEach((column) => {
+    const first_point = column.find((point) => point !== null);
+    const current_month = first_point ? first_point.date.slice(5, 7) : previous_month;
+    if (previous_month && current_month && current_month !== previous_month) {
+      with_gaps.push(Array.from({ length: column.length }, () => null));
+    }
+    with_gaps.push(column);
+    previous_month = current_month ?? previous_month;
+  });
+
+  return with_gaps;
 }
