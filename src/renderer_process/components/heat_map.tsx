@@ -18,6 +18,7 @@ export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMa
   );
   const color_scale = theme === 'light' ? LIGHT_COLOR_SCALE : DARK_COLOR_SCALE;
   const month_labels = build_month_labels(weekly_blocks);
+  const cell_block = 27;
 
   return (
     <div className="flex h-full flex-col rounded-sm bg-heat p-4">
@@ -25,26 +26,38 @@ export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMa
         <p className="mb-2 font-mono text-xs text-muted">{EMPTY_MESSAGE}</p>
       )}
       <div className="flex-1 overflow-auto">
-        <div className="flex flex-col gap-2 p-3">
-          <div className="flex items-center gap-[7px] pl-[8px]">
+        <div className="relative flex flex-col gap-2 p-3">
+          <div className="relative h-[18px]">
             {month_labels.map((label) => (
               <span
                 key={label.index}
-                className="text-[10px] font-mono uppercase tracking-[0.1em] text-subtle"
-                style={{ minWidth: label.span * 27 }}
+                className="absolute text-[10px] font-mono uppercase tracking-[0.1em] text-subtle"
+                style={{
+                  left: label.index * cell_block,
+                  minWidth: label.span * cell_block,
+                }}
               >
                 {label.name}
               </span>
             ))}
           </div>
-          <div className="flex gap-[7px]">
-            {weekly_blocks.map((column, column_index) => (
-              <div key={`col-${column_index}`} className="flex flex-col gap-[7px]">
-                {column.map((point, row_index) => (
-                  <Cell key={`${column_index}-${row_index}`} point={point} color_scale={color_scale} />
-                ))}
-              </div>
+          <div className="relative">
+            {month_labels.map((label) => (
+              <div
+                key={`line-${label.index}`}
+                className="absolute left-0 top-0 h-full border-l border-dashed border-soft opacity-50"
+                style={{ left: label.index * cell_block }}
+              />
             ))}
+            <div className="flex gap-[7px]">
+              {weekly_blocks.map((column, column_index) => (
+                <div key={`col-${column_index}`} className="flex flex-col gap-[7px]">
+                  {column.map((point, row_index) => (
+                    <Cell key={`${column_index}-${row_index}`} point={point} color_scale={color_scale} />
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
