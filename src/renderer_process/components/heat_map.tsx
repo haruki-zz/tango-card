@@ -12,7 +12,7 @@ const LIGHT_COLOR_SCALE = ['#ffffff', '#e2f5df', '#c7e8c0', '#9edf8f', '#63c861'
 const EMPTY_MESSAGE = 'No activity yet. Create or review cards to see your streak.';
 
 export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMapProps) {
-  const weekly_blocks = insert_month_gaps(trim_empty_columns(build_blocks(data, columns, rows)));
+  const weekly_blocks = insert_month_gap_columns(trim_empty_columns(build_blocks_with_month_boundaries(data, columns, rows)));
   const has_activity = data.some(
     (point) => point.created_count > 0 || point.reviewed_count > 0,
   );
@@ -111,6 +111,77 @@ function build_blocks(
   return blocks;
 }
 
+function insert_month_gap_columns(blocks: Array<Array<DailyActivityPoint | null>>): Array<Array<DailyActivityPoint | null>> {
+  if (blocks.length === 0) {
+    return blocks;
+  }
+  const result: Array<Array<DailyActivityPoint | null>> = [];
+  let previous_month: string | null = null;
+
+  blocks.forEach((column) => {
+    const first_point = column.find((point) => point !== null);
+    const current_month = first_point ? first_point.date.slice(5, 7) : previous_month;
+    if (previous_month && current_month && current_month !== previous_month) {
+      result.push(Array.from({ length: column.length }, () => null));
+    }
+    result.push(column);
+    previous_month = current_month ?? previous_month;
+  });
+
+  return result;
+}
+
+function build_blocks_with_month_boundaries(
+  data: DailyActivityPoint[],
+  columns: number,
+  rows: number,
+): Array<Array<DailyActivityPoint | null>> {
+  const normalized_columns = Math.max(1, columns);
+  const normalized_rows = Math.max(1, rows);
+  const padded = pad_to_multiple(data, normalized_columns * normalized_rows);
+
+  const blocks: Array<Array<DailyActivityPoint | null>> = [];
+  let current_column: Array<DailyActivityPoint | null> | null = null;
+  let row_index = 0;
+  let previous_month: string | null = null;
+
+  const commit_column = () => {
+    if (current_column) {
+      blocks.push(current_column);
+    }
+  };
+
+  padded.forEach((point) => {
+    const month = point ? point.date.slice(0, 7) : previous_month;
+
+    if (previous_month && month && month !== previous_month) {
+      commit_column();
+      current_column = Array.from({ length: normalized_rows }, () => null);
+    }
+
+    if (!current_column) {
+      current_column = Array.from({ length: normalized_rows }, () => null);
+    }
+
+    current_column[row_index] = point ?? null;
+    row_index += 1;
+
+    if (row_index >= normalized_rows) {
+      row_index = 0;
+      commit_column();
+      current_column = null;
+    }
+
+    if (point) {
+      previous_month = month;
+    }
+  });
+
+  commit_column();
+
+  return blocks;
+}
+
 function pad_to_multiple(data: DailyActivityPoint[], size: number): Array<DailyActivityPoint | null> {
   const padded: Array<DailyActivityPoint | null> = Array.from({ length: size }, () => null);
   const start = Math.max(0, data.length - size);
@@ -152,24 +223,4 @@ function trim_empty_columns(blocks: Array<Array<DailyActivityPoint | null>>): Ar
     return blocks;
   }
   return blocks.slice(first_filled_index);
-}
-
-function insert_month_gaps(blocks: Array<Array<DailyActivityPoint | null>>): Array<Array<DailyActivityPoint | null>> {
-  if (blocks.length === 0) {
-    return blocks;
-  }
-  const with_gaps: Array<Array<DailyActivityPoint | null>> = [];
-  let previous_month: string | null = null;
-
-  blocks.forEach((column) => {
-    const first_point = column.find((point) => point !== null);
-    const current_month = first_point ? first_point.date.slice(5, 7) : previous_month;
-    if (previous_month && current_month && current_month !== previous_month) {
-      with_gaps.push(Array.from({ length: column.length }, () => null));
-    }
-    with_gaps.push(column);
-    previous_month = current_month ?? previous_month;
-  });
-
-  return with_gaps;
 }
