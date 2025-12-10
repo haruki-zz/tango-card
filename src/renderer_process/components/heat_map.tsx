@@ -18,7 +18,7 @@ export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMa
   );
   const color_scale = theme === 'light' ? LIGHT_COLOR_SCALE : DARK_COLOR_SCALE;
   const month_labels = build_month_labels(weekly_blocks);
-  const cell_block = 27;
+  const cell_block = 20; // 15px cell + 5px gap
 
   return (
     <div className="flex h-full flex-col rounded-sm bg-heat p-4">
@@ -41,14 +41,14 @@ export function HeatMap({ data, columns = 21, rows = 7, theme = 'dark' }: HeatMa
               </span>
             ))}
           </div>
-          <div className="flex gap-[7px]">
+          <div className="flex gap-[5px]">
             {weekly_blocks.map((column, column_index) => (
-              <div key={`col-${column_index}`} className="flex flex-col gap-[7px]">
+              <div key={`col-${column_index}`} className="flex flex-col gap-[5px]">
                 {column.map((point, row_index) =>
                   point ? (
                     <Cell key={`${column_index}-${row_index}`} point={point} color_scale={color_scale} />
                   ) : (
-                    <span key={`${column_index}-${row_index}`} className="h-[20px] w-[20px] shrink-0" />
+                    <span key={`${column_index}-${row_index}`} className="h-[15px] w-[15px] shrink-0" />
                   ),
                 )}
               </div>
@@ -72,7 +72,7 @@ function Cell({ point, color_scale }: CellProps) {
   return (
     <div
       data-testid="heat-map-cell"
-      className="h-[20px] w-[20px] shrink-0 rounded-[3px] border border-app shadow-[0_0_0_1px_rgba(255,255,255,0.04)]"
+      className="h-[15px] w-[15px] shrink-0 rounded-[3px] border border-app shadow-[0_0_0_1px_rgba(255,255,255,0.04)]"
       style={{ backgroundColor: color, borderColor: 'var(--border)' }}
       title={point ? `${point.date}: +${point.created_count} / ↺${point.reviewed_count}` : 'No data'}
     />
