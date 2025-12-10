@@ -136,48 +136,49 @@ function build_blocks_with_month_boundaries(
   columns: number,
   rows: number,
 ): Array<Array<DailyActivityPoint | null>> {
+  if (data.length === 0) {
+    return [];
+  }
+
   const normalized_columns = Math.max(1, columns);
   const normalized_rows = Math.max(1, rows);
-  const padded = pad_to_multiple(data, normalized_columns * normalized_rows);
+  const total_slots = normalized_columns * normalized_rows;
+
+  const point_map = new Map<string, DailyActivityPoint>();
+  data.forEach((point) => point_map.set(point.date, point));
+
+  const last_point = data[data.length - 1];
+  const last_date = parse_date(last_point.date);
+  const start_date = new Date(
+    Date.UTC(last_date.getUTCFullYear(), last_date.getUTCMonth(), last_date.getUTCDate() - (total_slots - 1)),
+  );
 
   const blocks: Array<Array<DailyActivityPoint | null>> = [];
-  let current_column: Array<DailyActivityPoint | null> | null = null;
-  let row_index = 0;
+  let current_column: Array<DailyActivityPoint | null> = Array.from({ length: normalized_rows }, () => null);
   let previous_month: string | null = null;
+  let previous_weekday: number | null = null;
 
-  const commit_column = () => {
-    if (current_column) {
+  for (let offset = 0; offset < total_slots; offset += 1) {
+    const current = add_days(start_date, offset);
+    const key = format_date(current);
+    const point = point_map.get(key) ?? null;
+    const month_key = `${current.getUTCFullYear()}-${String(current.getUTCMonth() + 1).padStart(2, '0')}`;
+    const weekday = get_weekday_index(current);
+
+    const month_changed = previous_month !== null && month_key !== previous_month;
+    const week_changed = previous_weekday !== null && weekday < previous_weekday;
+
+    if (month_changed || week_changed) {
       blocks.push(current_column);
-    }
-  };
-
-  padded.forEach((point) => {
-    const month = point ? point.date.slice(0, 7) : previous_month;
-
-    if (previous_month && month && month !== previous_month) {
-      commit_column();
       current_column = Array.from({ length: normalized_rows }, () => null);
     }
 
-    if (!current_column) {
-      current_column = Array.from({ length: normalized_rows }, () => null);
-    }
+    current_column[weekday] = point;
+    previous_month = month_key;
+    previous_weekday = weekday;
+  }
 
-    current_column[row_index] = point ?? null;
-    row_index += 1;
-
-    if (row_index >= normalized_rows) {
-      row_index = 0;
-      commit_column();
-      current_column = null;
-    }
-
-    if (point) {
-      previous_month = month;
-    }
-  });
-
-  commit_column();
+  blocks.push(current_column);
 
   return blocks;
 }
@@ -190,6 +191,28 @@ function pad_to_multiple(data: DailyActivityPoint[], size: number): Array<DailyA
     padded[padded.length - slice.length + i] = slice[i];
   }
   return padded;
+}
+
+function format_date(date: Date): string {
+  const year = date.getUTCFullYear();
+  const month = `${date.getUTCMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getUTCDate()}`.padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function parse_date(value: string): Date {
+  return new Date(`${value}T00:00:00Z`);
+}
+
+function add_days(date: Date, days: number): Date {
+  const result = new Date(date.getTime());
+  result.setUTCDate(result.getUTCDate() + days);
+  return result;
+}
+
+function get_weekday_index(date: Date): number {
+  const day = date.getUTCDay(); // Sunday = 0
+  return (day + 6) % 7; // Monday = 0
 }
 
 function build_month_labels(blocks: Array<Array<DailyActivityPoint | null>>): Array<{ index: number; name: string; span: number }> {

@@ -7,8 +7,8 @@
     "scene": "Preparing a demo for the team.",
     "example": "私は毎朝新しい知識を学ぶ時間を作っています。",
     "created_at": "2025-02-20T09:30:00.000Z",
-    "review_count": 44,
-    "last_reviewed_at": "2025-12-04T13:11:38.526Z",
+    "review_count": 45,
+    "last_reviewed_at": "2025-12-10T12:44:35.476Z",
     "familiarity": "normal"
   },
   "練習": {
@@ -19,8 +19,8 @@
     "scene": "Preparing slides before the client call.",
     "example": "本番の前に何度も練習しておきましょう。",
     "created_at": "2025-02-22T18:15:00.000Z",
-    "review_count": 43,
-    "last_reviewed_at": "2025-12-04T13:11:38.595Z",
+    "review_count": 44,
+    "last_reviewed_at": "2025-12-10T12:44:36.859Z",
     "familiarity": "normal"
   },
   "挑戦": {
@@ -31,8 +31,8 @@
     "scene": "Late-night coding session with teammates.",
     "example": "新しい挑戦はいつも少し怖いけれど、成長のチャンスです。",
     "created_at": "2025-02-24T06:50:00.000Z",
-    "review_count": 39,
-    "last_reviewed_at": "2025-12-04T13:11:38.240Z",
+    "review_count": 40,
+    "last_reviewed_at": "2025-12-10T12:44:34.620Z",
     "familiarity": "normal"
   },
   "初々しい": {
@@ -43,9 +43,9 @@
     "scene": "面接で緊張しながらも一生懸命に話す新入社員。言葉に詰まりながらも、目は真っすぐ前を向いている。その不器用さが「初々しい」と感じさせる。",
     "example": "新郎新婦初々しい姿に、会場中が温かい笑顔に包まれた。",
     "created_at": "2025-11-05T12:51:00.712Z",
-    "review_count": 36,
-    "last_reviewed_at": "2025-12-04T13:14:15.833Z",
-    "familiarity": "not_familiar"
+    "review_count": 37,
+    "last_reviewed_at": "2025-12-10T12:44:34.016Z",
+    "familiarity": "normal"
   },
   "悴む": {
     "id": "d5cd1267-7fd7-4baa-8024-4eb7882d90a0",
@@ -55,8 +55,8 @@
     "scene": "真冬の朝、手袋を外してスマホを操作しようとするが、指が動かない。カチカチになった手が震えて思い通りに動かず、もどかしさが募る。まさに「悴んだ」状態だ。",
     "example": "雪かきの途中で、指先が悴んでスコップをうまく握れなかった。",
     "created_at": "2025-12-04T13:14:08.757Z",
-    "review_count": 1,
+    "review_count": 2,
     "familiarity": "normal",
-    "last_reviewed_at": "2025-12-04T13:14:16.194Z"
+    "last_reviewed_at": "2025-12-10T12:44:35.979Z"
   }
 }
