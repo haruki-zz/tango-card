@@ -10,6 +10,7 @@
 | `card:list` | Renderer → Main | `void` | `CardEntity[]` | 拉取全部单词卡，供编辑器与复习流程同步状态。 |
 | `review:queue` | Renderer → Main | `{ size?: number }` | `ReviewCandidate[]` | 请求下一批复习卡片。未提供 `size` 时由主进程策略给出默认值。 |
 | `review:update` | Renderer → Main | `{ card_id: string }` | `CardEntity` | 提交复习结果并回写复习次数及时间。 |
+| `card:familiarity` | Renderer → Main | `{ card_id: string, familiarity: 'normal' \| 'not_familiar' }` | `CardEntity` | 更新单词的熟悉度标签，用于复习优先级与热力图统计。 |
 
 ## 类型约束
 

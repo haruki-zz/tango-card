@@ -224,7 +224,10 @@ function build_month_labels(blocks: Array<Array<DailyActivityPoint | null>>): Ar
 
   for (let col = 0; col < blocks.length; col += 1) {
     const first_point = blocks[col].find((point) => point !== null);
-    const label = first_point ? first_point.date.slice(5, 7) : '';
+    if (!first_point) {
+      continue;
+    }
+    const label = first_point.date.slice(5, 7);
     if (!current_label || current_label.name !== label) {
       if (current_label) {
         labels.push(current_label);

@@ -2,13 +2,12 @@
 
 ## Overview
 本文件定义 tango-card 的统一目录结构与职责划分。所有新代码需要遵循这里的模块边界和命名约定，以保持简单、清晰、低耦合的实现。各技术栈职责参见 `docs/stack_responsibility.md`。
-界面实现须与 `UI/` 目录中的最新设计稿保持一致；在提交 UI 相关改动时务必核对对应的 SVG 或说明文件，并在评审中引用其路径。
+界面实现须与现有设计保持一致（入口双 CTA + 全年热力图 + 主题切换）；提交 UI 改动时务必在描述中说明与设计的一致性。
 
 ## Repository Layout
 ```
 .
 ├─ docs/                 # 项目文档（架构、规范、设计草案）
-├─ UI/                   # 界面设计稿与交互关系（SVG/说明文档）
 ├─ assets/               # 静态资源：图标、示例 SVG、演示截图
 ├─ config/               # 环境变量模板与打包配置
 ├─ scripts/              # 自动化脚本（构建、发布、数据迁移）
@@ -36,21 +35,23 @@ src/
 ├─ renderer_process/
 │  ├─ app_shell.tsx               # React 根组件，挂载全局状态与路由
 │  ├─ routing/
-│  │  └─ app_router.tsx           # 定义路由结构（编辑、复习、统计、设置）
+│  │  └─ app_router.tsx           # 定义路由结构（hub / 编辑 / 复习），内建主题切换
 │  ├─ screens/
-│  │  ├─ core_hub_screen.tsx      # 极简入口界面，仅提供“创建卡片 / 开始复习”两个操作
+│  │  ├─ core_hub_screen.tsx      # 极简入口界面，提供创建/复习 CTA、状态板与全年热力图
 │  │  ├─ card_editor_screen.tsx   # 输入单词/读音/语境/例句并保存
 │  │  └─ review_screen.tsx        # 复习流程视图，展示抽取的卡片
 │  ├─ components/
+│  │  ├─ heat_map.tsx             # GitHub 风格全年热力图，按月份分区、空列分隔
 │  │  └─ svg_canvas.tsx           # 自适应窗口尺寸的 SVG 渲染组件
 │  ├─ hooks/
-│  │  ├─ use_card_store.ts        # 管理卡片集合的业务状态钩子
-│  │  ├─ use_review_cycle.ts      # 控制复习队列与权重计算
-│  │  └─ use_element_size.ts      # 监听容器尺寸供 SVG 自适应渲染
+│  │  ├─ use_card_store.ts        # 管理卡片集合及每日活跃度聚合的业务状态钩子
+│  │  ├─ use_review_cycle.ts      # 控制复习队列、熟悉度权重与提交逻辑
+│  │  ├─ use_element_size.ts      # 监听容器尺寸供 SVG/热力图自适应渲染
+│  │  └─ use_window_size.ts       # 监听窗口尺寸以适配热力图列数
 │  ├─ services/
 │  │  └─ svg_renderer.ts          # 处理 SVG 解析、视口缩放、错误边界（TypeScript 纯函数）
 │  ├─ state/
-│  │  ├─ card_store.ts            # 基于 Zustand 的卡片集合状态（列表 / 加载 / 错误）
+│  │  ├─ card_store.ts            # 基于 Zustand 的卡片集合状态（列表 / 加载 / 错误 / 每日活跃度聚合）
 │  │  └─ review_queue_store.ts    # 基于 Zustand 的复习队列及指针调度
 │  ├─ styles/
 │  │  └─ global.css               # Tailwind 入口与少量全局样式覆盖
@@ -62,7 +63,7 @@ src/
 │  │  ├─ card_entity.ts           # 定义卡片领域模型（id、word、reading、context、scene、example 等）
 │  │  └─ card_factory.ts          # 构建卡片实例，封装默认值与验证
 │  ├─ review/
-│  │  ├─ review_policy.ts         # 复习策略接口与具体实现（均匀随机抽取）
+│  │  ├─ review_policy.ts         # 复习策略接口与具体实现（默认优先“不太熟悉”卡片，生成审阅候选）
 │  └─ shared/
 │     └─ result.ts                # 统一的结果类型（成功 / 失败）
 ├─ infrastructure/
@@ -97,9 +98,8 @@ tests/
 │  │  └─ review_policy.spec.ts
 │  ├─ renderer/
 │  │  ├─ components/
+│  │  │  ├─ heat_map.spec.tsx
 │  │  │  └─ svg_canvas.spec.tsx
-│  │  ├─ screens/
-│  │  │  └─ review_screen.spec.tsx
 │  │  ├─ state/
 │  │  │  ├─ card_store.spec.ts
 │  │  │  └─ review_queue_store.spec.ts

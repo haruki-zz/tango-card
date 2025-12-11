@@ -7,14 +7,14 @@
 - 实现领域模型与业务策略（`src/domain`、`src/renderer_process/services`、`src/shared`）。
 - 定义 IPC 通信契约、存储接口与通道常量（`src/main_process/ipc_channels.ts`、`src/infrastructure`）。
 - 维护跨存储引擎的抽象层（`storage_driver.ts`、`storage_engine.ts`），确保持久化实现可插拔。
-- 管理数据持久化、调度与计算逻辑，保证纯函数、可测试。
+- 管理数据持久化、调度与计算逻辑，保证纯函数、可测试；复习策略需考虑熟悉度权重与日期对齐（全年热力图）。
 - 维护工具函数、错误类型和结果封装，支撑 React 与 Electron 的调用。
 
 ## React
 - 构建用户界面与交互体验，位于 `src/renderer_process`。
 - 通过组件、hooks 和状态容器处理 UI 状态，调用 TypeScript 服务执行业务。
 - 负责 SVG 画布展示与复习流程，实现“创建 / 复习”两步体验。
-- 使用 Tailwind CSS + 自定义全局样式实现主题和布局，避免散落的内联样式；卡片编辑界面负责收集单词本体、读音、语境、例句四项输入并调用模板生成统一尺寸的 SVG。
+- 使用 Tailwind CSS + 自定义全局样式实现主题和布局（Light/Dark 变量），避免散落的内联样式；卡片编辑界面负责收集单词本体、读音、语境、例句四项输入并调用模板生成统一尺寸的 SVG；热力图、状态板等需自适应窗口并与主题联动。
 - 使用 TypeScript 类型定义 props、状态与上下文，确保组件组合的可靠性。
 - 集成 Testing Library 等工具编写组件级测试。
 
