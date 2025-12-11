@@ -17,11 +17,13 @@ export function CoreHubScreen({ on_create_card, on_start_review, theme, on_toggl
   const { width: viewport_width } = use_window_size();
   const total_cards = cards.length;
   const pending_reviews = cards.filter((card) => card.review_count === 0).length;
+  const required_columns = Math.ceil(365 / 7);
   const columns = useMemo(() => {
     const cell_block = 27; // 20px cell + 7px gap
     const available = Math.max(size.width, viewport_width);
-    return Math.max(10, Math.floor(available / cell_block));
-  }, [size.width, viewport_width]);
+    const computed = Math.floor(available / cell_block);
+    return Math.max(required_columns, computed);
+  }, [required_columns, size.width, viewport_width]);
   const target_window_days = useMemo(() => Math.min(365, columns * 7), [columns]);
 
   useEffect(() => {

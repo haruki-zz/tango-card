@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import type { CardEntity } from '../../domain/card/card_entity';
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
-const DEFAULT_ACTIVITY_WINDOW_DAYS = 84;
+const DEFAULT_ACTIVITY_WINDOW_DAYS = 365;
 
 export interface DailyActivityPoint {
   readonly date: string;
