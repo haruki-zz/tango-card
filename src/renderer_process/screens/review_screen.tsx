@@ -26,9 +26,19 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
   const [submission_error, set_submission_error] = useState<string | null>(null);
   const [familiarity_state, set_familiarity_state] = useState<'idle' | 'saving' | 'error'>('idle');
   const [familiarity_error, set_familiarity_error] = useState<string | null>(null);
+  const [active_face, set_active_face] = useState<'front' | 'back'>('front');
 
   const render_card = active_card;
   const round_in_progress = queue.length > 0 && Boolean(render_card);
+  const active_svg_source = render_card
+    ? active_face === 'front'
+      ? render_card.front_svg_source
+      : render_card.back_svg_source
+    : '';
+
+  const flip_card = useCallback(() => {
+    set_active_face((current) => (current === 'front' ? 'back' : 'front'));
+  }, []);
 
   const handle_start_round = useCallback(async () => {
     set_round_status('loading');
@@ -44,7 +54,14 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
   }, [start_round]);
 
   const handle_mark_reviewed = useCallback(async () => {
-    if (!render_card || submission_state === 'saving') {
+    if (!render_card) {
+      return;
+    }
+    if (active_face === 'front') {
+      set_active_face('back');
+      return;
+    }
+    if (submission_state === 'saving') {
       return;
     }
     set_submission_state('saving');
@@ -64,7 +81,17 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
       set_submission_state('error');
       set_submission_error((error as Error).message);
     }
-  }, [active_index, move_next, on_exit, queue.length, render_card, reset_queue, submission_state, submit_review]);
+  }, [
+    active_face,
+    active_index,
+    move_next,
+    on_exit,
+    queue.length,
+    render_card,
+    reset_queue,
+    submission_state,
+    submit_review,
+  ]);
 
   const handle_toggle_familiarity = useCallback(async () => {
     if (!render_card || familiarity_state === 'saving') {
@@ -125,17 +152,24 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
       } else if (event.key === 'ArrowLeft') {
         event.preventDefault();
         move_previous();
+      } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.code === 'Space') {
+        event.preventDefault();
+        flip_card();
       }
     };
     window.addEventListener('keydown', handle_keydown);
     return () => {
       window.removeEventListener('keydown', handle_keydown);
     };
-  }, [handle_mark_reviewed, move_previous, round_in_progress]);
+  }, [flip_card, handle_mark_reviewed, move_previous, round_in_progress]);
 
   useEffect(() => {
     set_familiarity_state('idle');
     set_familiarity_error(null);
+  }, [render_card?.id]);
+
+  useEffect(() => {
+    set_active_face('front');
   }, [render_card?.id]);
 
   return (
@@ -143,15 +177,30 @@ export function ReviewScreen({ on_exit, auto_start_round = false }: ReviewScreen
       {round_in_progress && render_card ? (
         <div className="w-full rounded-sm border border-app bg-surface p-4 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
           <SvgCanvas
-            svg_source={render_card.svg_source}
+            svg_source={active_svg_source}
+            orientation="portrait"
             on_swipe={(direction) => {
               if (direction === 'left') {
                 void handle_mark_reviewed();
               } else if (direction === 'right') {
                 move_previous();
+              } else if (direction === 'up' || direction === 'down') {
+                flip_card();
               }
             }}
           />
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-[11px] uppercase tracking-[0.25em] text-muted">
+            <span className="rounded-full border border-app px-3 py-1 font-semibold">
+              {active_face === 'front' ? 'front / word & reading' : 'back / context & example'}
+            </span>
+            <button
+              type="button"
+              onClick={flip_card}
+              className="btn-ghost px-3 py-1 text-[10px] uppercase tracking-[0.35em] text-accent-cyan"
+            >
+              flip card
+            </button>
+          </div>
           <div className="mt-3 border-t border-app pt-2 font-mono text-xs text-muted">
             [← prev] [→ next/done] · {queue.length === 0 ? 0 : active_index + 1}/{queue.length}
           </div>

@@ -19,13 +19,14 @@ function create_card(id: string, review_count = 0, familiarity: CardEntity['fami
 }
 
 describe('SimpleReviewPolicy', () => {
-  it('returns a shuffled queue with svg sources', () => {
+  it('returns a shuffled queue with svg sources for both faces', () => {
     const queue = policy.generate_review_queue(
       [create_card('1'), create_card('2'), create_card('3')],
       2,
     );
     expect(queue).toHaveLength(2);
-    expect(queue[0].svg_source).toContain('<svg');
+    expect(queue[0].front_svg_source).toContain('card-front');
+    expect(queue[0].back_svg_source).toContain('card-back');
   });
 
   it('prioritizes not-familiar cards roughly 2:1 when generating a round', () => {

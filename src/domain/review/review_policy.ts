@@ -1,8 +1,9 @@
 import type { CardEntity } from '../card/card_entity';
-import { render_card_svg } from '../../shared/templates/card_svg_template';
+import { render_card_faces } from '../../shared/templates/card_svg_template';
 
 export interface ReviewCandidate extends CardEntity {
-  readonly svg_source: string;
+  readonly front_svg_source: string;
+  readonly back_svg_source: string;
 }
 
 export interface ReviewPolicy {
@@ -49,7 +50,7 @@ export class SimpleReviewPolicy implements ReviewPolicy {
 function create_candidate(card: CardEntity): ReviewCandidate {
   return {
     ...card,
-    svg_source: render_card_svg({
+    ...render_card_faces({
       word: card.word,
       reading: card.reading,
       context: card.context,

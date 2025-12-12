@@ -28,6 +28,11 @@
   --card-svg-reading: #94a3b8;
   --card-svg-title: #38bdf8;
   --card-svg-body: #e2e8f0;
+  --card-front-bg: #0b1224;
+  --card-front-word: #f8fafc;
+  --card-front-reading: #7dd3fc;
+  --card-front-muted: #94a3b8;
+  --card-front-accent: #38bdf8;
 
   font-family: 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Menlo, monospace;
   background-color: var(--bg);
@@ -62,6 +67,11 @@
   --card-svg-reading: #334155;
   --card-svg-title: #0ea5e9;
   --card-svg-body: #0f172a;
+  --card-front-bg: #ffffff;
+  --card-front-word: #0f172a;
+  --card-front-reading: #0ea5e9;
+  --card-front-muted: #475569;
+  --card-front-accent: #0ea5e9;
 }
 
 .app-bg {
