@@ -41,67 +41,28 @@ export function render_card_svg(input: CardTemplateInput): string {
 function render_card_front_svg(word_input: string, reading_input: string): string {
   const word = sanitize_text(word_input);
   const reading = sanitize_text(reading_input);
-  const word_font_size = compute_front_font_size(word_input, { min: 46, max: 86 });
-  const reading_font_size = compute_front_font_size(reading_input, { min: 18, max: 34 });
-  const center_x = CARD_WIDTH / 2;
-  const word_y = 340;
-  const reading_box_top = word_y + 50;
-  const reading_box_height = 76;
-  const reading_y = reading_box_top + reading_box_height / 2 + reading_font_size / 3;
-  const hint_y = CARD_HEIGHT - 88;
+  const word_font_size = compute_front_font_size(word_input, { min: 44, max: 64 });
+  const reading_font_size = compute_front_font_size(reading_input, { min: 20, max: 32 });
+  const word_y = 200;
+  const reading_y = word_y + 56;
+  const hint_y = CARD_HEIGHT - CONTENT_PADDING * 1.5;
 
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
     `<svg class="card-svg card-front" xmlns="http://www.w3.org/2000/svg" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}" preserveAspectRatio="xMidYMid meet">`,
-    '<defs>',
-    '<linearGradient id="frontGradient" x1="0%" y1="0%" x2="0%" y2="100%">',
-    '<stop offset="0%" stop-color="var(--card-front-accent, #38bdf8)" stop-opacity="0.24"/>',
-    '<stop offset="40%" stop-color="var(--card-front-accent, #38bdf8)" stop-opacity="0.08"/>',
-    '<stop offset="100%" stop-color="var(--card-front-bg, #0b1224)" stop-opacity="0"/>',
-    '</linearGradient>',
-    '<linearGradient id="frontBeam" x1="0%" y1="0%" x2="100%" y2="0%">',
-    '<stop offset="0%" stop-color="var(--card-front-accent, #38bdf8)" stop-opacity="0"/>',
-    '<stop offset="40%" stop-color="var(--card-front-accent, #38bdf8)" stop-opacity="0.32"/>',
-    '<stop offset="100%" stop-color="var(--card-front-accent, #38bdf8)" stop-opacity="0"/>',
-    '</linearGradient>',
-    '<pattern id="frontGrid" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(6)">',
-    '<path d="M18 0L0 18" stroke="var(--card-front-accent, #38bdf8)" stroke-width="1" stroke-opacity="0.08"/>',
-    '<path d="M9 0L0 9" stroke="var(--card-front-accent, #38bdf8)" stroke-width="1" stroke-opacity="0.06"/>',
-    '</pattern>',
-    '<filter id="frontGlow" x="-30%" y="-30%" width="160%" height="160%">',
-    '<feGaussianBlur stdDeviation="14" result="blur" />',
-    '<feMerge>',
-    '<feMergeNode in="blur"/>',
-    '<feMergeNode in="SourceGraphic"/>',
-    '</feMerge>',
-    '</filter>',
-    '</defs>',
     '<style>',
     '.card-svg * { font-family: "游明朝", "Yu Mincho", "YuMincho", serif; }',
-    '.card-svg.card-front .card-bg { fill: var(--card-front-bg, #0b1224); }',
-    '.card-svg.card-front .frame { stroke: var(--card-front-accent, #38bdf8); stroke-opacity: 0.4; stroke-width: 2; fill: none; }',
-    '.card-svg.card-front .pill { fill: var(--card-front-accent, #38bdf8); fill-opacity: 0.12; stroke: var(--card-front-accent, #38bdf8); stroke-opacity: 0.6; }',
-    '.card-svg.card-front .panel { fill: var(--card-front-accent, #38bdf8); fill-opacity: 0.08; }',
-    '.card-svg.card-front .label { fill: var(--card-front-muted, #94a3b8); letter-spacing: 0.12em; font-size: 14px; font-weight: 700; text-transform: uppercase; }',
-    '.card-svg.card-front .label.subtle { opacity: 0.75; font-weight: 600; }',
-    '.card-svg.card-front .word { fill: var(--card-front-word, #f8fafc); font-weight: 800; letter-spacing: 0.06em; }',
-    '.card-svg.card-front .reading { fill: var(--card-front-reading, #a5f3fc); font-weight: 700; letter-spacing: 0.18em; }',
-    '.card-svg.card-front .hint { fill: var(--card-front-muted, #94a3b8); font-size: 15px; letter-spacing: 0.16em; }',
-    '.card-svg.card-front .divider { stroke: var(--card-front-accent, #38bdf8); stroke-opacity: 0.4; stroke-width: 1.5; }',
+    '.card-svg .card-bg { fill: var(--card-svg-bg, #0f172a); }',
+    '.card-svg .word { fill: var(--card-svg-word, #0b1224); font-size: 52px; font-weight: 700; }',
+    '.card-svg .reading { fill: var(--card-svg-reading, #475569); font-size: 28px; font-weight: 500; letter-spacing: 0.06em; }',
+    '.card-svg .section-title { fill: var(--card-svg-title, #2563eb); letter-spacing: 0.08em; font-weight: 600; }',
+    '.card-svg .hint { fill: var(--card-svg-reading, #475569); font-size: 16px; letter-spacing: 0.08em; }',
     '</style>',
     `<rect class="card-bg" x="0" y="0" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" rx="18"/>`,
-    `<rect x="${CONTENT_PADDING}" y="${CONTENT_PADDING}" width="${CARD_WIDTH - CONTENT_PADDING * 2}" height="${CARD_HEIGHT - CONTENT_PADDING * 2}" rx="14" fill="url(#frontGrid)" opacity="0.4"/>`,
-    `<rect x="${CONTENT_PADDING}" y="${CONTENT_PADDING}" width="${CARD_WIDTH - CONTENT_PADDING * 2}" height="${CARD_HEIGHT - CONTENT_PADDING * 2}" rx="14" fill="url(#frontGradient)" />`,
-    `<rect x="${CONTENT_PADDING + 10}" y="${HEADER_BOTTOM - 110}" width="${CARD_WIDTH - (CONTENT_PADDING + 10) * 2}" height="10" fill="url(#frontBeam)" opacity="0.6" />`,
-    `<rect x="${CONTENT_PADDING + 6}" y="${reading_box_top}" width="${CARD_WIDTH - (CONTENT_PADDING + 6) * 2}" height="${reading_box_height}" rx="14" class="pill"/>`,
-    `<rect x="${CONTENT_PADDING}" y="${CARD_HEIGHT - 160}" width="${CARD_WIDTH - CONTENT_PADDING * 2}" height="74" rx="12" class="panel"/>`,
-    `<rect x="${CONTENT_PADDING}" y="${CONTENT_PADDING}" width="${CARD_WIDTH - CONTENT_PADDING * 2}" height="${CARD_HEIGHT - CONTENT_PADDING * 2}" rx="14" class="frame"/>`,
-    `<text class="label" x="${CONTENT_PADDING}" y="${CONTENT_PADDING + 22}">japanese / reading</text>`,
-    `<text class="word" x="${center_x}" y="${word_y}" text-anchor="middle" style="font-size:${word_font_size}px" filter="url(#frontGlow)">${word}</text>`,
-    `<text class="reading" x="${center_x}" y="${reading_y}" text-anchor="middle" style="font-size:${reading_font_size}px">${reading}</text>`,
-    `<text class="hint" x="${CARD_WIDTH - CONTENT_PADDING}" y="${hint_y}" text-anchor="end">flip to see context / scene / example</text>`,
-    `<line class="divider" x1="${CONTENT_PADDING}" y1="${hint_y - 24}" x2="${CARD_WIDTH - CONTENT_PADDING}" y2="${hint_y - 24}"/>`,
-    `<text class="label subtle" x="${CONTENT_PADDING}" y="${hint_y - 34}">back: existing breakdown</text>`,
+    `<text class="section-title" x="${CONTENT_PADDING}" y="${CONTENT_PADDING + 22}" style="font-size:16px">word & reading</text>`,
+    `<text class="word" x="${CONTENT_PADDING}" y="${word_y}" style="font-size:${word_font_size}px">${word}</text>`,
+    `<text class="reading" x="${CONTENT_PADDING}" y="${reading_y}" style="font-size:${reading_font_size}px">${reading}</text>`,
+    `<text class="hint" x="${CONTENT_PADDING}" y="${hint_y}" style="font-size:16px">flip to see context / scene / example</text>`,
     '</svg>',
   ]
     .filter(Boolean)
