@@ -30,8 +30,13 @@
 - app/lib/db/README.md: 约束 SQLite 初始化、表结构与 CRUD/同步队列封装的职责。
 - app/lib/state/README.md: 约束 Zustand store 与 React Query 配置的职责。
 
+## 核心类型与常量
+- app/lib/constants.ts: 统一存放熟悉度枚举与默认值（familiar 默认、reviewCount=1）、复习队列批次与抽样权重、Heat Map 缓存/周起始/UTC 分桶、Supabase 环境变量键与可选 AI 模型标识。
+- app/lib/types/index.ts: 定义 User/WordEntry/ReviewEvent/ActivityLog 等实体类型与草稿类型，内置构建函数校验必填字段、枚举合法性与 ISO 时间字符串（lastReviewedAt 默认 createdAt），并规范 aiMeta 结构。
+- app/lib/types/types.test.ts: 覆盖类型构建器的默认值填充与非法输入防护，确保常量约束落地。
+
 ## 资产
 - assets/images/*: 应用图标、启动图、favicon 占位资源。
 
 ## 状态
-- 当前完成实施计划第 2 步（建立模块化目录骨架）：业务模块与横切层目录已创建并附 README 定义职责，等待后续按计划补充类型与实现。***
+- 当前完成实施计划第 3 步（定义核心类型与常量）：常量与实体类型已集中定义并加上构建/校验函数与单测，后续可在此基础上实现 SQLite 与状态管理。***

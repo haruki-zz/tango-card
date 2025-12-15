@@ -10,3 +10,9 @@
 - 创建业务与基础能力骨架目录：`app/features/words`、`app/features/review`、`app/features/heatmap`、`app/lib/api`、`app/lib/db`、`app/lib/state`、`app/components`，并在 `app/features`、`app/lib` 及各子目录添加 README 说明职责。
 - 更新 `CLAUDE.md` 反映新的目录层级与模块边界。
 - 本地验证：`npm run lint` 通过，确保新增占位文件未引入 lint 问题。***
+
+## 实施计划第 3 步（定义核心类型与常量）
+- 新增 `app/lib/constants.ts` 汇总熟悉度默认值（familiar）、reviewCount 默认 1、复习批次大小 30、2:1 抽样权重、Heat Map 缓存 TTL、周起始与 UTC 分桶、Supabase 环境变量键与可选 AI 模型标识。
+- 新增 `app/lib/types/index.ts` 定义 User/WordEntry/ReviewEvent/ActivityLog 等核心实体与草稿类型，并提供构建函数校验必填字段、枚举合法性与 ISO 时间字符串（lastReviewedAt 默认 createdAt）。
+- 新增 `app/lib/types/types.test.ts` 覆盖默认值落地、非法枚举与负计数的防护，确保类型构建器行为稳定。
+- 本地验证：`npm test` 通过。***

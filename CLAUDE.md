@@ -10,10 +10,12 @@ tango-card/
 │ │ ├ words/                   # 单词录入、编辑、列表与搜索
 │ │ ├ review/                  # 复习流程、卡片翻转与标记
 │ │ └ heatmap/                 # 活跃度聚合与热力图视图
-│ ├ lib/                       # 横切能力层（API/DB/状态）
+│ ├ lib/                       # 横切能力层（API/DB/状态/类型）
 │ │ ├ api/                     # Supabase/AI 等服务封装
 │ │ ├ db/                      # SQLite 初始化与 CRUD 封装
-│ │ └ state/                   # Zustand/React Query 配置与 store
+│ │ ├ state/                   # Zustand/React Query 配置与 store
+│ │ ├ constants.ts             # 业务枚举、默认值与模型/环境常量
+│ │ └ types/                   # 核心实体类型与构建/校验函数
 │ ├ __tests__/App.test.tsx     # 首页渲染快测
 │ ├ components/README.md
 │ ├ features/README.md
@@ -23,7 +25,10 @@ tango-card/
 │ ├ lib/README.md
 │ ├ lib/api/README.md
 │ ├ lib/db/README.md
-│ └ lib/state/README.md
+│ ├ lib/state/README.md
+│ ├ lib/constants.ts
+│ ├ lib/types/index.ts
+│ └ lib/types/types.test.ts
 ├ assets/
 │ └ images/                    # 应用图标与启动图占位
 ├ memory-bank/                 # 设计与进度/架构文档
@@ -52,7 +57,7 @@ tango-card/
 - app 层通过 Expo Router 从 `expo-router/entry` 启动，布局由 `app/_layout.tsx` 定义，页面（如 `app/index.tsx`）按路由文件约定渲染。
 - app/components 提供无业务耦合的可复用 UI 单元，为 features 层组合。
 - app/features 按业务垂直拆分：words 管理录入/列表，review 负责复习流程与标记，heatmap 聚合活跃度并呈现热力图。
-- app/lib 作为横切基础设施：api 封装 Supabase/AI 调用，db 负责 SQLite 表结构与 CRUD，同步队列，state 维护 Zustand store 与 React Query 配置。
+- app/lib 作为横切基础设施：api 封装 Supabase/AI 调用，db 负责 SQLite 表结构与 CRUD，同步队列，state 维护 Zustand store 与 React Query 配置，constants/types 提供枚举默认值与核心实体的构建/校验函数，供各业务模块复用。
 - 配置层（tsconfig/babel/eslint/jest）共同保障 TypeScript、路由、动画与测试可用；别名 `@/*` 在源码与测试中一致。
 - 资产层（assets/images）供 app.json 引用，确保打包与预览资源一致。
 - 文档层（memory-bank、prompts、AGENTS.md）规定业务需求、计划、架构与操作规范，是后续开发的真源信息。***
