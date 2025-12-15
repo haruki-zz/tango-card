@@ -27,6 +27,8 @@
 - app/features/heatmap/README.md: 定义活跃度聚合与热力图视图的职责。
 - app/lib/README.md: 说明横切能力层的定位（API/DB/状态等）。
 - app/lib/api/README.md: 约束网络与服务调用封装（Supabase、AI 代理）的职责。
+- app/lib/api/supabaseClient.ts: 读取并裁剪 `EXPO_PUBLIC_SUPABASE_URL`/`EXPO_PUBLIC_SUPABASE_ANON_KEY`，校验 URL 合法性并创建 Supabase JS 客户端单例，缺参或非法时抛出早期错误。
+- app/lib/api/supabaseClient.test.ts: 覆盖环境变量缺失/非法与成功路径，确保加载阶段暴露配置问题。
 - app/lib/db/README.md: 约束 SQLite 初始化、表结构与 CRUD/同步队列封装的职责。
 - app/lib/state/README.md: 约束 Zustand store 与 React Query 配置的职责。
 
@@ -56,4 +58,4 @@
 - assets/images/*: 应用图标、启动图、favicon 占位资源。
 
 ## 状态
-- 当前完成实施计划第 5 步（建立状态管理与数据获取框架）：在 SQLite CRUD 之上引入 Zustand store 管理词库、复习队列与活动计数，配套 React Query key/client 与查询预设，并用针对性的单测校验核心状态变更逻辑；用户已确认测试通过，等待指令再开始第 6 步（Supabase SDK 配置）。***
+- 当前完成实施计划第 6 步（配置 Supabase SDK 与环境校验）：新增 Supabase 客户端初始化与环境校验单例，缺失或非法配置时早期抛错，并以单测覆盖；用户已确认测试通过，等待指令再开始第 7 步（离线队列与同步策略）。***

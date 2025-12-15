@@ -28,3 +28,8 @@
 - 配置 React Query 基础设施：`queryKeys.ts` 统一 key 生成，`queryClient.ts` 暴露带默认重试/缓存策略的创建器，`queries.ts` 封装词条与活动日志的预取 query。
 - 新增导出入口 `app/lib/state/index.ts`，便于业务层复用 store 与 Query 配置。
 - 单测覆盖 store 状态变更与 Query Client 默认项：`npm test -- app/lib/state` 通过；用户已验证，暂不推进第 6 步。***
+
+## 实施计划第 6 步（配置 Supabase SDK 与环境校验）
+- 新增 `app/lib/api/supabaseClient.ts`：读取并裁剪 `EXPO_PUBLIC_SUPABASE_URL`/`EXPO_PUBLIC_SUPABASE_ANON_KEY`，校验 URL 合法性，创建 Supabase JS 客户端单例，缺参或非法时抛出明确错误。
+- 编写 `app/lib/api/supabaseClient.test.ts` 覆盖完整配置与缺参/非法 URL 分支，确保加载阶段即可暴露环境问题。
+- 本地验证：`npm test -- app/lib/api` 通过；用户已确认第 6 步完成，待指令再启动第 7 步。***
