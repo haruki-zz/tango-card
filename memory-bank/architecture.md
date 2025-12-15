@@ -45,8 +45,15 @@
 - app/lib/db/index.ts: 暴露持久化层统一出口。
 - app/lib/db/db.test.ts: 基于内存 SQLite 验证建表、CRUD 与外键级联；依赖 `__mocks__/expo-sqlite.ts`（sql.js asm 驱动）。
 
+## 状态管理与数据获取
+- app/lib/state/appStore.ts: 基于 Zustand vanilla store 维护词条 Map、复习队列与按日活动计数，提供去重入队/出队、增删改查、计数累加与重置等动作，并兼容 React 侧选择器。
+- app/lib/state/queryKeys.ts: 统一定义词条/活动日志/复习队列等 React Query key，避免跨模块硬编码。
+- app/lib/state/queryClient.ts: 创建携带默认重试、staleTime、gcTime 与窗口焦点刷新策略的 QueryClient，并暴露默认配置查询接口。
+- app/lib/state/queries.ts: 封装 SQLite 数据源的词条/活动日志 query 配置与预取辅助，便于在业务层复用。
+- app/lib/state/index.ts: state 层出口，集中导出 store 与 Query 工具。
+
 ## 资产
 - assets/images/*: 应用图标、启动图、favicon 占位资源。
 
 ## 状态
-- 当前完成实施计划第 4 步（搭建本地 SQLite 持久化层）：SQLite 表结构与外键约束已落地，提供词条/复习事件/活跃度 CRUD 封装，并以 sql.js 内存库通过 Jest 全链路校验；后续可在此基础上接入状态管理与上层业务。***
+- 当前完成实施计划第 5 步（建立状态管理与数据获取框架）：在 SQLite CRUD 之上引入 Zustand store 管理词库、复习队列与活动计数，配套 React Query key/client 与查询预设，并用针对性的单测校验核心状态变更逻辑；用户已确认测试通过，等待指令再开始第 6 步（Supabase SDK 配置）。***

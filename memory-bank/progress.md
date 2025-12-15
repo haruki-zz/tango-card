@@ -22,3 +22,9 @@
 - 新增 CRUD 封装：`wordRepository` 管理词条增删改查，`reviewEventRepository` 记录复习事件，`activityLogRepository` 负责活跃度 upsert/累加，`database.ts` 统一连接初始化/清理，`mappers.ts` 统一行数据映射。
 - 为单测引入 `__mocks__/expo-sqlite.ts`（基于 sql.js asm 内存库）并编写 `app/lib/db/db.test.ts` 覆盖建表、插入、查询、更新、删除与外键级联。
 - 本地验证：`npm test` 通过。***
+
+## 实施计划第 5 步（建立状态管理与数据获取框架）
+- 引入 `app/lib/state/appStore.ts` 的 Zustand store，集中维护词条 Map、复习队列与按日期的活动计数；提供增删改查、队列去重/入队/出队、活动累加与重置等动作。
+- 配置 React Query 基础设施：`queryKeys.ts` 统一 key 生成，`queryClient.ts` 暴露带默认重试/缓存策略的创建器，`queries.ts` 封装词条与活动日志的预取 query。
+- 新增导出入口 `app/lib/state/index.ts`，便于业务层复用 store 与 Query 配置。
+- 单测覆盖 store 状态变更与 Query Client 默认项：`npm test -- app/lib/state` 通过；用户已验证，暂不推进第 6 步。***
