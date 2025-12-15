@@ -4,7 +4,7 @@
 - 使用 Expo SDK 54 + Expo Router 6，React 19 / React Native 0.81，TypeScript 严格模式，入口为 `expo-router/entry`。
 
 ## 配置与工程基础
-- package.json: 脚本（start/android/ios/web/lint/test），依赖（Expo 栈、React Query、Zustand、SQLite、Supabase JS、Reanimated、手势、Safe Area/Screens、RN Web），devDependencies（eslint+universe 规则、jest-expo、RNTL、TS）。
+- package.json: 脚本（start/android/ios/web/lint/test），依赖（Expo 栈、React Query、Zustand、SQLite、Supabase JS、Reanimated、手势、Safe Area/Screens、RN Web），devDependencies（eslint+universe 规则、jest-expo、RNTL、TS、sql.js（用于 Jest 内存 SQLite 模拟））。
 - package-lock.json: 锁定上述依赖版本。
 - app.json: 应用元数据与图标/启动图配置，启用新架构。
 - tsconfig.json: 继承 expo 基础，开启 strict 与路径别名 `@/*`。
@@ -35,8 +35,18 @@
 - app/lib/types/index.ts: 定义 User/WordEntry/ReviewEvent/ActivityLog 等实体类型与草稿类型，内置构建函数校验必填字段、枚举合法性与 ISO 时间字符串（lastReviewedAt 默认 createdAt），并规范 aiMeta 结构。
 - app/lib/types/types.test.ts: 覆盖类型构建器的默认值填充与非法输入防护，确保常量约束落地。
 
+## 本地数据层（SQLite）
+- app/lib/db/schema.ts: 定义 SQLite 表结构与默认值（词条熟悉度/计数默认、lastReviewedAt 与 createdAt 同步）、外键约束与索引。
+- app/lib/db/database.ts: 负责打开连接、启用外键、执行建表与测试清理，统一数据库入口。
+- app/lib/db/mappers.ts: 将查询到的行数据映射为 WordEntry/ReviewEvent/ActivityLog，统一 snake_case 与实体字段。
+- app/lib/db/wordRepository.ts: 封装词条增删改查，保证默认值与时间戳更新一致。
+- app/lib/db/reviewEventRepository.ts: 记录复习事件并按词条查询，级联删除依赖外键。
+- app/lib/db/activityLogRepository.ts: 提供活跃度 upsert/累加、查询与删除接口。
+- app/lib/db/index.ts: 暴露持久化层统一出口。
+- app/lib/db/db.test.ts: 基于内存 SQLite 验证建表、CRUD 与外键级联；依赖 `__mocks__/expo-sqlite.ts`（sql.js asm 驱动）。
+
 ## 资产
 - assets/images/*: 应用图标、启动图、favicon 占位资源。
 
 ## 状态
-- 当前完成实施计划第 3 步（定义核心类型与常量）：常量与实体类型已集中定义并加上构建/校验函数与单测，后续可在此基础上实现 SQLite 与状态管理。***
+- 当前完成实施计划第 4 步（搭建本地 SQLite 持久化层）：SQLite 表结构与外键约束已落地，提供词条/复习事件/活跃度 CRUD 封装，并以 sql.js 内存库通过 Jest 全链路校验；后续可在此基础上接入状态管理与上层业务。***
