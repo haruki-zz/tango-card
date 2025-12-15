@@ -1,6 +1,6 @@
 # Repository Guidelines
 
-## 重要提示
+## Always(重要提示)
 - 写任何代码前必须完整阅读 `prompts/@system-prompts.md`，牢记并严格遵守定义的 role 和行为规范。
 - 写任何代码前必须完整阅读 `prompts/@coding-prompts.md`，严格遵守定义的编程规范。
 - 写任何代码前必须完整阅读 `memory-bank/@architecture.md`（包含完整数据库结构）。
