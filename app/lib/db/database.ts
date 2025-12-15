@@ -28,6 +28,7 @@ export const clearDatabase = async (db: DatabaseConnection) => {
         DELETE FROM review_events;
         DELETE FROM word_entries;
         DELETE FROM activity_log;
+        DELETE FROM sync_queue;
       `,
     );
   });

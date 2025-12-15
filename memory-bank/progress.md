@@ -33,3 +33,9 @@
 - 新增 `app/lib/api/supabaseClient.ts`：读取并裁剪 `EXPO_PUBLIC_SUPABASE_URL`/`EXPO_PUBLIC_SUPABASE_ANON_KEY`，校验 URL 合法性，创建 Supabase JS 客户端单例，缺参或非法时抛出明确错误。
 - 编写 `app/lib/api/supabaseClient.test.ts` 覆盖完整配置与缺参/非法 URL 分支，确保加载阶段即可暴露环境问题。
 - 本地验证：`npm test -- app/lib/api` 通过；用户已确认第 6 步完成，待指令再启动第 7 步。***
+
+## 实施计划第 7 步（设计离线队列与同步策略）
+- 增加同步队列表结构与常量：`app/lib/db/schema.ts` 引入 `sync_queue` 表，约束 `entity_type`/`operation` 枚举、客户端更新时间与退避字段；`syncQueue/constants.ts` 统一实体/操作枚举与退避参数。
+- 编写队列仓储：`app/lib/db/syncQueue/queueRepository.ts` 提供词条与复习事件入队（同一实体按客户端更新时间去重取最新）、到期查询、成功删除、失败指数退避（1s 起步，封顶 5 分钟）、冲突处理（服务端时间优先，否则立即重试），并对 payload 进行构建校验。
+- 补充 README/导出：`app/lib/db/README.md` 说明同步队列职责，`app/lib/db/index.ts` 导出接口；清理逻辑涵盖 `sync_queue`。
+- 单测：`npm test -- app/lib/db/syncQueue` 通过，覆盖重复入队去重、失败退避、冲突决策、复习事件入队与成功删除流程。***

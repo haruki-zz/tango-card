@@ -39,11 +39,14 @@
 
 ## 本地数据层（SQLite）
 - app/lib/db/schema.ts: 定义 SQLite 表结构与默认值（词条熟悉度/计数默认、lastReviewedAt 与 createdAt 同步）、外键约束与索引。
-- app/lib/db/database.ts: 负责打开连接、启用外键、执行建表与测试清理，统一数据库入口。
+- app/lib/db/database.ts: 负责打开连接、启用外键、执行建表与测试清理（涵盖同步队列），统一数据库入口。
 - app/lib/db/mappers.ts: 将查询到的行数据映射为 WordEntry/ReviewEvent/ActivityLog，统一 snake_case 与实体字段。
 - app/lib/db/wordRepository.ts: 封装词条增删改查，保证默认值与时间戳更新一致。
 - app/lib/db/reviewEventRepository.ts: 记录复习事件并按词条查询，级联删除依赖外键。
 - app/lib/db/activityLogRepository.ts: 提供活跃度 upsert/累加、查询与删除接口。
+- app/lib/db/syncQueue/constants.ts: 定义同步队列实体类型、操作类型与指数退避时间常量。
+- app/lib/db/syncQueue/queueRepository.ts: 维护词条/复习事件的同步队列入队（客户端更新时间去重取最新）、到期拉取、成功删除、失败退避与服务端时间优先的冲突决策。
+- app/lib/db/syncQueue/syncQueue.test.ts: 模拟离线写入、重试与冲突分支，验证去重、退避与删除行为。
 - app/lib/db/index.ts: 暴露持久化层统一出口。
 - app/lib/db/db.test.ts: 基于内存 SQLite 验证建表、CRUD 与外键级联；依赖 `__mocks__/expo-sqlite.ts`（sql.js asm 驱动）。
 
@@ -58,4 +61,4 @@
 - assets/images/*: 应用图标、启动图、favicon 占位资源。
 
 ## 状态
-- 当前完成实施计划第 6 步（配置 Supabase SDK 与环境校验）：新增 Supabase 客户端初始化与环境校验单例，缺失或非法配置时早期抛错，并以单测覆盖；用户已确认测试通过，等待指令再开始第 7 步（离线队列与同步策略）。***
+- 当前完成实施计划第 7 步（离线队列与同步策略）：新增同步队列表结构与仓储，支持词条/复习事件入队去重、失败退避、冲突决策，单测覆盖离线重试流程；等待指令再启动第 8 步（AI 代理 Edge Function）。***
