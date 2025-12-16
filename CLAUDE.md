@@ -52,6 +52,16 @@ tango-card/
 │ ├ lib/constants.ts
 │ ├ lib/types/index.ts
 │ └ lib/types/types.test.ts
+├ supabase/                    # Supabase Edge Functions 与测试
+│ ├ functions/
+│ │ └ ai-generator/
+│ │   ├ filters.ts             # 敏感词过滤规则
+│ │   ├ handler.ts             # 请求校验、CORS、限流与模型路由入口
+│ │   ├ index.ts               # Edge Function 入口，绑定 Deno.serve
+│ │   ├ modelProviders.ts      # OpenAI/Gemini 模型调用与解析
+│ │   └ rateLimiter.ts         # 简单双窗口限流实现
+│ └ tests/
+│   └ ai-generator.spec.ts     # AI 代理函数的 Deno 单测
 ├ assets/
 │ └ images/                    # 应用图标与启动图占位
 ├ memory-bank/                 # 设计与进度/架构文档
@@ -82,6 +92,7 @@ tango-card/
 - app/components 提供无业务耦合的可复用 UI 单元，为 features 层组合。
 - app/features 按业务垂直拆分：words 管理录入/列表，review 负责复习流程与标记，heatmap 聚合活跃度并呈现热力图。
 - app/lib 作为横切基础设施：api 封装 Supabase/AI 调用（含 supabaseClient 对环境变量的裁剪校验与单例创建），db 负责 SQLite 表结构与 CRUD（建表/外键、词条/复习事件/活跃度仓储与清理、同步队列入队/退避/冲突决策）、state 维护基于 Zustand 的全局 store（词库/复习队列/活动计数）与 React Query key、Client、预取查询配置，constants/types 提供枚举默认值与核心实体的构建/校验函数，供各业务模块复用。
+- supabase/functions/ai-generator 提供 AI 生成代理 Edge Function，内置敏感词过滤、限流、模型路由（GPT-4o/3.5、Gemini Flash-Lite）与超时处理，入口绑定至 Deno.serve；supabase/tests 下使用 Deno 原生测试覆盖成功、敏感词、限流与超时分支。
 - 配置层（tsconfig/babel/eslint/jest）共同保障 TypeScript、路由、动画与测试可用；别名 `@/*` 在源码与测试中一致。
 - 资产层（assets/images）供 app.json 引用，确保打包与预览资源一致。
 - 文档层（memory-bank、prompts、AGENTS.md）规定业务需求、计划、架构与操作规范，是后续开发的真源信息。***

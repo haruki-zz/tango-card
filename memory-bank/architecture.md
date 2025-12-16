@@ -4,8 +4,8 @@
 - 使用 Expo SDK 54 + Expo Router 6，React 19 / React Native 0.81，TypeScript 严格模式，入口为 `expo-router/entry`。
 
 ## 配置与工程基础
-- package.json: 脚本（start/android/ios/web/lint/test），依赖（Expo 栈、React Query、Zustand、SQLite、Supabase JS、Reanimated、手势、Safe Area/Screens、RN Web），devDependencies（eslint+universe 规则、jest-expo、RNTL、TS、sql.js（用于 Jest 内存 SQLite 模拟））。
-- package-lock.json: 锁定上述依赖版本。
+- package.json: 脚本（start/android/ios/web/lint/test/test:functions），依赖（Expo 栈、React Query、Zustand、SQLite、Supabase JS、Reanimated、手势、Safe Area/Screens、RN Web），devDependencies（eslint+universe 规则、jest-expo、RNTL、TS、sql.js（用于 Jest 内存 SQLite 模拟））。
+- package-lock.json: 锁定上述依赖版本；deno.lock 锁定 Supabase Edge Function 测试使用的 JSR 依赖。
 - app.json: 应用元数据与图标/启动图配置，启用新架构。
 - tsconfig.json: 继承 expo 基础，开启 strict 与路径别名 `@/*`。
 - babel.config.js: 使用 babel-preset-expo，并加载 Reanimated 插件。
@@ -57,8 +57,16 @@
 - app/lib/state/queries.ts: 封装 SQLite 数据源的词条/活动日志 query 配置与预取辅助，便于在业务层复用。
 - app/lib/state/index.ts: state 层出口，集中导出 store 与 Query 工具。
 
+## Supabase Edge Functions
+- supabase/functions/ai-generator/index.ts: Deno.serve 入口，挂载 AI 生成代理 handler。
+- supabase/functions/ai-generator/handler.ts: 统一处理 CORS、POST/JSON 校验、敏感词过滤、滑动窗口限流、超时保护与模型路由，返回固定 JSON（reading/meaningZh/exampleJa/model）。
+- supabase/functions/ai-generator/modelProviders.ts: 支持 GPT-4o/3.5、Gemini 2.5 Flash-Lite 的调用与返回解析，含模型别名、配置错误与上游错误封装。
+- supabase/functions/ai-generator/filters.ts: 轻量敏感词匹配工具。
+- supabase/functions/ai-generator/rateLimiter.ts: 双窗口计数限流实现，按客户端键统计。
+- supabase/tests/ai-generator.spec.ts: Deno 原生测试，覆盖成功生成、敏感词拒绝、限流命中与超时分支；`npm run test:functions` 指向该套件。
+
 ## 资产
 - assets/images/*: 应用图标、启动图、favicon 占位资源。
 
 ## 状态
-- 当前完成实施计划第 7 步（离线队列与同步策略）：新增同步队列表结构与仓储，支持词条/复习事件入队去重、失败退避、冲突决策，单测覆盖离线重试流程；等待指令再启动第 8 步（AI 代理 Edge Function）。***
+- 当前完成实施计划第 8 步（AI 生成 Edge Function 代理）：在 Supabase Edge Function 内实现 AI 生成代理，含敏感词过滤、限流、超时与多模型路由，并以 Deno 测试覆盖关键分支。***

@@ -39,3 +39,8 @@
 - 编写队列仓储：`app/lib/db/syncQueue/queueRepository.ts` 提供词条与复习事件入队（同一实体按客户端更新时间去重取最新）、到期查询、成功删除、失败指数退避（1s 起步，封顶 5 分钟）、冲突处理（服务端时间优先，否则立即重试），并对 payload 进行构建校验。
 - 补充 README/导出：`app/lib/db/README.md` 说明同步队列职责，`app/lib/db/index.ts` 导出接口；清理逻辑涵盖 `sync_queue`。
 - 单测：`npm test -- app/lib/db/syncQueue` 通过，覆盖重复入队去重、失败退避、冲突决策、复习事件入队与成功删除流程。***
+
+## 实施计划第 8 步（实现 AI 生成 Edge Function 代理接口）
+- 新增 Edge Function `supabase/functions/ai-generator`：`handler.ts` 负责 CORS、JSON 校验、敏感词过滤、滑动窗口限流、超时保护与模型路由；`modelProviders.ts` 封装 GPT-4o/3.5 与 Gemini Flash-Lite 调用与 JSON 解析；`filters.ts`、`rateLimiter.ts` 拆分敏感词与限流；`index.ts` 绑定 Deno.serve。
+- 编写 Deno 单测 `supabase/tests/ai-generator.spec.ts` 覆盖成功返回、敏感词拒绝、限流与超时分支，新增 `deno.lock` 锁定 JSR 依赖；`npm run test:functions` 路由至该测试，命令本地通过。
+- 目录文档 `CLAUDE.md` 已同步 supabase Edge Function 的位置与职责说明。***

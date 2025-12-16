@@ -9,7 +9,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "eslint . --ext .ts,.tsx --report-unused-disable-directives --max-warnings=0",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+    "test:functions": "deno test supabase/tests/ai-generator.spec.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.87.1",
