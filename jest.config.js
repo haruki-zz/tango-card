@@ -8,5 +8,6 @@ module.exports = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
   },
-  testPathIgnorePatterns: ["/node_modules/"],
+  // Supabase Edge Function 测试使用 Deno（npm run test:functions），避免被 Jest 误加载
+  testPathIgnorePatterns: ["/node_modules/", "<rootDir>/supabase/tests/"],
 };
