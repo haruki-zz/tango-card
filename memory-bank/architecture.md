@@ -10,7 +10,7 @@
 - tsconfig.json: 继承 expo 基础，开启 strict 与路径别名 `@/*`。
 - babel.config.js: 使用 babel-preset-expo，并加载 Reanimated 插件。
 - .eslintrc.js: 采用 universe/native 与 TypeScript 分析规则，配置 TS import resolver。
-- jest.config.js、jest.setup.ts: 使用 jest-expo 预设，加载 RNTL 匹配器、手势与 Reanimated 测试配置。
+- jest.config.js、jest.setup.ts: 使用 jest-expo 预设，加载 RNTL 匹配器、手势与 Reanimated 测试配置；Jest 忽略 `supabase/tests`，Edge Function 测试通过 `npm run test:functions` 的 Deno 套件执行。
 - expo-env.d.ts: 提供 expo-router 入口的类型声明。
 - .gitignore: 忽略 node_modules、构建产物、日志等临时文件。
 
@@ -27,6 +27,8 @@
 - app/features/heatmap/README.md: 定义活跃度聚合与热力图视图的职责。
 - app/lib/README.md: 说明横切能力层的定位（API/DB/状态等）。
 - app/lib/api/README.md: 约束网络与服务调用封装（Supabase、AI 代理）的职责。
+- app/lib/api/aiGenerator.ts: 调用 Supabase Edge Function `ai-generator`，支持模型参数、客户端标识、超时控制与错误友好回退（提供手动编辑草稿）。
+- app/lib/api/aiGenerator.test.ts: 覆盖成功生成、超时 abort 与服务端错误回退提示。
 - app/lib/api/supabaseClient.ts: 读取并裁剪 `EXPO_PUBLIC_SUPABASE_URL`/`EXPO_PUBLIC_SUPABASE_ANON_KEY`，校验 URL 合法性并创建 Supabase JS 客户端单例，缺参或非法时抛出早期错误。
 - app/lib/api/supabaseClient.test.ts: 覆盖环境变量缺失/非法与成功路径，确保加载阶段暴露配置问题。
 - app/lib/db/README.md: 约束 SQLite 初始化、表结构与 CRUD/同步队列封装的职责。
@@ -69,4 +71,4 @@
 - assets/images/*: 应用图标、启动图、favicon 占位资源。
 
 ## 状态
-- 当前完成实施计划第 8 步（AI 生成 Edge Function 代理）：在 Supabase Edge Function 内实现 AI 生成代理，含敏感词过滤、限流、超时与多模型路由，并以 Deno 测试覆盖关键分支。***
+- 当前完成实施计划第 9 步（封装客户端 AI 调用与回退）：提供客户端 `aiGenerator` 封装支持模型/超时/回退，Jest 覆盖成功与异常分支；Edge Function 仍由 Deno 测试 `npm run test:functions` 独立执行。***

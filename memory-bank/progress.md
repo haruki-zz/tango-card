@@ -44,3 +44,8 @@
 - 新增 Edge Function `supabase/functions/ai-generator`：`handler.ts` 负责 CORS、JSON 校验、敏感词过滤、滑动窗口限流、超时保护与模型路由；`modelProviders.ts` 封装 GPT-4o/3.5 与 Gemini Flash-Lite 调用与 JSON 解析；`filters.ts`、`rateLimiter.ts` 拆分敏感词与限流；`index.ts` 绑定 Deno.serve。
 - 编写 Deno 单测 `supabase/tests/ai-generator.spec.ts` 覆盖成功返回、敏感词拒绝、限流与超时分支，新增 `deno.lock` 锁定 JSR 依赖；`npm run test:functions` 路由至该测试，命令本地通过。
 - 目录文档 `CLAUDE.md` 已同步 supabase Edge Function 的位置与职责说明。***
+
+## 实施计划第 9 步（封装客户端 AI 调用与回退）
+- 在 `app/lib/api/aiGenerator.ts` 封装 Edge Function `ai-generator` 调用，支持模型参数、客户端 ID 头、外部 AbortSignal 与超时控制，统一错误码映射并回退到手动可编辑草稿。
+- 新增单测 `app/lib/api/aiGenerator.test.ts` 覆盖成功路径、超时 abort 与服务端错误回退提示；`jest.config.js` 忽略 `supabase/tests`，确保 Deno 测试由 `npm run test:functions` 独立执行。
+- 更新 `app/lib/api/README.md` 与 `CLAUDE.md` 记录新模块职责与目录；`npm test` 通过。***
