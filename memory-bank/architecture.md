@@ -10,7 +10,7 @@
 - tsconfig.json: 继承 expo 基础，开启 strict 与路径别名 `@/*`。
 - babel.config.js: 使用 babel-preset-expo，并加载 Reanimated 插件。
 - .eslintrc.js: 采用 universe/native 与 TypeScript 分析规则，配置 TS import resolver。
-- jest.config.js、jest.setup.ts: 使用 jest-expo 预设，加载 RNTL 匹配器、手势与 Reanimated 测试配置；Jest 忽略 `supabase/tests`，Edge Function 测试通过 `npm run test:functions` 的 Deno 套件执行。
+- jest.config.js、jest.setup.ts: 使用 jest-expo 预设，加载 RNTL 匹配器、手势与 Reanimated 测试配置，补充 useAnimatedGestureHandler/runOnJS 模拟便于动画与滑动测试；Jest 忽略 `supabase/tests`，Edge Function 测试通过 `npm run test:functions` 的 Deno 套件执行。
 - expo-env.d.ts: 提供 expo-router 入口的类型声明。
 - .gitignore: 忽略 node_modules、构建产物、日志等临时文件。
 
@@ -18,6 +18,8 @@
 - app/_layout.tsx: SafeAreaProvider 包裹的 Router Stack 布局，默认隐藏 header。
 - app/index.tsx: 首页占位视图，展示项目标题与环境就绪文案。
 - app/words/new.tsx: “新增单词”页面，初始化本地 SQLite 后渲染新增表单，失败时提示数据库加载错误。
+- app/components/WordCard.tsx: 可复用记忆卡片组件，正反面显示词面/读音与释义/例句，支持 Reanimated 翻转动画与左右滑动切卡回调，含可访问性提示。
+- app/components/__tests__/WordCard.test.tsx: 覆盖卡片翻转内容切换、旋转角度变更与滑动回调触发。
 - app/__tests__/App.test.tsx: 使用 RNTL 的首页渲染快测。
 
 ## 应用目录骨架
@@ -77,4 +79,4 @@
 - assets/images/*: 应用图标、启动图、favicon 占位资源。
 
 ## 状态
-- 当前完成实施计划第 10 步（“新增单词”页面与流程）：新增表单、写入服务与路由，保存时写入 SQLite、累加活跃度并入同步队列，RNTL 场景测试通过；上一阶段 AI 封装保持独立 Deno 测试。***
+- 当前完成实施计划第 11 步（卡片组件与翻转动画）：新增可翻转记忆卡片与滑动回调，配套 RNTL + Reanimated 模拟测试覆盖翻转与切卡，上一阶段新增表单与服务保持可用。***

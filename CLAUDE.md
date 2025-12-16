@@ -8,6 +8,9 @@ tango-card/
 │ ├ words/
 │ │ └ new.tsx                  # “新增单词”页面，加载本地数据库后渲染表单
 │ ├ components/                # 复用 UI 组件集合
+│ │ ├ README.md
+│ │ ├ WordCard.tsx             # 正反面翻转的记忆卡片组件，支持滑动切卡回调
+│ │ └ __tests__/WordCard.test.tsx# 卡片翻转动画与滑动回调的 RNTL 测试
 │ ├ features/                  # 业务模块（词库/复习/热力图）
 │ │ ├ words/                   # 单词录入、编辑、列表与搜索
 │ │ │ ├ README.md
@@ -47,7 +50,6 @@ tango-card/
 │ │ └ types/                   # 核心实体类型与构建/校验函数
 │ ├ __tests__/App.test.tsx     # 首页渲染快测
 │ ├ lib/db/db.test.ts          # SQLite 内存库 CRUD/外键单测
-│ ├ components/README.md
 │ ├ features/README.md
 │ ├ features/words/README.md
 │ ├ features/review/README.md
@@ -96,10 +98,10 @@ tango-card/
 
 ## 模块关系
 - app 层通过 Expo Router 从 `expo-router/entry` 启动，布局由 `app/_layout.tsx` 定义，页面（如 `app/index.tsx`）按路由文件约定渲染。
-- app/components 提供无业务耦合的可复用 UI 单元，为 features 层组合；`app/words/new.tsx` 挂载词库新增页面。
+- app/components 提供无业务耦合的可复用 UI 单元（WordCard 负责卡片正反面翻转与滑动切卡回调），为 features 层组合；`app/words/new.tsx` 挂载词库新增页面。
 - app/features 按业务垂直拆分：words 管理录入/列表（`components/AddWordForm` 依赖 AI 生成与新增服务，`services/createWord` 封装词条写入、活跃度累计与同步入队），review 负责复习流程与标记，heatmap 聚合活跃度并呈现热力图。
 - app/lib 作为横切基础设施：api 封装 Supabase/AI 调用（supabaseClient 校验环境并创建单例，aiGenerator 负责调用 Edge Function、处理模型参数与超时回退），db 负责 SQLite 表结构与 CRUD（建表/外键、词条/复习事件/活跃度仓储与清理、同步队列入队/退避/冲突决策）、state 维护基于 Zustand 的全局 store（词库/复习队列/活动计数）与 React Query key、Client、预取查询配置，constants/types 提供枚举默认值与核心实体的构建/校验函数，供各业务模块复用。
 - supabase/functions/ai-generator 提供 AI 生成代理 Edge Function，内置敏感词过滤、限流、模型路由（GPT-4o/3.5、Gemini Flash-Lite）与超时处理，入口绑定至 Deno.serve；supabase/tests 下使用 Deno 原生测试覆盖成功、敏感词、限流与超时分支。
-- 配置层（tsconfig/babel/eslint/jest）共同保障 TypeScript、路由、动画与测试可用；别名 `@/*` 在源码与测试中一致。
+- 配置层（tsconfig/babel/eslint/jest）共同保障 TypeScript、路由、动画与测试可用，`jest.setup.ts` 额外补全 Reanimated 手势模拟便于动画/滑动测试；别名 `@/*` 在源码与测试中一致。
 - 资产层（assets/images）供 app.json 引用，确保打包与预览资源一致。
 - 文档层（memory-bank、prompts、AGENTS.md）规定业务需求、计划、架构与操作规范，是后续开发的真源信息。***

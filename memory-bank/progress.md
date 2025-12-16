@@ -56,3 +56,8 @@
 - 新增路由 `app/words/new.tsx`：初始化本地数据库后渲染新增表单，失败时展示错误态。
 - 编写 RNTL 场景测试 `app/features/words/__tests__/AddWordForm.test.tsx` 覆盖空内容校验、AI 生成填充、保存后词条/活跃度/同步队列写入；使用可注入生成器和固定时钟稳定断言。
 - 更新 `app/features/words/README.md`、`CLAUDE.md` 说明新增表单与服务职责；`npm test` 通过。***
+
+## 实施计划第 11 步（构建卡片组件与翻转动画）
+- 新增 `app/components/WordCard.tsx`：可复用记忆卡片，正面展示词面/读音，背面展示释义与例句；使用 Reanimated 翻转动画与左右滑动切卡回调，含可访问性提示。
+- 新增测试 `app/components/__tests__/WordCard.test.tsx`：覆盖翻转前后内容可见性、旋转角度变化以及滑动超阈值触发回调。
+- 测试：`npm test -- app/components` 通过。
