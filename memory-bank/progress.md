@@ -49,3 +49,10 @@
 - 在 `app/lib/api/aiGenerator.ts` 封装 Edge Function `ai-generator` 调用，支持模型参数、客户端 ID 头、外部 AbortSignal 与超时控制，统一错误码映射并回退到手动可编辑草稿。
 - 新增单测 `app/lib/api/aiGenerator.test.ts` 覆盖成功路径、超时 abort 与服务端错误回退提示；`jest.config.js` 忽略 `supabase/tests`，确保 Deno 测试由 `npm run test:functions` 独立执行。
 - 更新 `app/lib/api/README.md` 与 `CLAUDE.md` 记录新模块职责与目录；`npm test` 通过。***
+
+## 实施计划第 10 步（完成“新增单词”页面与流程）
+- 新增 `app/features/words/components/AddWordForm.tsx`：提供词面输入、AI 生成按钮（支持注入生成器以避免测试时加载 Supabase 环境）、读音/释义/例句编辑、熟悉度切换与保存按钮，带错误/提示文案。
+- 新增服务 `app/features/words/services/createWord.ts`：生成唯一词条 ID，调用 SQLite `insertWord` 写入默认熟悉度/计数/时间戳，累加当日 `activity_log.addCount`，将词条入同步队列，并更新 Zustand store。
+- 新增路由 `app/words/new.tsx`：初始化本地数据库后渲染新增表单，失败时展示错误态。
+- 编写 RNTL 场景测试 `app/features/words/__tests__/AddWordForm.test.tsx` 覆盖空内容校验、AI 生成填充、保存后词条/活跃度/同步队列写入；使用可注入生成器和固定时钟稳定断言。
+- 更新 `app/features/words/README.md`、`CLAUDE.md` 说明新增表单与服务职责；`npm test` 通过。***

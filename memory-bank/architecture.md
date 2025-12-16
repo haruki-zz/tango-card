@@ -17,12 +17,13 @@
 ## 应用入口与视图
 - app/_layout.tsx: SafeAreaProvider 包裹的 Router Stack 布局，默认隐藏 header。
 - app/index.tsx: 首页占位视图，展示项目标题与环境就绪文案。
+- app/words/new.tsx: “新增单词”页面，初始化本地 SQLite 后渲染新增表单，失败时提示数据库加载错误。
 - app/__tests__/App.test.tsx: 使用 RNTL 的首页渲染快测。
 
 ## 应用目录骨架
 - app/components/README.md: 约定复用型 UI 组件集合的职责，保持无业务耦合。
 - app/features/README.md: 说明业务模块按子目录拆分的原则。
-- app/features/words/README.md: 定义单词录入、编辑、列表与搜索的作用范围与依赖。
+- app/features/words/README.md: 定义单词录入、编辑、列表与搜索的作用范围与依赖，记录新增表单与写入服务职责。
 - app/features/review/README.md: 定义复习流程、卡片翻转与熟悉度标记的职责。
 - app/features/heatmap/README.md: 定义活跃度聚合与热力图视图的职责。
 - app/lib/README.md: 说明横切能力层的定位（API/DB/状态等）。
@@ -67,8 +68,13 @@
 - supabase/functions/ai-generator/rateLimiter.ts: 双窗口计数限流实现，按客户端键统计。
 - supabase/tests/ai-generator.spec.ts: Deno 原生测试，覆盖成功生成、敏感词拒绝、限流命中与超时分支；`npm run test:functions` 指向该套件。
 
+## 业务模块：词库新增
+- app/features/words/components/AddWordForm.tsx: 新增单词表单，含词面输入、AI 生成触发、读音/释义/例句编辑、熟悉度选择与保存按钮，可注入生成器避免测试时加载 Supabase 环境。
+- app/features/words/services/createWord.ts: 写入词条的服务封装，生成唯一 ID、调用 SQLite 插入并默认熟悉度/计数/时间戳、累加当日 `activity_log.addCount`、入同步队列，并同步更新 Zustand store。
+- app/features/words/__tests__/AddWordForm.test.tsx: RNTL 场景测试，覆盖空内容校验、AI 填充与保存后词条/活跃度/同步队列写入。
+
 ## 资产
 - assets/images/*: 应用图标、启动图、favicon 占位资源。
 
 ## 状态
-- 当前完成实施计划第 9 步（封装客户端 AI 调用与回退）：提供客户端 `aiGenerator` 封装支持模型/超时/回退，Jest 覆盖成功与异常分支；Edge Function 仍由 Deno 测试 `npm run test:functions` 独立执行。***
+- 当前完成实施计划第 10 步（“新增单词”页面与流程）：新增表单、写入服务与路由，保存时写入 SQLite、累加活跃度并入同步队列，RNTL 场景测试通过；上一阶段 AI 封装保持独立 Deno 测试。***
