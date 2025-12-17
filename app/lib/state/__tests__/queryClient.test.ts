@@ -1,4 +1,4 @@
-import { createQueryClient, getDefaultQueryOptions } from "./queryClient";
+import { createQueryClient, getDefaultQueryOptions } from "../queryClient";
 
 describe("query client config", () => {
   it("builds a client with safe defaults", () => {

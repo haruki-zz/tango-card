@@ -2,15 +2,15 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 const mockInvoke = jest.fn();
 
-jest.mock("./supabaseClient", () => ({
+jest.mock("../supabaseClient", () => ({
   supabaseClient: { functions: { invoke: mockInvoke } },
 }));
 
-type AiGeneratorModule = typeof import("./aiGenerator");
+type AiGeneratorModule = typeof import("../aiGenerator");
 const {
   AI_GENERATOR_MANUAL_DRAFT,
   createAiGenerator,
-}: AiGeneratorModule = require("./aiGenerator");
+}: AiGeneratorModule = require("../aiGenerator");
 
 const buildGenerator = () =>
   createAiGenerator({ invoke: mockInvoke } as unknown as SupabaseClient["functions"]);

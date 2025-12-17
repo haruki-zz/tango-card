@@ -1,11 +1,11 @@
 const VALID_URL = "https://example.supabase.co";
 const VALID_ANON_KEY = "anon-key";
 
-type SupabaseClientModule = typeof import("./supabaseClient");
+type SupabaseClientModule = typeof import("../supabaseClient");
 
 const loadClientModule = (): SupabaseClientModule =>
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require("./supabaseClient");
+  require("../supabaseClient");
 
 describe("supabaseClient 环境校验", () => {
   const originalEnv = { ...process.env };

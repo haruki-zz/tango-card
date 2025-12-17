@@ -1,9 +1,9 @@
 import {
   DEFAULT_FAMILIARITY,
   DEFAULT_REVIEW_COUNT,
-} from "../constants";
-import { WordEntry } from "../types";
-import { createAppStore } from "./appStore";
+} from "../../constants";
+import { WordEntry } from "../../types";
+import { createAppStore } from "../appStore";
 
 const fixedTimestamp = "2024-01-01T00:00:00.000Z";
 
