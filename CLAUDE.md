@@ -5,6 +5,8 @@ tango-card/
 ├ app/                         # Expo Router 页面、业务模块与测试
 │ ├ _layout.tsx                # SafeArea + Router Stack 布局入口
 │ ├ index.tsx                  # 首页占位视图
+│ ├ heatmap/
+│ │ └ index.tsx                # 热力图页面，加载本地 ActivityLog 后渲染 HeatmapView
 │ ├ words/
 │ │ └ new.tsx                  # “新增单词”页面，加载本地数据库后渲染表单
 │ ├ components/                # 复用 UI 组件集合
@@ -31,11 +33,15 @@ tango-card/
 │ │   ├ README.md
 │ │   ├ index.ts               # 导出热力图聚合、缓存接口与类型
 │ │   ├ types.ts               # Heatmap 范围/每日方格数据结构
+│ │   ├ components/
+│ │   │ ├ HeatmapGrid.tsx      # 使用 react-native-svg 绘制方格，按计数深浅填色并支持点击
+│ │   │ └ HeatmapView.tsx      # 热力图视图：周/月切换、方格展示、点击显示每日新增/复习详情
 │ │   ├ services/
 │ │   │ ├ aggregation.ts       # 将 ActivityLog 聚合为周/月方格数据（UTC、周日为周起始）
 │ │   │ ├ cache.ts             # 读写 AsyncStorage 的热力图缓存（TTL 1 年，过期清理）
 │ │   │ └ heatmapData.ts       # 聚合 + 缓存回退入口，日志缺失时优先使用缓存
 │ │   └ __tests__/
+│ │     ├ HeatmapView.test.tsx # RNTL 测试颜色深浅、点击详情与范围切换刷新
 │ │     └ heatmapData.test.ts  # 聚合范围、缓存有效期与回退逻辑的单测
 │ ├ lib/                       # 横切能力层（API/DB/状态/类型）
 │ │ ├ api/                     # Supabase/AI 等服务封装
@@ -117,7 +123,7 @@ tango-card/
 ## 模块关系
 - app 层通过 Expo Router 从 `expo-router/entry` 启动，布局由 `app/_layout.tsx` 定义，页面（如 `app/index.tsx`）按路由文件约定渲染。
 - app/components 提供无业务耦合的可复用 UI 单元（WordCard 负责卡片正反面翻转与滑动切卡回调），为 features 层组合；`app/words/new.tsx` 挂载词库新增页面。
-- app/features 按业务垂直拆分：words 管理录入/列表（`components/AddWordForm` 依赖 AI 生成与新增服务，`services/createWord` 封装词条写入、活跃度累计与同步入队），review 提供复习队列抽样（2:1 权重、不足互补）、熟悉/不熟/跳过动作落库与同步（`services/reviewQueue`、`services/reviewActions`），`components/ReviewSession` 挂载 WordCard 并驱动复习与重置流程；heatmap 侧以 `aggregation.ts` 聚合 ActivityLog 为周/月方格数据（UTC、周日周起）、`cache.ts` 负责 AsyncStorage 本地缓存并提供 TTL 过期清理，`heatmapData.ts` 在日志缺失时走缓存回退，后续 UI 可直接消费 `index.ts` 导出的接口。
+- app/features 按业务垂直拆分：words 管理录入/列表（`components/AddWordForm` 依赖 AI 生成与新增服务，`services/createWord` 封装词条写入、活跃度累计与同步入队），review 提供复习队列抽样（2:1 权重、不足互补）、熟悉/不熟/跳过动作落库与同步（`services/reviewQueue`、`services/reviewActions`），`components/ReviewSession` 挂载 WordCard 并驱动复习与重置流程；heatmap 以 `aggregation.ts` 聚合 ActivityLog 为周/月方格数据（UTC、周日周起）、`cache.ts` 负责 AsyncStorage 本地缓存与 TTL 清理，`heatmapData.ts` 在日志缺失时走缓存回退，`components/HeatmapGrid` 用 react-native-svg 渲染方格并按计数深浅着色，`HeatmapView` 提供周/月切换与每日详情，页面 `app/heatmap/index.tsx` 负责加载 ActivityLog 后挂载视图。
 - app/lib 作为横切基础设施：api 封装 Supabase/AI 调用（supabaseClient 校验环境并创建单例，aiGenerator 负责调用 Edge Function、处理模型参数与超时回退），db 负责 SQLite 表结构与 CRUD（建表/外键、词条/复习事件/活跃度仓储与清理、同步队列入队/退避/冲突决策）、state 维护基于 Zustand 的全局 store（词库/复习队列/活动计数）与 React Query key、Client、预取查询配置，constants/types 提供枚举默认值与核心实体的构建/校验函数，供各业务模块复用。
 - supabase/functions/ai-generator 提供 AI 生成代理 Edge Function，内置敏感词过滤、限流、模型路由（GPT-4o/3.5、Gemini Flash-Lite）与超时处理，入口绑定至 Deno.serve；supabase/tests 下使用 Deno 原生测试覆盖成功、敏感词、限流与超时分支。
 - 配置层（tsconfig/babel/eslint/jest）共同保障 TypeScript、路由、动画与测试可用，`jest.setup.ts` 额外补全 Reanimated 手势模拟便于动画/滑动测试；别名 `@/*` 在源码与测试中一致。

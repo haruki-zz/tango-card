@@ -4,7 +4,7 @@
 - 使用 Expo SDK 54 + Expo Router 6，React 19 / React Native 0.81，TypeScript 严格模式，入口为 `expo-router/entry`。
 
 ## 配置与工程基础
-- package.json: 脚本（start/android/ios/web/lint/test/test:functions），依赖（Expo 栈、React Query、Zustand、SQLite、Supabase JS、Reanimated、手势、Safe Area/Screens、Expo Network、AsyncStorage、RN Web），devDependencies（eslint+universe 规则、jest-expo、RNTL、TS、sql.js（用于 Jest 内存 SQLite 模拟））。
+- package.json: 脚本（start/android/ios/web/lint/test/test:functions），依赖（Expo 栈、React Query、Zustand、SQLite、Supabase JS、Reanimated、手势、Safe Area/Screens、Expo Network、AsyncStorage、RN Web、react-native-svg），devDependencies（eslint+universe 规则、jest-expo、RNTL、TS、sql.js（用于 Jest 内存 SQLite 模拟））。
 - package-lock.json: 锁定上述依赖版本；deno.lock 锁定 Supabase Edge Function 测试使用的 JSR 依赖。
 - app.json: 应用元数据与图标/启动图配置，启用新架构。
 - tsconfig.json: 继承 expo 基础，开启 strict 与路径别名 `@/*`。
@@ -17,6 +17,7 @@
 ## 应用入口与视图
 - app/_layout.tsx: SafeAreaProvider 包裹的 Router Stack 布局，默认隐藏 header。
 - app/index.tsx: 首页占位视图，展示项目标题与环境就绪文案。
+- app/heatmap/index.tsx: 热力图页面，初始化本地数据库并读取 ActivityLog 后渲染 HeatmapView，加载/错误态友好提示。
 - app/words/new.tsx: “新增单词”页面，初始化本地 SQLite 后渲染新增表单，失败时提示数据库加载错误。
 - app/components/WordCard.tsx: 可复用记忆卡片组件，正反面显示词面/读音与释义/例句，支持 Reanimated 翻转动画与左右滑动切卡回调，含可访问性提示。
 - app/components/__tests__/WordCard.test.tsx: 覆盖卡片翻转内容切换、旋转角度变更与滑动回调触发。
@@ -82,16 +83,19 @@
 - app/features/review/__tests__/reviewQueue.test.ts: 覆盖抽样比例（2:1）与不足互补逻辑。
 - app/features/review/__tests__/ReviewSession.test.tsx: 覆盖熟悉/不熟/跳过全流程、活跃度与事件写入、重置不重复计数的集成行为。
 
-## 业务模块：Heat Map 数据聚合与缓存
+## 业务模块：Heat Map 数据聚合与 UI
 - app/features/heatmap/types.ts: 定义热力图范围（周/月）与每日方格数据结构。
 - app/features/heatmap/services/aggregation.ts: 将 ActivityLog 按 UTC 分桶聚合为周/月区间数据，周日为周起点，填充范围内所有日期的 add/review/total。
 - app/features/heatmap/services/cache.ts: 使用 AsyncStorage 存储热力图缓存，携带版本与缓存时间戳，TTL 1 年，解析失败或过期自动清理。
 - app/features/heatmap/services/heatmapData.ts: 聚合入口，先尝试读取缓存（仅当日志为空时），否则重算并回写缓存，便于离线查看。
-- app/features/heatmap/index.ts: 聚合与缓存的导出出口，供 UI 层直接调用。
+- app/features/heatmap/components/HeatmapGrid.tsx: 基于 react-native-svg 的 7 列方格渲染，按每日计数梯度着色并支持点击高亮。
+- app/features/heatmap/components/HeatmapView.tsx: 热力图视图组件，提供周/月切换、加载/错误态提示、默认选中活跃日与每日新增/复习/总计详情展示。
+- app/features/heatmap/index.ts: 聚合、缓存与 UI 组件导出入口，供页面直接消费。
 - app/features/heatmap/__tests__/heatmapData.test.ts: 覆盖周/月聚合范围、缓存回退与过期策略的单元测试。
+- app/features/heatmap/__tests__/HeatmapView.test.tsx: RNTL 场景测试颜色深浅映射、点击详情与切换范围刷新。
 
 ## 资产
 - assets/images/*: 应用图标、启动图、favicon 占位资源。
 
 ## 状态
-- 当前完成实施计划第 14 步（构建 Heat Map 数据聚合与缓存）：新增热力图聚合与缓存模块（UTC 分桶、周日起算、AsyncStorage 1 年 TTL 回退），测试覆盖周/月范围与缓存过期/回退。下一步为 Heat Map UI，但尚未开始。***
+- 当前完成实施计划第 15 步（实现 Heat Map UI 与互动）：完成热力图 SVG 方格、周/月切换与点击详情 UI，新增页面挂载本地日志加载，测试覆盖颜色映射与交互。下一步为第 16 步搜索与筛选，尚未开始。***

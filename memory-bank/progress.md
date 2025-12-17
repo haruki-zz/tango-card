@@ -79,3 +79,9 @@
 - 定义热力图类型与出口：`app/features/heatmap/types.ts` 描述范围与每日方格数据；`index.ts` 统一导出聚合、缓存接口；README 更新职责说明。
 - 为 Jest 注入 AsyncStorage mock（`jest.setup.ts`），新增依赖 `@react-native-async-storage/async-storage`；编写单测 `app/features/heatmap/__tests__/heatmapData.test.ts` 覆盖周/月聚合、缓存回退与 TTL 过期。
 - 本地验证：`npm test -- app/features/heatmap/__tests__/heatmapData.test.ts` 通过。***
+
+## 实施计划第 15 步（实现 Heat Map UI 与互动）
+- 引入 UI 组件：`app/features/heatmap/components/HeatmapGrid.tsx` 使用 `react-native-svg` 渲染 7 列方格，按每日计数梯度着色并支持选中高亮；`HeatmapView.tsx` 提供周/月切换、加载状态、点击日详情（新增/复习/总计）与缓存来源提示。
+- 新增页面 `app/heatmap/index.tsx`：初始化本地数据库、读取 `ActivityLog` 后挂载 HeatmapView，并将日志同步到 Zustand store；更新 `app/features/heatmap/index.ts` 导出组件与常量。
+- 补充测试 `app/features/heatmap/__tests__/HeatmapView.test.tsx`：验证颜色深浅映射、点击显示详情、切换范围重新加载；README 与 `CLAUDE.md` 反映新组件与路由；依赖新增 `react-native-svg`。
+- 本地验证：`npm test -- app/features/heatmap/__tests__/HeatmapView.test.tsx` 通过。***

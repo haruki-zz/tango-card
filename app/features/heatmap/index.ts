@@ -7,3 +7,5 @@ export {
   clearHeatmapCache,
 } from "./services/cache";
 export { getHeatmapData } from "./services/heatmapData";
+export { HeatmapView } from "./components/HeatmapView";
+export { HeatmapGrid, HEATMAP_COLOR_STOPS } from "./components/HeatmapGrid";
