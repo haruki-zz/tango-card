@@ -73,3 +73,9 @@
 - 引入 `expo-network` 检测网络状态，离线时提示“网络不可用，请检查网络设置”。
 - 扩充 `ReviewSession.test.tsx` 场景覆盖进度显示、重置归零、离线空态与进度条宽度校验，并新增 `__mocks__/expo-network.ts` 以便 Jest 模拟。
 - 本地验证：`npm test -- app/features/review/__tests__/ReviewSession.test.tsx` 通过。***
+
+## 实施计划第 14 步（构建 Heat Map 数据聚合与缓存）
+- 新增热力图聚合与缓存模块：`app/features/heatmap/services/aggregation.ts` 以 UTC 分桶、周日为周起始生成周/月方格数据；`services/cache.ts` 使用 AsyncStorage 存储 1 年 TTL 缓存并做版本/过期清理；`services/heatmapData.ts` 统一聚合入口，日志缺失时回退缓存。
+- 定义热力图类型与出口：`app/features/heatmap/types.ts` 描述范围与每日方格数据；`index.ts` 统一导出聚合、缓存接口；README 更新职责说明。
+- 为 Jest 注入 AsyncStorage mock（`jest.setup.ts`），新增依赖 `@react-native-async-storage/async-storage`；编写单测 `app/features/heatmap/__tests__/heatmapData.test.ts` 覆盖周/月聚合、缓存回退与 TTL 过期。
+- 本地验证：`npm test -- app/features/heatmap/__tests__/heatmapData.test.ts` 通过。***

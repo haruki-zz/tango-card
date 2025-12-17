@@ -3,6 +3,10 @@ import "react-native-gesture-handler/jestSetup";
 import { State } from "react-native-gesture-handler";
 import { setUpTests as setUpReanimatedTests } from "react-native-reanimated";
 
+jest.mock("@react-native-async-storage/async-storage", () =>
+  require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
+);
+
 setUpReanimatedTests();
 
 // 补充 Reanimated 模拟中缺失的手势回调与 runOnJS，便于手势相关组件测试

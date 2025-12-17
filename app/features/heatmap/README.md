@@ -1,3 +1,4 @@
 # app/features/heatmap
-- 聚合 ActivityLog 数据，渲染周/月视图的活跃度热力图。
-- 支持本地缓存与离线查看，提供每日新增/复习详情。
+- 聚合 ActivityLog 为周/月视图（UTC 分桶，周日为起始）的活跃度数据。
+- 提供纯函数 `buildHeatmapData`/`getHeatmapData` 生成方格数据与缓存回退。
+- 使用 AsyncStorage 做 1 年 TTL 的本地缓存，日志缺失时可离线读取缓存。

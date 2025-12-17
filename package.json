@@ -13,6 +13,7 @@
     "test:functions": "deno test supabase/tests/ai-generator.spec.ts"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "@supabase/supabase-js": "^2.87.1",
     "@tanstack/react-query": "^5.90.12",
     "expo": "~54.0.29",
