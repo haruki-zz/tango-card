@@ -3,6 +3,7 @@ import {
   render,
   waitFor,
 } from "@testing-library/react-native";
+import * as Network from "expo-network";
 
 import { ReviewSession } from "../components/ReviewSession";
 import { buildReviewQueue } from "../services/reviewQueue";
@@ -21,6 +22,7 @@ import {
 } from "@/app/lib/types";
 
 jest.mock("expo-sqlite");
+jest.mock("expo-network");
 
 describe("ReviewSession", () => {
   let db: DatabaseConnection;
@@ -51,9 +53,16 @@ describe("ReviewSession", () => {
       return acc;
     }, {});
 
+  const mockNetworkState = jest.mocked(Network.getNetworkStateAsync);
+
   beforeEach(async () => {
     db = await openDatabase(":memory:");
     appStore.getState().reset();
+    mockNetworkState.mockResolvedValue({
+      type: "wifi",
+      isConnected: true,
+      isInternetReachable: true,
+    });
   });
 
   afterEach(async () => {
@@ -81,23 +90,30 @@ describe("ReviewSession", () => {
       <ReviewSession db={db} clock={clock} />,
     );
 
+    const getProgressValue = () =>
+      getByTestId("review-progress-value").props.children as string;
+
     const pressCard = () => fireEvent.press(getByTestId("word-card-pressable"));
 
     await waitFor(() => expect(getAllByText(surfaces[0]).length).toBeGreaterThan(0));
+    expect(getProgressValue()).toBe("0/3");
     pressCard();
     fireEvent.press(getByText("熟悉"));
 
     await waitFor(() => expect(getAllByText(surfaces[1]).length).toBeGreaterThan(0));
+    expect(getProgressValue()).toBe("1/3");
     pressCard();
     fireEvent.press(getByText("不熟"));
 
     await waitFor(() => expect(getAllByText(surfaces[2]).length).toBeGreaterThan(0));
+    expect(getProgressValue()).toBe("2/3");
     pressCard();
     fireEvent.press(getByText("跳过"));
 
     await waitFor(() =>
       expect(getAllByText("本次复习已完成").length).toBeGreaterThan(0),
     );
+    expect(getProgressValue()).toBe("3/3");
 
     const updatedWords = await listWords(db);
     const updatedById = mapById(updatedWords);
@@ -148,19 +164,25 @@ describe("ReviewSession", () => {
       <ReviewSession db={db} clock={clock} />,
     );
 
+    const getProgressValue = () =>
+      getByTestId("review-progress-value").props.children as string;
+
     const pressCard = () => fireEvent.press(getByTestId("word-card-pressable"));
 
     await waitFor(() => expect(getAllByText("単語-alpha").length).toBeGreaterThan(0));
+    expect(getProgressValue()).toBe("0/2");
     pressCard();
     fireEvent.press(getByText("熟悉"));
 
     await waitFor(() => expect(getAllByText("単語-beta").length).toBeGreaterThan(0));
+    expect(getProgressValue()).toBe("1/2");
 
     let activityLog = await listActivityLogs(db);
     expect(activityLog[0].reviewCount).toBe(1);
 
     fireEvent.press(getByText("重置本轮"));
     await waitFor(() => expect(getAllByText("単語-alpha").length).toBeGreaterThan(0));
+    expect(getProgressValue()).toBe("0/2");
 
     activityLog = await listActivityLogs(db);
     expect(activityLog[0].reviewCount).toBe(1);
@@ -174,11 +196,41 @@ describe("ReviewSession", () => {
     await waitFor(() =>
       expect(getAllByText("本次复习已完成").length).toBeGreaterThan(0),
     );
+    expect(getProgressValue()).toBe("2/2");
 
     activityLog = await listActivityLogs(db);
     expect(activityLog[0].reviewCount).toBe(3);
 
     const eventsAlpha = await listReviewEventsByWord(db, "alpha");
     expect(eventsAlpha).toHaveLength(2);
+  });
+
+  it("在空队列与离线时提示空态与网络错误", async () => {
+    mockNetworkState.mockResolvedValue({
+      type: "none",
+      isConnected: false,
+      isInternetReachable: false,
+    });
+
+    const { findByText, getByTestId } = render(
+      <ReviewSession db={db} clock={clock} />,
+    );
+
+    await findByText("目前复习队列为空，请添加单词");
+    await findByText("网络不可用，请检查网络设置");
+    expect(
+      getByTestId("review-progress-value").props.children as string,
+    ).toBe("0/0");
+
+    const progressBar = getByTestId("review-progress-bar");
+    const styleArray = Array.isArray(progressBar.props.style)
+      ? progressBar.props.style
+      : [progressBar.props.style];
+    const widthStyle = styleArray.find(
+      (style: { width?: string }) =>
+        style && typeof style.width !== "undefined",
+    );
+
+    expect(widthStyle?.width).toBe("0%");
   });
 });

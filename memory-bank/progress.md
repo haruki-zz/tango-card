@@ -67,3 +67,9 @@
 - 复习动作：新增 `app/features/review/services/reviewActions.ts`，封装熟悉/不熟/跳过操作，统一更新词条熟悉度、reviewCount/lastReviewedAt，写入 ReviewEvent、累加当日 reviewCount，并入同步队列与 store。
 - 复习会话：新增 `app/features/review/components/ReviewSession.tsx`，挂载 WordCard，要求翻面后操作，支持跳过和“重置本轮”，空队列时提示并自动加载。
 - 测试：新增 `app/features/review/__tests__/reviewQueue.test.ts` 与 `ReviewSession.test.tsx` 覆盖抽样比例、复习流程与重置不计数；`npm test -- app/features/review` 通过。
+
+## 实施计划第 13 步（实现复习导航与进度反馈）
+- `ReviewSession` 增加进度条（完成/总量）、跳过与重置后的进度更新，统一空队列文案“目前复习队列为空，请添加单词”。
+- 引入 `expo-network` 检测网络状态，离线时提示“网络不可用，请检查网络设置”。
+- 扩充 `ReviewSession.test.tsx` 场景覆盖进度显示、重置归零、离线空态与进度条宽度校验，并新增 `__mocks__/expo-network.ts` 以便 Jest 模拟。
+- 本地验证：`npm test -- app/features/review/__tests__/ReviewSession.test.tsx` 通过。***

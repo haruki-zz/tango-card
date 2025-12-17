@@ -10,6 +10,7 @@ import {
   Text,
   View,
 } from "react-native";
+import * as Network from "expo-network";
 
 import { WordCard } from "@/app/components/WordCard";
 import { DatabaseConnection } from "@/app/lib/db";
@@ -28,6 +29,8 @@ const actionMessage: Record<Exclude<ReviewAction, "skip">, string> = {
   unfamiliar: "已标记为不熟",
 };
 
+const EMPTY_QUEUE_MESSAGE = "目前复习队列为空，请添加单词";
+
 export const ReviewSession = ({ db, clock }: ReviewSessionProps) => {
   const queueIds = useAppStore((state) => state.reviewQueue);
   const [currentWord, setCurrentWord] = useState<WordEntry | undefined>();
@@ -35,6 +38,7 @@ export const ReviewSession = ({ db, clock }: ReviewSessionProps) => {
   const [processing, setProcessing] = useState(false);
   const [hasFlipped, setHasFlipped] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [networkMessage, setNetworkMessage] = useState<string | null>(null);
   const hydratedRef = useRef(false);
   const initialQueueRef = useRef<string[]>([]);
 
@@ -48,7 +52,7 @@ export const ReviewSession = ({ db, clock }: ReviewSessionProps) => {
         const { queue, words } = await prepareReviewQueue(db);
         hydratedRef.current = true;
         if (queue.length === 0 || words.length === 0) {
-          setMessage("当前复习队列为空，请先添加单词");
+          setMessage(EMPTY_QUEUE_MESSAGE);
         } else {
           setMessage(null);
         }
@@ -62,6 +66,27 @@ export const ReviewSession = ({ db, clock }: ReviewSessionProps) => {
 
     void hydrateQueue();
   }, [db, queueIds.length]);
+
+  useEffect(() => {
+    const checkNetwork = async () => {
+      try {
+        const state = await Network.getNetworkStateAsync();
+        if (
+          state &&
+          (state.isConnected === false ||
+            state.isInternetReachable === false)
+        ) {
+          setNetworkMessage("网络不可用，请检查网络设置");
+        } else {
+          setNetworkMessage(null);
+        }
+      } catch {
+        setNetworkMessage(null);
+      }
+    };
+
+    void checkNetwork();
+  }, []);
 
   useEffect(() => {
     if (queueIds.length > 0 && !hydratedRef.current) {
@@ -169,6 +194,42 @@ export const ReviewSession = ({ db, clock }: ReviewSessionProps) => {
     );
   };
 
+  const totalCount = initialQueueRef.current.length;
+  const remaining = queueIds.length;
+  const activeWordCount = currentWord ? 1 : 0;
+  const completedCount =
+    totalCount === 0
+      ? 0
+      : Math.min(
+          totalCount,
+          Math.max(0, totalCount - (remaining + activeWordCount)),
+        );
+  const progressRatio =
+    totalCount === 0 ? 0 : Math.min(1, completedCount / totalCount);
+
+  const renderProgress = () => (
+    <View style={styles.progressContainer}>
+      <View style={styles.progressHeader}>
+        <Text style={styles.progressLabel}>进度</Text>
+        <Text
+          style={styles.progressValue}
+          testID="review-progress-value"
+        >
+          {`${completedCount}/${totalCount || 0}`}
+        </Text>
+      </View>
+      <View style={styles.progressBarTrack} accessibilityRole="progressbar">
+        <View
+          testID="review-progress-bar"
+          style={[
+            styles.progressBarFill,
+            { width: `${progressRatio * 100}%` },
+          ]}
+        />
+      </View>
+    </View>
+  );
+
   const renderContent = () => {
     if (loading) {
       return (
@@ -183,7 +244,7 @@ export const ReviewSession = ({ db, clock }: ReviewSessionProps) => {
       return (
         <View style={styles.center}>
           <Text style={styles.status}>
-            {message ?? "当前复习队列为空，请先添加单词"}
+            {message ?? EMPTY_QUEUE_MESSAGE}
           </Text>
         </View>
       );
@@ -217,8 +278,16 @@ export const ReviewSession = ({ db, clock }: ReviewSessionProps) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>复习</Text>
+      {renderProgress()}
       {renderContent()}
-      {message ? <Text style={styles.message}>{message}</Text> : null}
+      {networkMessage ? (
+        <Text style={[styles.message, styles.networkWarning]}>
+          {networkMessage}
+        </Text>
+      ) : null}
+      {message && message !== EMPTY_QUEUE_MESSAGE ? (
+        <Text style={styles.message}>{message}</Text>
+      ) : null}
     </View>
   );
 };
@@ -273,6 +342,37 @@ const styles = StyleSheet.create({
     borderColor: "#cbd5e1",
     alignItems: "center",
   },
+  progressContainer: {
+    backgroundColor: "#e2e8f0",
+    padding: 12,
+    borderRadius: 12,
+    gap: 8,
+  },
+  progressHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  progressLabel: {
+    color: "#0f172a",
+    fontWeight: "700",
+  },
+  progressValue: {
+    color: "#0f172a",
+    fontWeight: "800",
+  },
+  progressBarTrack: {
+    height: 10,
+    width: "100%",
+    backgroundColor: "#cbd5e1",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  progressBarFill: {
+    height: "100%",
+    backgroundColor: "#2563eb",
+    borderRadius: 8,
+  },
   resetText: {
     color: "#0f172a",
     fontWeight: "600",
@@ -293,5 +393,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#e2e8f0",
     padding: 10,
     borderRadius: 10,
+  },
+  networkWarning: {
+    backgroundColor: "#fef3c7",
+    color: "#92400e",
   },
 });

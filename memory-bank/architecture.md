@@ -4,7 +4,7 @@
 - 使用 Expo SDK 54 + Expo Router 6，React 19 / React Native 0.81，TypeScript 严格模式，入口为 `expo-router/entry`。
 
 ## 配置与工程基础
-- package.json: 脚本（start/android/ios/web/lint/test/test:functions），依赖（Expo 栈、React Query、Zustand、SQLite、Supabase JS、Reanimated、手势、Safe Area/Screens、RN Web），devDependencies（eslint+universe 规则、jest-expo、RNTL、TS、sql.js（用于 Jest 内存 SQLite 模拟））。
+- package.json: 脚本（start/android/ios/web/lint/test/test:functions），依赖（Expo 栈、React Query、Zustand、SQLite、Supabase JS、Reanimated、手势、Safe Area/Screens、Expo Network、RN Web），devDependencies（eslint+universe 规则、jest-expo、RNTL、TS、sql.js（用于 Jest 内存 SQLite 模拟））。
 - package-lock.json: 锁定上述依赖版本；deno.lock 锁定 Supabase Edge Function 测试使用的 JSR 依赖。
 - app.json: 应用元数据与图标/启动图配置，启用新架构。
 - tsconfig.json: 继承 expo 基础，开启 strict 与路径别名 `@/*`。
@@ -78,7 +78,7 @@
 ## 业务模块：复习队列与熟悉度更新
 - app/features/review/services/reviewQueue.ts: 生成复习队列，按不熟:熟悉=2:1 权重随机抽样（默认批次 30），不足互补，并提供 `prepareReviewQueue` 读取词库、写入 store 的便捷入口。
 - app/features/review/services/reviewActions.ts: 封装熟悉/不熟/跳过三种操作，统一更新词条熟悉度、reviewCount/lastReviewedAt/updatedAt，写入 ReviewEvent、累加 `activity_log.reviewCount`，并将词条与事件入同步队列及 store。
-- app/features/review/components/ReviewSession.tsx: 复习会话组件，挂载 WordCard，要求翻面后才能标记，支持跳过与“重置本轮”，自动加载空队列并在完成时提示。
+- app/features/review/components/ReviewSession.tsx: 复习会话组件，挂载 WordCard，要求翻面后才能标记，支持跳过与“重置本轮”，展示完成/总量进度条，空队列时提示，离线时提示检查网络，完成后提示。
 - app/features/review/__tests__/reviewQueue.test.ts: 覆盖抽样比例（2:1）与不足互补逻辑。
 - app/features/review/__tests__/ReviewSession.test.tsx: 覆盖熟悉/不熟/跳过全流程、活跃度与事件写入、重置不重复计数的集成行为。
 
@@ -86,4 +86,4 @@
 - assets/images/*: 应用图标、启动图、favicon 占位资源。
 
 ## 状态
-- 当前完成实施计划第 12 步（组装复习队列与熟悉度更新）：完成复习队列抽样（2:1 权重、不足互补）、熟悉/不熟/跳过动作的落库与同步，以及可重置的复习会话组件与集成测试，上一阶段新增表单与卡片组件保持可用。***
+- 当前完成实施计划第 13 步（实现复习导航与进度反馈）：在复习会话中加入进度条、离线提示与统一空队列文案，保持跳过/重置流程可用并补充对应测试，上一阶段队列抽样与熟悉度更新逻辑已稳定。***
