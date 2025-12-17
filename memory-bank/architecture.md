@@ -26,7 +26,7 @@
 - app/components/README.md: 约定复用型 UI 组件集合的职责，保持无业务耦合。
 - app/features/README.md: 说明业务模块按子目录拆分的原则。
 - app/features/words/README.md: 定义单词录入、编辑、列表与搜索的作用范围与依赖，记录新增表单与写入服务职责。
-- app/features/review/README.md: 定义复习流程、卡片翻转与熟悉度标记的职责。
+- app/features/review/README.md: 定义复习流程、卡片翻转与熟悉度标记的职责，记录队列抽样、复习动作与会话组件的位置。
 - app/features/heatmap/README.md: 定义活跃度聚合与热力图视图的职责。
 - app/lib/README.md: 说明横切能力层的定位（API/DB/状态等）。
 - app/lib/api/README.md: 约束网络与服务调用封装（Supabase、AI 代理）的职责。
@@ -75,8 +75,15 @@
 - app/features/words/services/createWord.ts: 写入词条的服务封装，生成唯一 ID、调用 SQLite 插入并默认熟悉度/计数/时间戳、累加当日 `activity_log.addCount`、入同步队列，并同步更新 Zustand store。
 - app/features/words/__tests__/AddWordForm.test.tsx: RNTL 场景测试，覆盖空内容校验、AI 填充与保存后词条/活跃度/同步队列写入。
 
+## 业务模块：复习队列与熟悉度更新
+- app/features/review/services/reviewQueue.ts: 生成复习队列，按不熟:熟悉=2:1 权重随机抽样（默认批次 30），不足互补，并提供 `prepareReviewQueue` 读取词库、写入 store 的便捷入口。
+- app/features/review/services/reviewActions.ts: 封装熟悉/不熟/跳过三种操作，统一更新词条熟悉度、reviewCount/lastReviewedAt/updatedAt，写入 ReviewEvent、累加 `activity_log.reviewCount`，并将词条与事件入同步队列及 store。
+- app/features/review/components/ReviewSession.tsx: 复习会话组件，挂载 WordCard，要求翻面后才能标记，支持跳过与“重置本轮”，自动加载空队列并在完成时提示。
+- app/features/review/__tests__/reviewQueue.test.ts: 覆盖抽样比例（2:1）与不足互补逻辑。
+- app/features/review/__tests__/ReviewSession.test.tsx: 覆盖熟悉/不熟/跳过全流程、活跃度与事件写入、重置不重复计数的集成行为。
+
 ## 资产
 - assets/images/*: 应用图标、启动图、favicon 占位资源。
 
 ## 状态
-- 当前完成实施计划第 11 步（卡片组件与翻转动画）：新增可翻转记忆卡片与滑动回调，配套 RNTL + Reanimated 模拟测试覆盖翻转与切卡，上一阶段新增表单与服务保持可用。***
+- 当前完成实施计划第 12 步（组装复习队列与熟悉度更新）：完成复习队列抽样（2:1 权重、不足互补）、熟悉/不熟/跳过动作的落库与同步，以及可重置的复习会话组件与集成测试，上一阶段新增表单与卡片组件保持可用。***

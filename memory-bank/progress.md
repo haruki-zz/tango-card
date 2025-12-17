@@ -61,3 +61,9 @@
 - 新增 `app/components/WordCard.tsx`：可复用记忆卡片，正面展示词面/读音，背面展示释义与例句；使用 Reanimated 翻转动画与左右滑动切卡回调，含可访问性提示。
 - 新增测试 `app/components/__tests__/WordCard.test.tsx`：覆盖翻转前后内容可见性、旋转角度变化以及滑动超阈值触发回调。
 - 测试：`npm test -- app/components` 通过。
+
+## 实施计划第 12 步（组装复习队列与熟悉度更新逻辑）
+- 复习队列：新增 `app/features/review/services/reviewQueue.ts`，按不熟:熟悉=2:1 权重抽样默认 30 条，不足互补，提供 `prepareReviewQueue` 读取词库并写入 store。
+- 复习动作：新增 `app/features/review/services/reviewActions.ts`，封装熟悉/不熟/跳过操作，统一更新词条熟悉度、reviewCount/lastReviewedAt，写入 ReviewEvent、累加当日 reviewCount，并入同步队列与 store。
+- 复习会话：新增 `app/features/review/components/ReviewSession.tsx`，挂载 WordCard，要求翻面后操作，支持跳过和“重置本轮”，空队列时提示并自动加载。
+- 测试：新增 `app/features/review/__tests__/reviewQueue.test.ts` 与 `ReviewSession.test.tsx` 覆盖抽样比例、复习流程与重置不计数；`npm test -- app/features/review` 通过。
