@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm:dev:renderer\" \"npm:dev:electron\"",
     "dev:renderer": "vite dev --config renderer/vite.config.ts",
-    "dev:electron": "cross-env NODE_ENV=development TS_NODE_PROJECT=electron/tsconfig.json electron -r ts-node/register/transpile-only electron/main.ts",
+    "dev:electron": "cross-env NODE_ENV=development TS_NODE_PROJECT=electron/tsconfig.json electron electron/dev-runner.js",
     "build": "npm run build:renderer && npm run build:electron",
     "build:renderer": "vite build --config renderer/vite.config.ts",
     "build:electron": "tsc -p electron/tsconfig.json",

@@ -14,6 +14,7 @@
 /electron/
   main.ts                 # Electron 主进程入口，创建窗口、加载渲染进程
   preload.ts              # 预加载占位，暴露受控 API 容器
+  dev-runner.js           # 开发模式引导：注册 ts-node 后再加载主进程入口
   tsconfig.json           # 主进程专用 TS 配置，输出 dist-electron
 /renderer/
   index.html              # Vite 入口 HTML
@@ -32,7 +33,7 @@
 ```
 
 ## 模块职责与边界
-- Electron 主进程：`electron/main.ts` 负责窗口创建与渲染资源加载，预加载脚本路径按 dev/prod 切换；`preload.ts` 预留安全桥。
+- Electron 主进程：`electron/main.ts` 负责窗口创建与渲染资源加载，预加载脚本路径按 dev/prod 切换；启用 contextIsolation、webSecurity，禁用 webviewTag，ready-to-show 后展示并禁止窗口打开；`getUserDataPath` 提供用户数据目录拼接；`dev-runner.js` 在开发模式注册 ts-node 以支持直接运行 TS 主进程与预加载。
 - 渲染进程：`renderer` 下的 Vite + React 骨架，`App.tsx` 为占位 UI，`App.test.tsx` 验证测试框架与 DOM 渲染管线。
 - 构建与质量：`package.json` 定义 dev/lint/test/build/dist 全套脚本；`eslint.config.cjs`、`prettier` 文件约束代码风格；`vitest.config.ts` 配置测试环境与别名。
 - 配置复用：`tsconfig.base.json` 作为公共基线，`electron/tsconfig.json`、`renderer/tsconfig.json` 继承各自输出与类型设置。
