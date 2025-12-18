@@ -14,11 +14,11 @@
 - 预期目录：`/electron`（主进程、预加载脚本）、`/renderer`（React+Vite 前端）、`/db`（SQLite schema/迁移）、`/scripts`（构建与打包辅助）。放置测试于相邻的 `__tests__` 或 `*.test.ts(x)`。
 
 ## Build, Test, and Development Commands
-- 安装依赖：`pnpm install`（推荐）或 `npm install`。
-- 开发模式：`pnpm run dev`（并行启动 Electron 主进程与 Vite 渲染进程）。
-- Lint：`pnpm run lint`（ESLint/Prettier）。
-- 单测：`pnpm test`（Vitest + Testing Library）。
-- 打包：`pnpm run build`（Vite 产物）+ `pnpm run dist`（electron-builder 生成安装包）。
+- 安装依赖：`npm install`。
+- 开发模式：`npm run dev`（并行启动 Electron 主进程与 Vite 渲染进程）。
+- Lint：`npm run lint`（ESLint/Prettier）。
+- 单测：`npm test`（Vitest + Testing Library）。
+- 打包：`npm run build`（Vite 产物）+ `npm run dist`（electron-builder 生成安装包）。
 
 ## Coding Style & Naming Conventions
 - 语言：TypeScript；缩进 2 空格；尽量使用函数式无状态组件。
