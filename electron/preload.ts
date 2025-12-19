@@ -1,3 +1,7 @@
-import { contextBridge } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 
-contextBridge.exposeInMainWorld('electronAPI', {});
+import { createPreloadApi, freezePreloadApi } from './preload-api';
+
+const electronAPI = freezePreloadApi(createPreloadApi(ipcRenderer));
+
+contextBridge.exposeInMainWorld('electronAPI', electronAPI);
