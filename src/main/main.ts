@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { app, BrowserWindow } from 'electron';
+import { registerIpcHandlers } from './ipcHandlers';
 
 const isDev = !app.isPackaged;
 
@@ -28,7 +29,10 @@ async function createWindow() {
   await mainWindow.loadFile(indexHtml);
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  registerIpcHandlers();
+  return createWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

@@ -13,13 +13,18 @@
 - playwright.config.ts：Playwright 端到端测试配置，占位 headless 场景。
 - .gitignore：忽略 node_modules、dist、测试产物（coverage/playwright-report/test-results）、环境变量、IDE 缓存。
 - index.html：渲染入口挂载 #root，加载 src/renderer/main.tsx。
-- src/main/main.ts：Electron 主进程创建窗口；dev 加载 Vite 服务，prod 读打包文件；contextIsolation=true、nodeIntegration=false。
-- src/preload/index.ts：通过 contextBridge 暴露受限 API（ping 占位）。
-- src/renderer/env.d.ts：声明 window.api 类型。
+- src/shared/apiTypes.ts：定义 ai/db/settings/files IPC 数据结构与渲染可见 ExposedApi 接口。
+- src/shared/ipcChannels.ts：集中管理 IPC 通道名，主/预加载/渲染共用。
+- src/main/main.ts：Electron 主进程创建窗口，启动前注册 IPC handler；dev 加载 Vite 服务，prod 读打包文件；contextIsolation=true、nodeIntegration=false。
+- src/main/ipcHandlers.ts：主进程注册白名单 IPC handler，返回可预测 mock（AI 生成、队列、复习反馈、设置读写、导入导出）。
+- src/preload/createApi.ts：基于 ipcRenderer.invoke 构建 window.api 映射。
+- src/preload/index.ts：通过 contextBridge 暴露基于 createApi 的 API。
+- src/renderer/env.d.ts：声明 window.api 类型，引用 shared/apiTypes。
 - src/renderer/main.tsx：React 入口，挂载 App 并加载样式。
 - src/renderer/App.tsx：占位 UI，惰性读取 preload ping 避免 effect 中同步 setState。
 - src/renderer/index.css：基础视觉样式（扁平、浅色渐变）。
 - tests/smoke.test.ts：Vitest 占位用例，验证测试管线通畅。
+- tests/ipc-boundary.test.ts：模拟 ipc bus 驱动 handler，验证 window.api 白名单接口与 mock 响应。
 - e2e/smoke.spec.ts：Playwright 占位场景，验证 e2e 管线运行。
 - CLAUDE.md：记录骨架阶段的文件职责与边界。
 - prompts/*、memory-bank/*：开发约束与项目背景文档。
@@ -33,4 +38,4 @@
 - 端到端：`npm run e2e` 运行 Playwright（headless，占位场景）。
 
 ## 安全边界
-- 渲染层通过 preload 白名单访问 API；默认禁用 nodeIntegration、启用 contextIsolation，减少 Node 能力暴露。
+- 渲染层通过 preload 白名单访问 API，通道集中在 shared/ipcChannels；默认禁用 nodeIntegration、启用 contextIsolation，减少 Node 能力暴露。

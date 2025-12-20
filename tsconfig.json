@@ -12,5 +12,5 @@
     "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src/renderer", "vite.config.ts"]
+  "include": ["src/renderer", "src/shared", "vite.config.ts"]
 }

@@ -1,5 +1,6 @@
-import { contextBridge } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
+import { createPreloadApi } from './createApi';
 
-contextBridge.exposeInMainWorld('api', {
-  ping: () => 'pong'
-});
+const api = createPreloadApi(ipcRenderer.invoke.bind(ipcRenderer));
+
+contextBridge.exposeInMainWorld('api', api);

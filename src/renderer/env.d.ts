@@ -2,8 +2,6 @@ export {};
 
 declare global {
   interface Window {
-    api: {
-      ping: () => string;
-    };
+    api: import('../shared/apiTypes').ExposedApi;
   }
 }
