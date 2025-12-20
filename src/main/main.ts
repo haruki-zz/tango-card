@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { app, BrowserWindow } from 'electron';
 import { registerIpcHandlers } from './ipcHandlers';
+import { initializeDatabase } from './db/database';
 
 const isDev = !app.isPackaged;
 
@@ -30,6 +31,7 @@ async function createWindow() {
 }
 
 app.whenReady().then(() => {
+  initializeDatabase();
   registerIpcHandlers();
   return createWindow();
 });
