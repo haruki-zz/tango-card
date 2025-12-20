@@ -6,3 +6,6 @@ out
 .env
 .env.local
 .vscode
+coverage
+playwright-report
+test-results

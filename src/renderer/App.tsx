@@ -1,13 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 function App() {
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    if (window.api?.ping) {
-      setMessage(window.api.ping());
-    }
-  }, []);
+  const [message] = useState(() => (window.api?.ping ? window.api.ping() : ''));
 
   return (
     <div className="app-shell">
