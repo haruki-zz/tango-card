@@ -4,7 +4,7 @@
 - 做任何设计或者写任何代码前必须完整阅读 `prompts/@system_prompts.md`。
 - 写任何代码前必须完整阅读 `prompts/@coding_prompts.md`（包含必须遵守的编程规范）。
 - 写任何代码前必须完整阅读 `memory-bank/@architecture.md`（包含完整数据库结构）。
-- 写任何代码前必须完整阅读 `memory-bank/@game-design-document.md`。
+- 写任何代码前必须完整阅读 `memory-bank/@design-document.md`。
 - 每完成一个重大功能或里程碑后，必须更新 `memory-bank/@architecture.md`。
 - 强调模块化（多文件，各文件职责分明），禁止单体巨文件（monolith）。
 
