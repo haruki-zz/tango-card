@@ -24,7 +24,7 @@
      - `db.answerReview(input: AnswerReviewInput): Promise<AnswerReviewResult>`  
      - `settings.getSettings(): Promise<AppSettings>` / `settings.updateSettings(patch: Partial<AppSettings>): Promise<AppSettings>`  
      - `files.importWords(filePath: string): Promise<ImportResult>` / `files.exportBackup(): Promise<ExportResult>`  
-   - 验证：在渲染层调用 `window.api`（占位）返回预期的模拟值；Vitest 编写接口存在性测试。
+   - 验证：运行 `npm run test`（接口存在性单测）；在渲染层调用 `window.api`（占位）返回预期的模拟值。
 
 4) 搭建 SQLite 数据层（核心）  
    - 指令：主进程集成 SQLite（better-sqlite3），用 Drizzle 定义表：`words`、`review_events`、`daily_activity`、`settings`。字段约束：  
@@ -32,44 +32,44 @@
      - `tags` 存 JSON 数组。  
      - `examples_json` 为 `{ sentence_jp, sentence_cn }[]`。  
      - 新卡默认 SRS：`level/repetitions/interval = 0`，`due_at/last_reviewed_at = null`，`ease_factor = 2.5`。  
-   - 验证：运行初始化脚本后，表正确创建；Vitest 读取 schema 验证字段存在与默认值。
+   - 验证：运行初始化脚本后，表正确创建；`npm run test` 覆盖 schema 字段与默认值。
 
 5) 实现 AI 调用模块（占位+回退）  
    - 指令：在主进程实现 AI 客户端，支持配置 API Key/模型（Gemini-Flash-2.5-Lite 默认，备选 gpt-4o/gpt-4.1-mini）。提供 `generateWordData(term)`，返回结构参考：  
      - 成功：`{ ok: true, data: { term, pronunciation, definition_cn, examples: { sentence_jp, sentence_cn }[] } }`。  
      - 失败：`{ ok: false, error: { code, message, detail? } }`，错误码自定义，message 面向前端。  
-   - 验证：Vitest 使用 mock HTTP 验证成功/失败路径；渲染层收到错误时能继续手动输入。
+   - 验证：`npm run test`（mock HTTP 覆盖成功/失败路径）；渲染层收到错误时能继续手动输入。
 
 6) 新增单词表单（核心流）  
    - 指令：渲染层创建“新增”视图：输入单词 → 触发生成 → 展示假名读音/释义/例句可编辑 → 保存到 DB。AI 失败时允许手动完整填写后保存；单词保存后默认不再允许修改（如需再次编辑需明确二次流程）。  
-   - 验证：手工流：输入词 → 成功生成并保存；模拟 AI 失败时仍可保存。Vitest/React Testing Library 检查按钮禁用/错误提示逻辑。
+   - 验证：手工流：输入词 → 成功生成并保存；模拟 AI 失败时仍可保存；`npm run test`（React Testing Library 检查按钮禁用/错误提示逻辑）。
 
 7) 单词卡片组件（双面）  
    - 指令：实现卡片组件：正面显示词+假名读音，背面显示词+假名读音+释义+例句；点击/空格翻转，扁平风格。  
-   - 验证：组件测试确保正背面切换；键盘事件触发翻转；示例数据渲染字段正确。
+   - 验证：`npm run test`（组件切换与键盘事件）；示例数据渲染字段正确。
 
 8) 复习队列生成（30 张）  
    - 指令：实现队列构建：  
      - 先取所有到期卡（按 `due_at` 升序）。  
      - 若不足 30，再从“新卡池”（`srs_level = 0` 且 `last_reviewed_at = null`）随机补充。  
      - 若仍不足 30，不强行补满。  
-   - 验证：Vitest 构造数据集，验证排序、补足与长度上限逻辑。
+   - 验证：`npm run test`（队列生成单测：排序、补足与长度上限）。
 
 9) 复习交互 + SRS 更新  
-   - 指令：复习视图加载队列，展示卡片，支持翻转与 Again/Hard/Good/Easy（快捷键 A/H/G/E）；基于常规 SM-2 参数更新 `srs_level/interval/due_at` 等，记录 `review_events`。  
-   - 验证：Vitest 针对 SRS 计算（不同评分的间隔变化），以及事件写入；手工流检查 30 张进度与快捷键。
+   - 指令：复习视图加载队列，展示卡片，支持翻转与 Again/Hard/Good/Easy（快捷键 A/H/G/E）；如用户已熟记可不翻面直接跳过并自动记为最低难度（Easy）。仅读取数据库中已保存的读音/释义/例句，不触发 AI；基于常规 SM-2 参数更新 `srs_level/interval/due_at` 等，记录 `review_events`。  
+   - 验证：`npm run test`（SRS 计算与跳过记为 Easy 行为、事件写入）；手工流检查 30 张进度与快捷键。
 
 10) Heat Map 数据生成与展示  
     - 指令：实现按日聚合 `words`（新增）与 `review_events`（复习）求和为每日 count；展示近 12 个月 7×N 网格。颜色 5 档：0=无记录，1–3=level1，4–7=level2，8–15=level3，16+=level4。  
-    - 验证：Vitest 聚合函数测试（输入样本数据输出正确计数与档位）；手工检查 UI 显示与切换。
+    - 验证：`npm run test`（聚合函数输出计数与档位）；手工检查 UI 显示与切换。
 
 11) 设置与配置存储  
     - 指令：添加设置视图，存储 API Key、模型（默认 Gemini-Flash-2.5-Lite）、批次大小（默认 1）、主题（`light`|`dark`|`system`，默认 `light`）等到 `settings` 表，通过主进程 IPC 读写。  
-    - 验证：手工修改后重启仍保留；Vitest 确认读写函数正确。
+    - 验证：手工修改后通过 `npm run dev` 重启检查仍保留；`npm run test` 确认读写函数正确。
 
 12) 错误与离线回退  
     - 指令：实现 AI 失败与离线提示，允许离线手动保存完整词条；需要补全时由用户手动触发 AI 生成（无自动补全状态位）。  
-    - 验证：Vitest 模拟无网/失败路径；手工检查离线保存与后续手动补全流程。
+    - 验证：`npm run test`（无网/失败路径）；手工检查离线保存与后续手动补全流程。
 
 13) 打包与签名检查  
     - 指令：配置 Electron Builder 目标 `.dmg` 与 `.msi/.exe`；使用占位 appId `com.example.jpvocab` 与占位图标，签名配置占位但不接正式证书；确保忽略 `.env.local` 等敏感文件。  
