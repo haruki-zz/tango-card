@@ -25,3 +25,8 @@
 - 数据层：新增 wordService 校验必填字段、写入 words 表并自增 daily_activity.words_added_count，默认 SRS 字段取常量。
 - 渲染层：实现新增单词页面（AI 生成→手动微调→保存后锁定→重置继续），例句列表与预览组件拆分，视觉样式更新以支撑双列布局。
 - 测试：补充 React Testing Library 用例覆盖生成失败提示、成功填充、保存锁定与重置；wordService 单测验证写库与每日计数；IPC 边界单测改为使用内存数据库。`npm test` 已通过。
+
+## 单词卡片组件（双面）
+- 新增复习用卡片组件（src/renderer/features/review/ReviewWordCard.tsx，index.ts 导出），正面展示单词+假名，背面展示释义与例句，点击或空格翻转，空例句时提供提示。
+- 全局样式补充卡片 3D 翻转、提示与排版样式（src/renderer/index.css）。
+- 添加 RTL+Vitest 覆盖点击与空格翻转、字段渲染（tests/review-word-card.test.tsx），测试通过。***

@@ -1,0 +1,1 @@
+export { ReviewWordCard } from './ReviewWordCard';

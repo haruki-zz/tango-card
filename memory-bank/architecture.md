@@ -27,13 +27,15 @@
 - src/renderer/features/add-word/AddWordForm.tsx：新增单词核心流（AI 生成、手动编辑、保存后锁定、重置新条目）。
 - src/renderer/features/add-word/ExampleFields.tsx：例句输入列表组件，支持增删与独立编辑。
 - src/renderer/features/add-word/WordPreviewCard.tsx：新增词条实时/已保存预览。
-- src/renderer/index.css：全局视觉样式，覆盖新增流程的布局、按钮、预览卡片。
+- src/renderer/features/review/ReviewWordCard.tsx：复习阶段的双面卡片组件，正面展示词+假名，背面展示释义与例句，支持点击/空格翻转，index.ts 暴露复用入口。
+- src/renderer/index.css：全局视觉样式，覆盖新增流程的布局、按钮、预览卡片，并包含复习卡片的 3D 翻转外观与可访问焦点提示。
 - tests/smoke.test.ts：Vitest 占位用例，验证测试管线通畅。
 - tests/ai-client.test.ts：覆盖 AiClient 成功解析、缺少 API Key、HTTP 错误返回路径。
 - tests/ipc-boundary.test.ts：模拟 ipc bus 驱动 handler，验证 window.api 白名单接口、AI stub 响应与 db:createWord 写库。
 - e2e/smoke.spec.ts：Playwright 占位场景，验证 e2e 管线运行。
 - tests/word-service.test.ts：验证 createWord 的必填校验、默认 SRS 字段与 daily_activity 计数更新。
 - tests/add-word-form.test.tsx：React Testing Library 覆盖生成失败提示、成功填充、保存后锁定与重置流程。
+- tests/review-word-card.test.tsx：RTL 用例覆盖复习卡片正反面翻转（点击/空格）与字段渲染。
 - CLAUDE.md：记录骨架阶段的文件职责与边界。
 - prompts/*、memory-bank/*：开发约束与项目背景文档。
 

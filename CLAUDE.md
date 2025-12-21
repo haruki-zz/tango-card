@@ -27,13 +27,15 @@
 - src/renderer/features/add-word/AddWordForm.tsx：新增单词核心流程，支持 AI 生成、手动编辑、保存后锁定与重置。
 - src/renderer/features/add-word/ExampleFields.tsx：例句输入列表组件，支持增删与独立编辑。
 - src/renderer/features/add-word/WordPreviewCard.tsx：新增单词实时/已保存预览组件。
-- src/renderer/index.css：全局视觉与布局样式，覆盖新增流程的面板、按钮、预览卡片。
+- src/renderer/features/review/ReviewWordCard.tsx：复习用双面卡片组件，正面词+假名、背面释义+例句，点击或空格翻转；index.ts 提供复用导出。
+- src/renderer/index.css：全局视觉与布局样式，覆盖新增流程的面板、按钮、预览卡片，并包含复习卡片的 3D 翻转与焦点提示样式。
 - tests/smoke.test.ts：基础测试管线占位。
 - tests/ai-client.test.ts：验证 AiClient 成功解析、缺失 API Key 与 HTTP 错误路径。
 - tests/ipc-boundary.test.ts：验证 createPreloadApi 与主进程 handler 的通路，AI 通道通过 stubbed AiClient，确保 window.api 方法可用。
 - tests/db-schema.test.ts：使用内存 SQLite 检查建表字段、默认值、枚举约束和设置表的初始数据。
 - tests/word-service.test.ts：验证 createWord 写入默认 SRS 字段并更新 daily_activity 计数。
 - tests/add-word-form.test.tsx：使用 React Testing Library 覆盖新增单词表单的生成失败提示、生成成功填充与保存后锁定/重置流程。
+- tests/review-word-card.test.tsx：RTL 覆盖复习卡片点击/空格翻转与字段渲染。
 - .gitignore：忽略 node_modules、dist、环境变量与 IDE 缓存。
 - memory-bank/*、prompts/*、AGENTS.md：项目信息与工作流程约束文档，需在开发前阅读。
 
