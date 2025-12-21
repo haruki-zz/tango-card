@@ -15,8 +15,9 @@
 - index.html：渲染入口挂载 #root，加载 src/renderer/main.tsx。
 - src/shared/apiTypes.ts：定义 ai/db/settings/files IPC 数据结构与渲染可见 ExposedApi 接口。
 - src/shared/ipcChannels.ts：集中管理 IPC 通道名，主/预加载/渲染共用。
+- src/main/ai/aiClient.ts：主进程 AI 客户端封装，支持 Gemini/GPT 兼容接口，校验 term 与 API Key，输出标准 ok/error 结构供 IPC 调用。
 - src/main/main.ts：Electron 主进程创建窗口，启动前注册 IPC handler；dev 加载 Vite 服务，prod 读打包文件；contextIsolation=true、nodeIntegration=false。
-- src/main/ipcHandlers.ts：主进程注册白名单 IPC handler，返回可预测 mock（AI 生成、队列、复习反馈、设置读写、导入导出）。
+- src/main/ipcHandlers.ts：主进程注册白名单 IPC handler，AI 通道委托 AiClient，其他通道返回可预测 mock（队列、复习反馈、设置读写、导入导出），可注入自定义 aiClient 便于测试。
 - src/preload/createApi.ts：基于 ipcRenderer.invoke 构建 window.api 映射。
 - src/preload/index.ts：通过 contextBridge 暴露基于 createApi 的 API。
 - src/renderer/env.d.ts：声明 window.api 类型，引用 shared/apiTypes。
@@ -24,7 +25,8 @@
 - src/renderer/App.tsx：占位 UI，惰性读取 preload ping 避免 effect 中同步 setState。
 - src/renderer/index.css：基础视觉样式（扁平、浅色渐变）。
 - tests/smoke.test.ts：Vitest 占位用例，验证测试管线通畅。
-- tests/ipc-boundary.test.ts：模拟 ipc bus 驱动 handler，验证 window.api 白名单接口与 mock 响应。
+- tests/ai-client.test.ts：覆盖 AiClient 成功解析、缺少 API Key、HTTP 错误返回路径。
+- tests/ipc-boundary.test.ts：模拟 ipc bus 驱动 handler，验证 window.api 白名单接口与 AI stub/mock 响应。
 - e2e/smoke.spec.ts：Playwright 占位场景，验证 e2e 管线运行。
 - CLAUDE.md：记录骨架阶段的文件职责与边界。
 - prompts/*、memory-bank/*：开发约束与项目背景文档。

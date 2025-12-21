@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { registerIpcHandlers } from '../src/main/ipcHandlers';
 import { createPreloadApi } from '../src/preload/createApi';
+import { AiClient } from '../src/main/ai/aiClient';
 
 vi.mock('electron', () => {
   return {
@@ -19,7 +20,37 @@ describe('ipc boundary', () => {
       }
     };
 
-    registerIpcHandlers(mockBus);
+    const aiResponse = {
+      choices: [
+        {
+          message: {
+            content: JSON.stringify({
+              pronunciation: 'すし',
+              definition_cn: '以醋饭和鱼类为主的日式料理，常见于日本餐桌。',
+              examples: [
+                {
+                  sentence_jp: '週末に友だちと寿司を食べました。',
+                  sentence_cn: '周末和朋友一起吃了寿司。'
+                }
+              ]
+            })
+          }
+        }
+      ]
+    };
+
+    const aiClient = new AiClient({
+      apiKey: 'test-key',
+      model: 'gpt-4o',
+      fetchImpl: vi.fn(async () => ({
+        ok: true,
+        status: 200,
+        json: async () => aiResponse,
+        text: async () => JSON.stringify(aiResponse)
+      }))
+    });
+
+    registerIpcHandlers(mockBus, { aiClient });
 
     const invoke = (channel: string, ...args: unknown[]) =>
       Promise.resolve(handlers[channel]?.({} as unknown, ...args));

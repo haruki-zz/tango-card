@@ -14,3 +14,8 @@
 - 预加载通过 createPreloadApi（src/preload/createApi.ts）包装 ipcRenderer.invoke，暴露 window.api，渲染 env.d.ts 引用 shared 类型。
 - 主进程注册模拟 IPC handler（src/main/ipcHandlers.ts），main.ts 启动时加载，提供可预测的 mock 数据（AI 生成、队列、复习反馈、设置读写、导入导出）。
 - 增补 ipc 边界单测（tests/ipc-boundary.test.ts）验证 window.api 方法可用；`npm run test` 通过。
+
+## AI 调用模块占位
+- 新增主进程 AI 客户端（src/main/ai/aiClient.ts），支持 Gemini Flash 2.5 Lite / GPT-4o / GPT-4.1-mini，校验空词与缺失 API Key，区分 HTTP 错误、请求异常与响应格式异常，返回结构化 ok/error。
+- IPC 层改为注入式 AI 客户端（registerIpcHandlers 支持传入 aiClient），settings 更新时同步刷新客户端配置，`ai:generateWordData` 调用真实客户端。
+- 添加单测覆盖 AI 成功、缺 Key、HTTP 429 失败（tests/ai-client.test.ts）与改造后的 IPC 通路 stub（tests/ipc-boundary.test.ts）；`npm test` 通过。

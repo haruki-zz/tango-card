@@ -10,6 +10,7 @@ import {
   ImportResult,
   WordCard
 } from '../shared/apiTypes';
+import { AiClient } from './ai/aiClient';
 
 type IpcMainLike = Pick<typeof ipcMain, 'handle'>;
 
@@ -44,18 +45,25 @@ let currentSettings: AppSettings = {
   theme: 'light'
 };
 
-export function registerIpcHandlers(bus: IpcMainLike = ipcMain) {
+interface IpcHandlerDeps {
+  aiClient?: AiClient;
+}
+
+export function registerIpcHandlers(
+  bus: IpcMainLike = ipcMain,
+  deps: IpcHandlerDeps = {}
+) {
+  const aiClient =
+    deps.aiClient ??
+    new AiClient({
+      apiKey: currentSettings.apiKey,
+      model: currentSettings.preferredModel
+    });
+
   bus.handle(
     IPC_CHANNELS.aiGenerateWordData,
-    async (_event, term: string): Promise<GenerateWordDataResult> => ({
-      ok: true,
-      data: {
-        term,
-        pronunciation: mockWordCard.pronunciation,
-        definition_cn: mockWordCard.definition_cn,
-        examples: mockWordCard.examples
-      }
-    })
+    async (_event, term: string): Promise<GenerateWordDataResult> =>
+      aiClient.generateWordData(term)
   );
 
   bus.handle(IPC_CHANNELS.dbGetTodayQueue, async (): Promise<WordCard[]> => [
@@ -78,6 +86,10 @@ export function registerIpcHandlers(bus: IpcMainLike = ipcMain) {
     IPC_CHANNELS.settingsUpdate,
     async (_event, patch: Partial<AppSettings>): Promise<AppSettings> => {
       currentSettings = { ...currentSettings, ...patch };
+      aiClient.updateConfig({
+        apiKey: currentSettings.apiKey,
+        model: currentSettings.preferredModel
+      });
       return currentSettings;
     }
   );
