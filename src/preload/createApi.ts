@@ -7,7 +7,8 @@ import {
   AnswerReviewResult,
   GenerateWordDataResult,
   WordCard,
-  ExportResult
+  ExportResult,
+  CreateWordInput
 } from '../shared/apiTypes';
 
 type Invoke = <T>(
@@ -25,7 +26,9 @@ export function createPreloadApi(invoke: Invoke): ExposedApi {
     db: {
       getTodayQueue: () => invoke<WordCard[]>(IPC_CHANNELS.dbGetTodayQueue),
       answerReview: (input: AnswerReviewInput) =>
-        invoke<AnswerReviewResult>(IPC_CHANNELS.dbAnswerReview, input)
+        invoke<AnswerReviewResult>(IPC_CHANNELS.dbAnswerReview, input),
+      createWord: (input: CreateWordInput) =>
+        invoke<WordCard>(IPC_CHANNELS.dbCreateWord, input)
     },
     settings: {
       getSettings: () => invoke<AppSettings>(IPC_CHANNELS.settingsGet),

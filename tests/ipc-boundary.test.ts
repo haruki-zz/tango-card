@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { registerIpcHandlers } from '../src/main/ipcHandlers';
+import { initializeDatabase } from '../src/main/db/database';
 import { createPreloadApi } from '../src/preload/createApi';
 import { AiClient } from '../src/main/ai/aiClient';
 
@@ -50,7 +51,8 @@ describe('ipc boundary', () => {
       }))
     });
 
-    registerIpcHandlers(mockBus, { aiClient });
+    const database = initializeDatabase(':memory:');
+    registerIpcHandlers(mockBus, { aiClient, database });
 
     const invoke = (channel: string, ...args: unknown[]) =>
       Promise.resolve(handlers[channel]?.({} as unknown, ...args));

@@ -19,3 +19,9 @@
 - 新增主进程 AI 客户端（src/main/ai/aiClient.ts），支持 Gemini Flash 2.5 Lite / GPT-4o / GPT-4.1-mini，校验空词与缺失 API Key，区分 HTTP 错误、请求异常与响应格式异常，返回结构化 ok/error。
 - IPC 层改为注入式 AI 客户端（registerIpcHandlers 支持传入 aiClient），settings 更新时同步刷新客户端配置，`ai:generateWordData` 调用真实客户端。
 - 添加单测覆盖 AI 成功、缺 Key、HTTP 429 失败（tests/ai-client.test.ts）与改造后的 IPC 通路 stub（tests/ipc-boundary.test.ts）；`npm test` 通过。
+
+## 新增单词表单（核心流）
+- 扩展 IPC/类型：新增 `db:createWord` 通道与 CreateWordInput 类型，预加载映射 createWord。
+- 数据层：新增 wordService 校验必填字段、写入 words 表并自增 daily_activity.words_added_count，默认 SRS 字段取常量。
+- 渲染层：实现新增单词页面（AI 生成→手动微调→保存后锁定→重置继续），例句列表与预览组件拆分，视觉样式更新以支撑双列布局。
+- 测试：补充 React Testing Library 用例覆盖生成失败提示、成功填充、保存锁定与重置；wordService 单测验证写库与每日计数；IPC 边界单测改为使用内存数据库。`npm test` 已通过。

@@ -12,6 +12,14 @@ export interface WordData {
   examples: WordExample[];
 }
 
+export interface CreateWordInput {
+  term: string;
+  pronunciation: string;
+  definition_cn: string;
+  examples: WordExample[];
+  tags?: string[];
+}
+
 export interface WordCard extends WordData {
   id: number;
   tags: string[];
@@ -69,6 +77,7 @@ export interface AiApi {
 export interface DbApi {
   getTodayQueue: () => Promise<WordCard[]>;
   answerReview: (input: AnswerReviewInput) => Promise<AnswerReviewResult>;
+  createWord: (input: CreateWordInput) => Promise<WordCard>;
 }
 
 export interface SettingsApi {

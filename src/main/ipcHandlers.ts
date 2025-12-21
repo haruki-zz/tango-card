@@ -8,9 +8,12 @@ import {
   ExportResult,
   GenerateWordDataResult,
   ImportResult,
+  CreateWordInput,
   WordCard
 } from '../shared/apiTypes';
 import { AiClient } from './ai/aiClient';
+import { initializeDatabase, type DatabaseContext } from './db/database';
+import { createWord } from './db/wordService';
 
 type IpcMainLike = Pick<typeof ipcMain, 'handle'>;
 
@@ -47,6 +50,7 @@ let currentSettings: AppSettings = {
 
 interface IpcHandlerDeps {
   aiClient?: AiClient;
+  database?: DatabaseContext;
 }
 
 export function registerIpcHandlers(
@@ -59,6 +63,7 @@ export function registerIpcHandlers(
       apiKey: currentSettings.apiKey,
       model: currentSettings.preferredModel
     });
+  const database = deps.database ?? initializeDatabase();
 
   bus.handle(
     IPC_CHANNELS.aiGenerateWordData,
@@ -78,6 +83,12 @@ export function registerIpcHandlers(
       level: input.result === 'again' ? 0 : mockWordCard.srs_level + 1,
       nextDue: input.reviewedAt + 3600
     })
+  );
+
+  bus.handle(
+    IPC_CHANNELS.dbCreateWord,
+    async (_event, input: CreateWordInput): Promise<WordCard> =>
+      createWord(database.db, input)
   );
 
   bus.handle(IPC_CHANNELS.settingsGet, async (): Promise<AppSettings> => currentSettings);
