@@ -91,6 +91,9 @@ describe('ipc boundary', () => {
     });
     expect(review.nextDue).toBeGreaterThan(1_000);
     expect(review.level).toBeGreaterThanOrEqual(1);
+    expect(review.interval).toBeGreaterThan(0);
+    expect(review.repetitions).toBeGreaterThan(0);
+    expect(review.reviewedAt).toBe(1_000);
 
     const settings = await api.settings.getSettings();
     expect(settings.preferredModel).toContain('gemini');

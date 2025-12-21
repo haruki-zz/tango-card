@@ -15,6 +15,7 @@ import { AiClient } from './ai/aiClient';
 import { initializeDatabase, type DatabaseContext } from './db/database';
 import { createWord } from './db/wordService';
 import { buildReviewQueue } from './db/reviewQueueService';
+import { answerReview } from './db/reviewService';
 
 type IpcMainLike = Pick<typeof ipcMain, 'handle'>;
 
@@ -55,12 +56,8 @@ export function registerIpcHandlers(
 
   bus.handle(
     IPC_CHANNELS.dbAnswerReview,
-    async (_event, input: AnswerReviewInput): Promise<AnswerReviewResult> => ({
-      wordId: input.wordId,
-      result: input.result,
-      level: input.result === 'again' ? 0 : 1,
-      nextDue: input.reviewedAt + 3600
-    })
+    async (_event, input: AnswerReviewInput): Promise<AnswerReviewResult> =>
+      answerReview(database.db, input)
   );
 
   bus.handle(

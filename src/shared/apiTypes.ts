@@ -49,6 +49,10 @@ export interface AnswerReviewResult {
   result: ReviewRating;
   nextDue: number;
   level: number;
+   interval: number;
+   repetitions: number;
+   easeFactor: number;
+   reviewedAt: number;
 }
 
 export interface AppSettings {

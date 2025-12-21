@@ -14,6 +14,7 @@ import {
   schema,
   words
 } from './schema';
+import { startOfUtcDay } from './timeUtils';
 
 type WordRow = InferSelectModel<typeof words>;
 
@@ -105,11 +106,6 @@ async function upsertDailyActivity(db: BetterSQLite3Database<typeof schema>, tim
         wordsAddedCount: sql`${dailyActivity.wordsAddedCount} + 1`
       }
     });
-}
-
-function startOfUtcDay(seconds: number) {
-  const date = new Date(seconds * 1000);
-  return Math.floor(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) / 1000);
 }
 
 export function mapWordRow(row: WordRow): WordCard {
