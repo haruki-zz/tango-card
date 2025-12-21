@@ -30,3 +30,9 @@
 - 新增复习用卡片组件（src/renderer/features/review/ReviewWordCard.tsx，index.ts 导出），正面展示单词+假名，背面展示释义与例句，点击或空格翻转，空例句时提供提示。
 - 全局样式补充卡片 3D 翻转、提示与排版样式（src/renderer/index.css）。
 - 添加 RTL+Vitest 覆盖点击与空格翻转、字段渲染（tests/review-word-card.test.tsx），测试通过。***
+
+## 复习队列生成
+- 主进程新增复习队列服务（src/main/db/reviewQueueService.ts），按到期时间升序取已到期卡片，缺口随机补充新卡，整体上限 30。
+- dbGetTodayQueue IPC 由真实队列生成替代原先 mock，wordService 暴露 mapWordRow 供复用。
+- 新增复习队列单测（tests/review-queue.test.ts）覆盖排序、补足与上限截断；ipc 边界用例先写入真实词条再拉取队列，保证通路验证。
+- 测试：npm test（通过）。***

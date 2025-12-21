@@ -67,6 +67,19 @@ describe('ipc boundary', () => {
       expect(aiResult.data.examples[0].sentence_cn).toContain('寿司');
     }
 
+    await api.db.createWord({
+      term: '寿司',
+      pronunciation: 'すし',
+      definition_cn: '以醋饭和鱼类为主的日式料理。',
+      examples: [
+        {
+          sentence_jp: '週末に友だちと寿司を食べました。',
+          sentence_cn: '周末和朋友一起吃了寿司。'
+        }
+      ],
+      tags: []
+    });
+
     const queue = await api.db.getTodayQueue();
     expect(queue.length).toBeGreaterThan(0);
     expect(queue[0].term).toBe('寿司');

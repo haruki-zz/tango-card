@@ -49,7 +49,7 @@ export async function createWord(
 
   await upsertDailyActivity(db, now);
 
-  return mapWord(row);
+  return mapWordRow(row);
 }
 
 function sanitizeInput(input: CreateWordInput) {
@@ -112,7 +112,7 @@ function startOfUtcDay(seconds: number) {
   return Math.floor(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) / 1000);
 }
 
-function mapWord(row: WordRow): WordCard {
+export function mapWordRow(row: WordRow): WordCard {
   return {
     id: row.id!,
     term: row.term,

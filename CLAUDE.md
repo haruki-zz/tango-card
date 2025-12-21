@@ -15,9 +15,10 @@
 - src/shared/ipcChannels.ts：集中管理 IPC 通道名常量，避免字符串分散。
 - src/main/db/schema.ts：使用 Drizzle 定义 words/review_events/daily_activity/settings 表与 SRS 默认值常量。
 - src/main/db/database.ts：封装 better-sqlite3 连接、建表 DDL 与默认设置行插入，提供初始化入口。
-- src/main/db/wordService.ts：校验新增单词数据、写入 words 表并同步 daily_activity 计数的服务层。
+- src/main/db/wordService.ts：校验新增单词数据、写入 words 表并同步 daily_activity 计数的服务层，提供行到 WordCard 的映射。
+- src/main/db/reviewQueueService.ts：根据到期时间与新卡规则（到期优先、随机补新、上限 30）构建当日复习队列。
 - src/main/ai/aiClient.ts：AI 请求封装，支持 Gemini/GPT 兼容接口，校验 term 与 API Key，返回标准 ok/error 结构，便于 IPC 层调用与测试注入。
-- src/main/ipcHandlers.ts：主进程注册白名单 IPC handler，AI 通道委托 AiClient，DB 通道新增 createWord 写入本地词库，其余通道返回可预测的模拟数据，支持注入自定义 aiClient 与 database。
+- src/main/ipcHandlers.ts：主进程注册白名单 IPC handler，AI 通道委托 AiClient，DB 通道使用 reviewQueueService 生成复习队列并通过 createWord 写入词库，其余通道暂提供可预测的模拟数据，支持注入自定义 aiClient 与 database。
 - src/main/main.ts：Electron 主进程入口，初始化本地 SQLite 后注册 IPC handler 并创建 BrowserWindow；开发模式加载 Vite dev server，生产模式加载打包 renderer；开启 contextIsolation，禁用 nodeIntegration。
 - src/preload/createApi.ts：基于 ipcRenderer.invoke 构建暴露给渲染层的 API，实现通道到方法的映射。
 - src/preload/index.ts：通过 contextBridge 暴露基于 createApi 的 window.api。
@@ -32,6 +33,7 @@
 - tests/smoke.test.ts：基础测试管线占位。
 - tests/ai-client.test.ts：验证 AiClient 成功解析、缺失 API Key 与 HTTP 错误路径。
 - tests/ipc-boundary.test.ts：验证 createPreloadApi 与主进程 handler 的通路，AI 通道通过 stubbed AiClient，确保 window.api 方法可用。
+- tests/review-queue.test.ts：验证复习队列生成排序、补足与 30 张上限逻辑。
 - tests/db-schema.test.ts：使用内存 SQLite 检查建表字段、默认值、枚举约束和设置表的初始数据。
 - tests/word-service.test.ts：验证 createWord 写入默认 SRS 字段并更新 daily_activity 计数。
 - tests/add-word-form.test.tsx：使用 React Testing Library 覆盖新增单词表单的生成失败提示、生成成功填充与保存后锁定/重置流程。

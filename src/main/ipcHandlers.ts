@@ -14,32 +14,9 @@ import {
 import { AiClient } from './ai/aiClient';
 import { initializeDatabase, type DatabaseContext } from './db/database';
 import { createWord } from './db/wordService';
+import { buildReviewQueue } from './db/reviewQueueService';
 
 type IpcMainLike = Pick<typeof ipcMain, 'handle'>;
-
-const baseTimestamp = Math.floor(Date.now() / 1000);
-
-const mockWordCard: WordCard = {
-  id: 1,
-  term: '寿司',
-  pronunciation: 'すし',
-  definition_cn: '以醋饭和鱼类为主的日式料理，常见于日本餐桌。',
-  examples: [
-    {
-      sentence_jp: '週末に友だちと寿司を食べました。',
-      sentence_cn: '周末和朋友一起吃了寿司。'
-    }
-  ],
-  tags: ['food', 'basic'],
-  created_at: baseTimestamp - 86400,
-  updated_at: baseTimestamp - 3600,
-  srs_level: 0,
-  srs_repetitions: 0,
-  srs_interval: 0,
-  ease_factor: 2.5,
-  last_reviewed_at: null,
-  due_at: baseTimestamp
-};
 
 let currentSettings: AppSettings = {
   apiKey: null,
@@ -71,16 +48,17 @@ export function registerIpcHandlers(
       aiClient.generateWordData(term)
   );
 
-  bus.handle(IPC_CHANNELS.dbGetTodayQueue, async (): Promise<WordCard[]> => [
-    mockWordCard
-  ]);
+  bus.handle(
+    IPC_CHANNELS.dbGetTodayQueue,
+    async (): Promise<WordCard[]> => buildReviewQueue(database.db)
+  );
 
   bus.handle(
     IPC_CHANNELS.dbAnswerReview,
     async (_event, input: AnswerReviewInput): Promise<AnswerReviewResult> => ({
       wordId: input.wordId,
       result: input.result,
-      level: input.result === 'again' ? 0 : mockWordCard.srs_level + 1,
+      level: input.result === 'again' ? 0 : 1,
       nextDue: input.reviewedAt + 3600
     })
   );
