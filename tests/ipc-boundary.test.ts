@@ -111,5 +111,9 @@ describe('ipc boundary', () => {
     const exportResult = await api.files.exportBackup();
     expect(exportResult.filePath).toContain('tango-card-backup');
     expect(exportResult.count).toBeGreaterThan(0);
+
+    const activity = await api.db.getHeatmapActivity();
+    expect(activity.days.length % 7).toBe(0);
+    expect(activity.days.some((day) => day.wordsAdded > 0 || day.reviewsDone > 0)).toBe(true);
   });
 });

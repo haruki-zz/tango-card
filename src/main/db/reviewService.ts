@@ -92,8 +92,8 @@ export async function answerReview(
   const card = mapWordRow(row);
   const schedule = calculateNextSchedule(card, input.result, reviewedAt);
 
-  await db.transaction(async (tx) => {
-    await tx
+  db.transaction((tx) => {
+    tx
       .update(words)
       .set({
         srsLevel: schedule.level,
@@ -104,16 +104,20 @@ export async function answerReview(
         dueAt: schedule.nextDue,
         updatedAt: reviewedAt
       })
-      .where(eq(words.id, input.wordId));
+      .where(eq(words.id, input.wordId))
+      .run();
 
-    await tx.insert(reviewEvents).values({
-      wordId: input.wordId,
-      result: input.result,
-      reviewedAt,
-      deltaSeconds: input.durationSeconds ?? null
-    });
+    tx
+      .insert(reviewEvents)
+      .values({
+        wordId: input.wordId,
+        result: input.result,
+        reviewedAt,
+        deltaSeconds: input.durationSeconds ?? null
+      })
+      .run();
 
-    await tx
+    tx
       .insert(dailyActivity)
       .values({
         date: startOfUtcDay(reviewedAt),
@@ -125,7 +129,8 @@ export async function answerReview(
         set: {
           reviewsDoneCount: sql`${dailyActivity.reviewsDoneCount} + 1`
         }
-      });
+      })
+      .run();
   });
 
   return {

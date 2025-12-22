@@ -9,13 +9,15 @@ import {
   GenerateWordDataResult,
   ImportResult,
   CreateWordInput,
-  WordCard
+  WordCard,
+  HeatmapActivityRange
 } from '../shared/apiTypes';
 import { AiClient } from './ai/aiClient';
 import { initializeDatabase, type DatabaseContext } from './db/database';
 import { createWord } from './db/wordService';
 import { buildReviewQueue } from './db/reviewQueueService';
 import { answerReview } from './db/reviewService';
+import { getHeatmapActivity } from './db/activityService';
 
 type IpcMainLike = Pick<typeof ipcMain, 'handle'>;
 
@@ -64,6 +66,11 @@ export function registerIpcHandlers(
     IPC_CHANNELS.dbCreateWord,
     async (_event, input: CreateWordInput): Promise<WordCard> =>
       createWord(database.db, input)
+  );
+
+  bus.handle(
+    IPC_CHANNELS.dbGetHeatmapActivity,
+    async (): Promise<HeatmapActivityRange> => getHeatmapActivity(database.db)
   );
 
   bus.handle(IPC_CHANNELS.settingsGet, async (): Promise<AppSettings> => currentSettings);

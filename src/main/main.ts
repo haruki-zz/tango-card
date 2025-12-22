@@ -7,7 +7,7 @@ const isDev = !app.isPackaged;
 
 async function createWindow() {
   const preloadPath = isDev
-    ? path.join(__dirname, '../preload/index.ts')
+    ? path.resolve(__dirname, '../../dist/preload/index.js')
     : path.join(__dirname, '../preload/index.js');
 
   const mainWindow = new BrowserWindow({
@@ -16,7 +16,9 @@ async function createWindow() {
     webPreferences: {
       preload: preloadPath,
       contextIsolation: true,
-      nodeIntegration: false
+      nodeIntegration: false,
+      // 关闭 sandbox 以便 preload 能访问 Node 模块并正确暴露 window.api
+      sandbox: false
     }
   });
 

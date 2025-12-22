@@ -49,10 +49,22 @@ export interface AnswerReviewResult {
   result: ReviewRating;
   nextDue: number;
   level: number;
-   interval: number;
-   repetitions: number;
-   easeFactor: number;
-   reviewedAt: number;
+  interval: number;
+  repetitions: number;
+  easeFactor: number;
+  reviewedAt: number;
+}
+
+export interface HeatmapActivityDay {
+  date: number;
+  wordsAdded: number;
+  reviewsDone: number;
+}
+
+export interface HeatmapActivityRange {
+  startDate: number;
+  endDate: number;
+  days: HeatmapActivityDay[];
 }
 
 export interface AppSettings {
@@ -82,6 +94,7 @@ export interface DbApi {
   getTodayQueue: () => Promise<WordCard[]>;
   answerReview: (input: AnswerReviewInput) => Promise<AnswerReviewResult>;
   createWord: (input: CreateWordInput) => Promise<WordCard>;
+  getHeatmapActivity: () => Promise<HeatmapActivityRange>;
 }
 
 export interface SettingsApi {

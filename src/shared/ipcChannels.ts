@@ -3,6 +3,7 @@ export const IPC_CHANNELS = {
   dbGetTodayQueue: 'db:getTodayQueue',
   dbAnswerReview: 'db:answerReview',
   dbCreateWord: 'db:createWord',
+  dbGetHeatmapActivity: 'db:getHeatmapActivity',
   settingsGet: 'settings:get',
   settingsUpdate: 'settings:update',
   filesImport: 'files:import',

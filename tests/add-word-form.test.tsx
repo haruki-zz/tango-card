@@ -124,7 +124,8 @@ function stubApi(options: {
       answerReview: vi.fn(),
       createWord:
         options.createWord ??
-        (async (input: CreateWordInput) => Promise.resolve(createWordCardStub(input)))
+        (async (input: CreateWordInput) => Promise.resolve(createWordCardStub(input))),
+      getHeatmapActivity: vi.fn()
     },
     settings: {
       getSettings: vi.fn(),

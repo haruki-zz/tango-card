@@ -8,7 +8,8 @@ import {
   GenerateWordDataResult,
   WordCard,
   ExportResult,
-  CreateWordInput
+  CreateWordInput,
+  HeatmapActivityRange
 } from '../shared/apiTypes';
 
 type Invoke = <T>(
@@ -28,7 +29,9 @@ export function createPreloadApi(invoke: Invoke): ExposedApi {
       answerReview: (input: AnswerReviewInput) =>
         invoke<AnswerReviewResult>(IPC_CHANNELS.dbAnswerReview, input),
       createWord: (input: CreateWordInput) =>
-        invoke<WordCard>(IPC_CHANNELS.dbCreateWord, input)
+        invoke<WordCard>(IPC_CHANNELS.dbCreateWord, input),
+      getHeatmapActivity: () =>
+        invoke<HeatmapActivityRange>(IPC_CHANNELS.dbGetHeatmapActivity)
     },
     settings: {
       getSettings: () => invoke<AppSettings>(IPC_CHANNELS.settingsGet),

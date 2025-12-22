@@ -4,9 +4,10 @@
   "description": "Modern Electron + React vocabulary desktop app for Japanese learners.",
   "main": "dist/main/main.js",
   "scripts": {
-    "dev": "run-p dev:renderer dev:main",
+    "dev": "run-p dev:renderer dev:preload dev:main",
     "dev:renderer": "vite dev --mode development --host --port 5173 --clearScreen false",
-    "dev:main": "wait-on http://localhost:5173 && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron scripts/electron-dev.js",
+    "dev:preload": "tsc -p tsconfig.preload.json --watch --outDir dist",
+    "dev:main": "wait-on http://localhost:5173 dist/preload/index.js && cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron scripts/electron-dev.js",
     "build": "run-s build:clean build:main build:preload build:renderer",
     "build:clean": "rimraf dist",
     "build:main": "tsc -p tsconfig.main.json",

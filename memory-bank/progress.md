@@ -49,3 +49,10 @@
 - IPC `db:answerReview` 接入真实 SRS 更新；AnswerReviewResult 类型补充 interval/repetitions/easeFactor/reviewedAt。
 - 渲染层新增 ReviewSession（src/renderer/features/review/ReviewSession.tsx），加载队列、翻转卡片、快捷键 A/H/G/E 评分，跳过即记 Easy，展示进度/摘要；样式更新在 src/renderer/index.css，并在 App 中串联新增与复习区块。
 - 测试：新增 SRS 写库单测（tests/review-service.test.ts）与复习交互用例（tests/review-session.test.tsx）；ipc 边界用例补充返回字段断言。用户已验证 npm test 通过。***
+
+## Heat Map 数据生成与展示
+- 数据层新增活跃度聚合（src/main/db/activityService.ts），按日读取 daily_activity，向前 12 个月对齐周起点并填充空日；timeUtils 补充 DAY_SECONDS 与周起点计算。
+- IPC/预加载扩展 `db:getHeatmapActivity` 通道与 HeatmapActivityRange 类型，渲染可通过 window.api.db.getHeatmapActivity 取数据。
+- 渲染新增 Heat Map 视图（src/renderer/features/heatmap/ActivityHeatMap.tsx 与 heatmapUtils.ts），支持新增/复习切换、档位图例、近 12 个月网格；index.css 增加样式；App 串联展示。
+- 修复 dev 环境 preload 未编译导致通道缺失：dev 脚本加入 preload watch 编译，main.ts 始终加载 dist/preload/index.js，确保 window.api 包含新通道。
+- 测试：新增聚合与档位单测（tests/activity-service.test.ts、tests/heatmap-utils.test.ts），ipc 边界用例覆盖热力图通道；npm test 通过。***

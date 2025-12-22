@@ -52,7 +52,7 @@ describe('ReviewSession', () => {
     stubApi({ getTodayQueue, answerReview });
 
     render(<ReviewSession />);
-    await screen.findByText('寿司');
+    await screen.findAllByText('寿司');
 
     await user.keyboard('g');
 
@@ -63,7 +63,7 @@ describe('ReviewSession', () => {
         result: 'good'
       })
     );
-    await screen.findByText(/已标记为 Good/);
+    await screen.findByText(/Good 1/);
   });
 
   it('allows skipping a card and treats it as Easy', async () => {
@@ -85,7 +85,7 @@ describe('ReviewSession', () => {
     stubApi({ getTodayQueue, answerReview });
 
     render(<ReviewSession />);
-    await screen.findByText('寿司');
+    await screen.findAllByText('寿司');
 
     await user.click(screen.getByRole('button', { name: /熟记，直接下一张/ }));
 
@@ -112,7 +112,8 @@ function stubApi(options: {
     db: {
       getTodayQueue: options.getTodayQueue,
       answerReview: options.answerReview,
-      createWord: vi.fn()
+      createWord: vi.fn(),
+      getHeatmapActivity: vi.fn()
     },
     settings: {
       getSettings: vi.fn(),
