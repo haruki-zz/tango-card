@@ -15,6 +15,12 @@
 - 主进程注册模拟 IPC handler（src/main/ipcHandlers.ts），main.ts 启动时加载，提供可预测的 mock 数据（AI 生成、队列、复习反馈、设置读写、导入导出）。
 - 增补 ipc 边界单测（tests/ipc-boundary.test.ts）验证 window.api 方法可用；`npm run test` 通过。
 
+## SQLite 数据层
+- 引入 better-sqlite3 + Drizzle，新增 src/main/db/schema.ts 定义 words/review_events/daily_activity/settings 表与 SRS 默认值常量。
+- 新增 src/main/db/database.ts 封装数据库初始化，启用外键、建表 DDL、种子 settings 单行，数据库路径优先 TANGO_CARD_DB_PATH，其次 Electron userData，最后 cwd。
+- main.ts 启动时初始化数据库，确保表就绪后再注册 IPC。
+- 新增 tests/db-schema.test.ts 覆盖建表默认值、枚举约束与 settings 默认行；`npm run test` 通过。
+
 ## AI 调用模块占位
 - 新增主进程 AI 客户端（src/main/ai/aiClient.ts），支持 Gemini Flash 2.5 Lite / GPT-4o / GPT-4.1-mini，校验空词与缺失 API Key，区分 HTTP 错误、请求异常与响应格式异常，返回结构化 ok/error。
 - IPC 层改为注入式 AI 客户端（registerIpcHandlers 支持传入 aiClient），settings 更新时同步刷新客户端配置，`ai:generateWordData` 调用真实客户端。

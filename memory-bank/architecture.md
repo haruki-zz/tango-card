@@ -18,6 +18,8 @@
 - src/main/ai/aiClient.ts：主进程 AI 客户端封装，支持 Gemini/GPT 兼容接口，校验 term 与 API Key，输出标准 ok/error 结构供 IPC 调用。
 - src/main/main.ts：Electron 主进程创建窗口，初始化数据库后注册 IPC handler；dev 加载 Vite 服务，prod 读打包文件；contextIsolation=true、nodeIntegration=false。
 - src/main/ipcHandlers.ts：主进程注册白名单 IPC handler，AI 通道委托 AiClient，db 通道接入 createWord 写库、reviewQueueService 生成复习队列与 reviewService 的 SRS 更新，支持注入 aiClient/database 便于测试。
+- src/main/db/schema.ts：Drizzle 表定义，涵盖 words、review_events、daily_activity、settings 字段与枚举/默认值（SRS 默认 level/repetitions/interval=0，ease_factor=2.5，时间字段 unix 秒）。
+- src/main/db/database.ts：better-sqlite3 初始化封装，启用外键，执行建表 DDL 并插入 settings 单例默认行，数据库路径优先 TANGO_CARD_DB_PATH，其次 Electron userData，最后 cwd。
 - src/main/db/wordService.ts：校验新增单词数据、写入 words 表并同步 daily_activity 计数的服务层，提供行到 WordCard 的映射。
 - src/main/db/reviewService.ts：基于 SM-2 的评分调度与持久化，更新 words SRS 字段、记录 review_events、递增 daily_activity.reviews_done_count。
 - src/main/db/reviewQueueService.ts：按到期优先、随机新卡补足并限制 30 张的复习队列生成器。
@@ -43,12 +45,14 @@
 - tests/review-queue.test.ts：验证复习队列的到期排序、随机新卡补足与 30 张上限截断。
 - tests/review-service.test.ts：验证 SRS 评分后 words/ review_events/ daily_activity 的写入与 Again 重置逻辑。
 - tests/review-session.test.tsx：复习交互用例，覆盖键盘评分与跳过记 Easy 的行为与提示。
+- tests/db-schema.test.ts：内存数据库校验建表默认值、枚举约束以及 settings 默认行。
 - CLAUDE.md：记录骨架阶段的文件职责与边界。
 - prompts/*、memory-bank/*：开发约束与项目背景文档。
 
 ## 运行与构建流
 - 开发：`npm run dev` 同时启动 Vite（渲染）与 Electron（主进程），通过 `VITE_DEV_SERVER_URL` 加载。
 - 构建：`npm run build` 先清理 dist，再分别编译主进程、预加载与渲染层，输出 dist/main、dist/preload、dist/renderer。
+- 数据库：默认 sqlite 存储路径为 `TANGO_CARD_DB_PATH` 环境变量指定，否则使用 Electron `userData` 目录中的 `tango-card.sqlite`，再退回 cwd；测试可用 `:memory:`。
 ## 质量与测试
 - 静态检查：`npm run lint` 使用 ESLint + Prettier 规则；`npm run format` 统一代码风格。
 - 单元/集成：`npm run test` 运行 Vitest（JSdom）。
