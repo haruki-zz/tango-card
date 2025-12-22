@@ -36,3 +36,10 @@
 - dbGetTodayQueue IPC 由真实队列生成替代原先 mock，wordService 暴露 mapWordRow 供复用。
 - 新增复习队列单测（tests/review-queue.test.ts）覆盖排序、补足与上限截断；ipc 边界用例先写入真实词条再拉取队列，保证通路验证。
 - 测试：npm test（通过）。***
+
+## 复习交互 + SRS 更新
+- 新增 SRS 调度与复习写库服务（src/main/db/reviewService.ts），基于 SM-2 调整间隔/易度，记录 review_events、更新 words SRS 字段与 daily_activity.reviews_done_count。
+- 抽出 UTC 日起点工具（src/main/db/timeUtils.ts），wordService/daily activity 复用。
+- IPC `db:answerReview` 接入真实 SRS 更新；AnswerReviewResult 类型补充 interval/repetitions/easeFactor/reviewedAt。
+- 渲染层新增 ReviewSession（src/renderer/features/review/ReviewSession.tsx），加载队列、翻转卡片、快捷键 A/H/G/E 评分，跳过即记 Easy，展示进度/摘要；样式更新在 src/renderer/index.css，并在 App 中串联新增与复习区块。
+- 测试：新增 SRS 写库单测（tests/review-service.test.ts）与复习交互用例（tests/review-session.test.tsx）；ipc 边界用例补充返回字段断言。用户已验证 npm test 通过。***
