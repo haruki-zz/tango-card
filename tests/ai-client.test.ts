@@ -80,4 +80,25 @@ describe('AiClient', () => {
       expect(result.error.detail).toContain('429');
     }
   });
+
+  it('marks network errors as unavailable and suggests manual input', async () => {
+    const fetchImpl = vi.fn(async () => {
+      throw new Error('TypeError: fetch failed');
+    });
+
+    const client = new AiClient({
+      apiKey: 'offline-key',
+      model: 'gemini-flash-2.5-lite',
+      fetchImpl
+    });
+
+    const result = await client.generateWordData('離島');
+
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.error.code).toBe('network_unavailable');
+      expect(result.error.message).toContain('手动填写');
+    }
+  });
 });

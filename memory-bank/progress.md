@@ -62,3 +62,8 @@
 - IPC 层改为异步初始化数据库后注册 handler，settings 通道落地 SQLite 并在模型/API Key 变化时同步 AiClient；main.ts 等待注册完成再建窗。
 - 渲染层新增设置视图（src/renderer/features/settings/SettingsPanel.tsx，index 导出），可加载/保存 API Key、模型、批次大小、主题，补充 select/布局样式并挂载到 App。
 - 测试：新增 settings 服务与设置页的单测（tests/settings-service.test.ts、tests/settings-panel.test.tsx），ipc 边界测试更新为 await 异步注册并覆盖 settings 通道。用户已验证测试通过。***
+
+## 错误与离线回退
+- 渲染层新增在线状态监听，新增页离线时直接提示“手动填写并保存，联网后再点生成补全”，阻断 AI 调用但允许本地保存，状态徽标提示当前离线。
+- AI 客户端识别常见网络故障返回 `network_unavailable`，提示手动填写后联网重试，保留其他异常的通用失败提示。
+- 测试：补充 AI 网络异常用例（tests/ai-client.test.ts）与离线保存用例（tests/add-word-form.test.tsx）；用户已验证 npm test 通过。

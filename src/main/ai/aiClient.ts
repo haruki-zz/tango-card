@@ -106,12 +106,24 @@ export class AiClient {
 
       return { ok: true, data: wordData };
     } catch (error) {
+      const detail = stringifyError(error);
+      if (isNetworkError(error)) {
+        return {
+          ok: false,
+          error: {
+            code: 'network_unavailable',
+            message: '无法连接到 AI 服务，请先手动填写后保存，联网后再点击“生成”补全。',
+            detail
+          }
+        };
+      }
+
       return {
         ok: false,
         error: {
           code: 'ai_request_failed',
-          message: 'AI 调用失败，请检查网络或稍后重试。',
-          detail: stringifyError(error)
+          message: 'AI 调用失败，请稍后重试。',
+          detail
         }
       };
     }
@@ -203,6 +215,33 @@ function extractWordData(payload: unknown, term: string): WordData | null {
 function stringifyError(error: unknown) {
   if (error instanceof Error) return error.message;
   return typeof error === 'string' ? error : JSON.stringify(error);
+}
+
+function isNetworkError(error: unknown) {
+  const message = normalizeErrorMessage(error);
+  if (!message) return false;
+
+  return (
+    message.includes('fetch failed') ||
+    message.includes('failed to fetch') ||
+    message.includes('network') ||
+    message.includes('offline') ||
+    message.includes('net::') ||
+    message.includes('econnrefused') ||
+    message.includes('enotfound') ||
+    message.includes('enetunreach') ||
+    message.includes('econnreset')
+  );
+}
+
+function normalizeErrorMessage(error: unknown) {
+  if (error instanceof Error && typeof error.message === 'string') {
+    return error.message.toLowerCase();
+  }
+  if (typeof error === 'string') {
+    return error.toLowerCase();
+  }
+  return '';
 }
 
 function stringifyForLog(payload: unknown) {

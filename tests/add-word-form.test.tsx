@@ -106,6 +106,52 @@ describe('AddWordForm', () => {
     expect(screen.getByLabelText('假名读音')).toBeEnabled();
     expect(screen.getByRole('button', { name: '保存到词库' })).toBeDisabled();
   });
+
+  it('离线时提示手动填写，跳过 AI 调用并仍可保存', async () => {
+    const user = userEvent.setup();
+    const originalOnline = navigator.onLine;
+    Object.defineProperty(window.navigator, 'onLine', { value: false, configurable: true });
+
+    const generateWordData = vi
+      .fn<[string], Promise<GenerateWordDataResult>>()
+      .mockResolvedValue({
+        ok: true,
+        data: {
+          term: '雨',
+          pronunciation: 'あめ',
+          definition_cn: '从云中降落的水滴。',
+          examples: [{ sentence_jp: '雨が降っています。', sentence_cn: '正在下雨。' }]
+        }
+      });
+    const createWord = vi
+      .fn<[CreateWordInput], Promise<WordCard>>()
+      .mockImplementation(async (input) => createWordCardStub(input));
+    stubApi({ generateWordData, createWord });
+
+    try {
+      render(<AddWordForm />);
+
+      await user.type(screen.getByLabelText('日语单词'), '雨');
+      await user.click(screen.getByRole('button', { name: '生成' }));
+
+      await screen.findByText(/当前离线/);
+      expect(generateWordData).not.toHaveBeenCalled();
+
+      await user.type(screen.getByLabelText('假名读音'), 'あめ');
+      await user.type(screen.getByLabelText('释义（140 字内）'), '从云中降落的水滴。');
+      await user.type(screen.getByLabelText('例句（日语）'), '雨が降っています。');
+      await user.type(screen.getByLabelText('例句（中文）'), '正在下雨。');
+
+      await user.click(screen.getByRole('button', { name: '保存到词库' }));
+      await screen.findByText(/已保存到本地词库/);
+      expect(createWord).toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(window.navigator, 'onLine', {
+        value: originalOnline,
+        configurable: true
+      });
+    }
+  });
 });
 
 function stubApi(options: {

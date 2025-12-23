@@ -1,15 +1,18 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { CreateWordInput, WordCard, WordExample } from '../../../shared/apiTypes';
 import { ExampleFields } from './ExampleFields';
 import { WordPreviewCard } from './WordPreviewCard';
 
 const EMPTY_EXAMPLE: WordExample = { sentence_jp: '', sentence_cn: '' };
+const OFFLINE_HINT =
+  '当前离线，AI 无法生成。请手动填写后保存，联网后再点击“生成”补全。';
 
 export default function AddWordForm() {
   const [term, setTerm] = useState('');
   const [pronunciation, setPronunciation] = useState('');
   const [definition, setDefinition] = useState('');
   const [examples, setExamples] = useState<WordExample[]>([{ ...EMPTY_EXAMPLE }]);
+  const [isOffline, setIsOffline] = useState(!isNavigatorOnline());
   const [aiMessage, setAiMessage] = useState<string | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
@@ -38,6 +41,17 @@ export default function AddWordForm() {
 
   const busy = isGenerating || isSaving;
 
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   const handleGenerate = async () => {
     if (!window.api?.ai?.generateWordData) {
       setAiError('AI 通道不可用，请检查预加载配置。');
@@ -48,6 +62,13 @@ export default function AddWordForm() {
       return;
     }
 
+    if (isOffline) {
+      setAiError(OFFLINE_HINT);
+      setAiMessage(null);
+      setSaveMessage(null);
+      return;
+    }
+
     setIsGenerating(true);
     setAiError(null);
     setAiMessage(null);
@@ -55,7 +76,9 @@ export default function AddWordForm() {
     try {
       const result = await window.api.ai.generateWordData(trimmedTerm);
       if (!result.ok) {
-        setAiError(result.error.message);
+        const message =
+          result.error.code === 'network_unavailable' ? OFFLINE_HINT : result.error.message;
+        setAiError(message);
         return;
       }
 
@@ -148,6 +171,7 @@ export default function AddWordForm() {
         </div>
         <div className="status-stack">
           <span className="badge">步骤 6 / 核心功能</span>
+          {isOffline ? <span className="badge error">离线模式</span> : null}
           {locked ? <span className="badge success">已保存</span> : null}
           {busy ? <span className="badge info">处理中</span> : null}
         </div>
@@ -234,7 +258,10 @@ export default function AddWordForm() {
             {aiMessage ? <span className="badge info">{aiMessage}</span> : null}
             {saveError ? <span className="badge error">{saveError}</span> : null}
             {saveMessage ? <span className="badge success">{saveMessage}</span> : null}
-            {!aiError && !aiMessage && !saveError && !saveMessage ? (
+            {isOffline && !aiError && !aiMessage && !saveError && !saveMessage ? (
+              <span className="badge info">{OFFLINE_HINT}</span>
+            ) : null}
+            {!aiError && !aiMessage && !saveError && !saveMessage && !isOffline ? (
               <span className="muted small">提示与错误将显示在此。</span>
             ) : null}
           </div>
@@ -277,4 +304,9 @@ function extractMessage(error: unknown, fallback: string) {
   if (error instanceof Error) return error.message;
   if (typeof error === 'string') return error;
   return fallback;
+}
+
+function isNavigatorOnline() {
+  if (typeof navigator === 'undefined') return true;
+  return navigator.onLine;
 }

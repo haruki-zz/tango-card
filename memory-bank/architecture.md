@@ -56,3 +56,7 @@
 
 ## 安全边界
 - 渲染层通过 preload 白名单访问 API，通道集中在 shared/ipcChannels；默认禁用 nodeIntegration、启用 contextIsolation，减少 Node 能力暴露。
+
+## 错误与离线策略
+- src/main/ai/aiClient.ts：检测常见网络故障并返回 `network_unavailable`，提示用户先手动录入，联网后再补全 AI 结果。
+- src/renderer/features/add-word/AddWordForm.tsx：监听在线状态，离线时显式提示并阻断 AI 调用，但允许手动填写后本地保存；联网后可再次点击生成补全。
