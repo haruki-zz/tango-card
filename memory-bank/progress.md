@@ -56,3 +56,9 @@
 - 渲染新增 Heat Map 视图（src/renderer/features/heatmap/ActivityHeatMap.tsx 与 heatmapUtils.ts），支持新增/复习切换、档位图例、近 12 个月网格；index.css 增加样式；App 串联展示。
 - 修复 dev 环境 preload 未编译导致通道缺失：dev 脚本加入 preload watch 编译，main.ts 始终加载 dist/preload/index.js，确保 window.api 包含新通道。
 - 测试：新增聚合与档位单测（tests/activity-service.test.ts、tests/heatmap-utils.test.ts），ipc 边界用例覆盖热力图通道；npm test 通过。***
+
+## 设置与配置存储
+- 新增 settings 服务（src/main/db/settingsService.ts），支持读取/更新 settings 单行表，规范化模型、批次大小、主题与 API Key 为空值处理。
+- IPC 层改为异步初始化数据库后注册 handler，settings 通道落地 SQLite 并在模型/API Key 变化时同步 AiClient；main.ts 等待注册完成再建窗。
+- 渲染层新增设置视图（src/renderer/features/settings/SettingsPanel.tsx，index 导出），可加载/保存 API Key、模型、批次大小、主题，补充 select/布局样式并挂载到 App。
+- 测试：新增 settings 服务与设置页的单测（tests/settings-service.test.ts、tests/settings-panel.test.tsx），ipc 边界测试更新为 await 异步注册并覆盖 settings 通道。用户已验证测试通过。***

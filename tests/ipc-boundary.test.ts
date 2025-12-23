@@ -52,7 +52,7 @@ describe('ipc boundary', () => {
     });
 
     const database = initializeDatabase(':memory:');
-    registerIpcHandlers(mockBus, { aiClient, database });
+    await registerIpcHandlers(mockBus, { aiClient, database });
 
     const invoke = (channel: string, ...args: unknown[]) =>
       Promise.resolve(handlers[channel]?.({} as unknown, ...args));

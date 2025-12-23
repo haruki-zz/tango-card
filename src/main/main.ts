@@ -32,10 +32,10 @@ async function createWindow() {
   await mainWindow.loadFile(indexHtml);
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   const database = initializeDatabase();
-  registerIpcHandlers(ipcMain, { database });
-  return createWindow();
+  await registerIpcHandlers(ipcMain, { database });
+  await createWindow();
 });
 
 app.on('window-all-closed', () => {

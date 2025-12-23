@@ -18,32 +18,34 @@ import { createWord } from './db/wordService';
 import { buildReviewQueue } from './db/reviewQueueService';
 import { answerReview } from './db/reviewService';
 import { getHeatmapActivity } from './db/activityService';
+import { getAppSettings, updateAppSettings } from './db/settingsService';
 
 type IpcMainLike = Pick<typeof ipcMain, 'handle'>;
-
-let currentSettings: AppSettings = {
-  apiKey: null,
-  preferredModel: 'gemini-flash-2.5-lite',
-  reviewBatchSize: 1,
-  theme: 'light'
-};
 
 interface IpcHandlerDeps {
   aiClient?: AiClient;
   database?: DatabaseContext;
 }
 
-export function registerIpcHandlers(
+export async function registerIpcHandlers(
   bus: IpcMainLike = ipcMain,
   deps: IpcHandlerDeps = {}
 ) {
+  const database = deps.database ?? initializeDatabase();
+  let currentSettings = await getAppSettings(database.db);
   const aiClient =
     deps.aiClient ??
     new AiClient({
       apiKey: currentSettings.apiKey,
       model: currentSettings.preferredModel
     });
-  const database = deps.database ?? initializeDatabase();
+
+  if (!deps.aiClient) {
+    aiClient.updateConfig({
+      apiKey: currentSettings.apiKey,
+      model: currentSettings.preferredModel
+    });
+  }
 
   bus.handle(
     IPC_CHANNELS.aiGenerateWordData,
@@ -73,17 +75,39 @@ export function registerIpcHandlers(
     async (): Promise<HeatmapActivityRange> => getHeatmapActivity(database.db)
   );
 
-  bus.handle(IPC_CHANNELS.settingsGet, async (): Promise<AppSettings> => currentSettings);
+  bus.handle(IPC_CHANNELS.settingsGet, async (): Promise<AppSettings> => {
+    const latest = await getAppSettings(database.db);
+    if (
+      latest.apiKey !== currentSettings.apiKey ||
+      latest.preferredModel !== currentSettings.preferredModel
+    ) {
+      aiClient.updateConfig({
+        apiKey: latest.apiKey,
+        model: latest.preferredModel
+      });
+    }
+    currentSettings = latest;
+    return currentSettings;
+  });
 
   bus.handle(
     IPC_CHANNELS.settingsUpdate,
     async (_event, patch: Partial<AppSettings>): Promise<AppSettings> => {
-      currentSettings = { ...currentSettings, ...patch };
-      aiClient.updateConfig({
-        apiKey: currentSettings.apiKey,
-        model: currentSettings.preferredModel
-      });
-      return currentSettings;
+      const updated = await updateAppSettings(database.db, patch ?? {});
+      const shouldSyncAi =
+        updated.apiKey !== currentSettings.apiKey ||
+        updated.preferredModel !== currentSettings.preferredModel;
+
+      currentSettings = updated;
+
+      if (shouldSyncAi) {
+        aiClient.updateConfig({
+          apiKey: currentSettings.apiKey,
+          model: currentSettings.preferredModel
+        });
+      }
+
+      return updated;
     }
   );
 
