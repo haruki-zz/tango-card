@@ -7,6 +7,7 @@ Contributor quick-start for the Electron + React/Vite Japanese vocabulary app. K
 - Always read `memory-bank/@architecture.md` before writing any code.
 - Always read `memory-bank/@game-design-document.md` before writing any code.
 - After adding a major feature or completing a milestone, update `memory-bank/@architecture.md`.
+- Emphasize modularity (multiple files) and discourage a monolith (one giant file).
 
 ## Project Structure & Module Organization
 - `src/main`: Electron main process (IPC, filesystem, LLM calls). Keep persistent paths under `app.getPath('userData')` using `words.jsonl`, `reviews.jsonl`, and `activity.json`.
