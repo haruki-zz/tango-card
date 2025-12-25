@@ -7,7 +7,7 @@ type SettingsRow = InferSelectModel<typeof settings>;
 
 const DEFAULT_SETTINGS: AppSettings = {
   apiKey: null,
-  preferredModel: 'gemini-flash-2.5-lite',
+  preferredModel: 'gemini-2.5-flash',
   reviewBatchSize: 1,
   theme: 'light'
 };
@@ -78,8 +78,11 @@ function normalizeModel(
   value: string | null | undefined,
   fallback: AppSettings['preferredModel']
 ): AppSettings['preferredModel'] {
-  if (value === 'gemini-flash-2.5-lite' || value === 'gpt-4o' || value === 'gpt-4.1-mini') {
+  if (value === 'gpt-4o' || value === 'gpt-4.1-mini') {
     return value;
+  }
+  if (value === 'gemini-2.5-flash' || value === 'gemini-flash-2.5-lite') {
+    return 'gemini-2.5-flash';
   }
   return fallback;
 }

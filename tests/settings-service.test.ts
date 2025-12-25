@@ -10,7 +10,7 @@ describe('settingsService', () => {
 
     expect(settings).toEqual({
       apiKey: null,
-      preferredModel: 'gemini-flash-2.5-lite',
+      preferredModel: 'gemini-2.5-flash',
       reviewBatchSize: 1,
       theme: 'light'
     });
@@ -40,6 +40,15 @@ describe('settingsService', () => {
     expect(row.preferred_model).toBe('gpt-4o');
     expect(row.review_batch_size).toBe(3);
     expect(row.theme).toBe('dark');
+  });
+
+  it('maps legacy Gemini 名称到官方模型 ID', async () => {
+    const context = initializeDatabase(':memory:');
+    const updated = await updateAppSettings(context.db, {
+      preferredModel: 'gemini-flash-2.5-lite'
+    });
+
+    expect(updated.preferredModel).toBe('gemini-2.5-flash');
   });
 
   it('ignores invalid values and keeps last valid settings', async () => {

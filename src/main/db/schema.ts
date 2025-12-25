@@ -51,7 +51,7 @@ export const dailyActivity = sqliteTable(
 export const settings = sqliteTable('settings', {
   id: integer('id').primaryKey().default(SETTINGS_SINGLETON_ID),
   apiKey: text('api_key'),
-  preferredModel: text('preferred_model').notNull().default('gemini-flash-2.5-lite'),
+  preferredModel: text('preferred_model').notNull().default('gemini-2.5-flash'),
   reviewBatchSize: integer('review_batch_size').notNull().default(1),
   theme: text('theme', { enum: ['light', 'dark', 'system'] }).notNull().default('light')
 });

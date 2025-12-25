@@ -42,7 +42,7 @@ describe('database schema', () => {
         .get();
 
       expect(settings.api_key).toBeNull();
-      expect(settings.preferred_model).toBe('gemini-flash-2.5-lite');
+      expect(settings.preferred_model).toBe('gemini-2.5-flash');
       expect(settings.review_batch_size).toBe(1);
       expect(settings.theme).toBe('light');
     } finally {

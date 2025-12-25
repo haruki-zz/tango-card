@@ -102,7 +102,7 @@ function applySchema(sqlite: BetterSqliteDatabase) {
     CREATE TABLE IF NOT EXISTS settings (
       id INTEGER PRIMARY KEY CHECK (id = 1),
       api_key TEXT,
-      preferred_model TEXT NOT NULL DEFAULT 'gemini-flash-2.5-lite',
+      preferred_model TEXT NOT NULL DEFAULT 'gemini-2.5-flash',
       review_batch_size INTEGER NOT NULL DEFAULT 1,
       theme TEXT NOT NULL DEFAULT 'light' CHECK (theme IN ('light','dark','system'))
     );

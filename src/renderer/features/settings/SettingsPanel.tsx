@@ -9,7 +9,7 @@ type FormState = {
 };
 
 const MODEL_OPTIONS: { value: AppSettings['preferredModel']; label: string; hint: string }[] = [
-  { value: 'gemini-flash-2.5-lite', label: 'Gemini Flash 2.5 Lite', hint: '默认模型，速度快、成本低' },
+  { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash', hint: '官方 generateContent 接口，速度快、成本低' },
   { value: 'gpt-4o', label: 'GPT-4o', hint: '更强的理解与生成能力' },
   { value: 'gpt-4.1-mini', label: 'GPT-4.1 Mini', hint: '轻量模型，语义可靠' }
 ];
@@ -22,7 +22,7 @@ const THEME_OPTIONS: { value: AppSettings['theme']; label: string }[] = [
 
 const DEFAULT_FORM: FormState = {
   apiKey: '',
-  preferredModel: 'gemini-flash-2.5-lite',
+  preferredModel: 'gemini-2.5-flash',
   reviewBatchSize: 1,
   theme: 'light'
 };

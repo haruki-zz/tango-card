@@ -2,19 +2,23 @@ import { describe, expect, it, vi } from 'vitest';
 import { AiClient } from '../src/main/ai/aiClient';
 
 const successPayload = {
-  choices: [
+  candidates: [
     {
-      message: {
-        content: JSON.stringify({
-          pronunciation: 'さくら',
-          definition_cn: '春天盛开的樱花，象征日本的季节与短暂之美。',
-          examples: [
-            {
-              sentence_jp: '公園で桜が満開になりました。',
-              sentence_cn: '公园里的樱花已经盛开了。'
-            }
-          ]
-        })
+      content: {
+        parts: [
+          {
+            text: JSON.stringify({
+              pronunciation: 'さくら',
+              definition_cn: '春天盛开的樱花，象征日本的季节与短暂之美。',
+              examples: [
+                {
+                  sentence_jp: '公園で桜が満開になりました。',
+                  sentence_cn: '公园里的樱花已经盛开了。'
+                }
+              ]
+            })
+          }
+        ]
       }
     }
   ]
@@ -31,7 +35,7 @@ describe('AiClient', () => {
 
     const client = new AiClient({
       apiKey: 'test-key',
-      model: 'gemini-flash-2.5-lite',
+      model: 'gemini-2.5-flash',
       fetchImpl
     });
 

@@ -33,7 +33,7 @@ describe('SettingsPanel', () => {
     const user = userEvent.setup();
     const getSettings = vi.fn().mockResolvedValue({
       apiKey: null,
-      preferredModel: 'gemini-flash-2.5-lite',
+      preferredModel: 'gemini-2.5-flash',
       reviewBatchSize: 1,
       theme: 'light'
     });
@@ -88,7 +88,7 @@ function stubApi(options: {
         (options.updateSettings as ExposedApi['settings']['updateSettings']) ??
         (async () => ({
           apiKey: null,
-          preferredModel: 'gemini-flash-2.5-lite',
+          preferredModel: 'gemini-2.5-flash',
           reviewBatchSize: 1,
           theme: 'light'
         }))
