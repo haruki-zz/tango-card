@@ -1,0 +1,27 @@
+{
+  "name": "tango-card",
+  "version": "1.0.0",
+  "description": "Japanese vocabulary desktop app (Electron + React/Vite).",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "echo \"dev server not configured yet\"",
+    "build": "echo \"build not configured yet\"",
+    "lint": "echo \"lint config pending\"",
+    "test": "echo \"tests not configured yet\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/haruki-zz/tango-card.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/haruki-zz/tango-card/issues"
+  },
+  "homepage": "https://github.com/haruki-zz/tango-card#readme"
+}
