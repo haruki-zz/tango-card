@@ -1,0 +1,25 @@
+import type {
+  AiProvider,
+  GeneratedWordContent,
+  WordGenerationRequest,
+} from './types';
+import { normalizeGeneratedContent } from './utils';
+
+const DEFAULT_RESPONSE: GeneratedWordContent = {
+  hiragana: 'てすと',
+  definition_ja: 'テスト用の固定応答です。',
+  example_ja: '図書館で静かにテストを受けた。',
+};
+
+export class MockAiProvider implements AiProvider {
+  readonly name = 'mock';
+  private readonly response: GeneratedWordContent;
+
+  constructor(response: GeneratedWordContent = DEFAULT_RESPONSE) {
+    this.response = response;
+  }
+
+  async generateWordContent(input: WordGenerationRequest) {
+    return normalizeGeneratedContent(this.response, input);
+  }
+}

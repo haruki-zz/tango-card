@@ -1,3 +1,8 @@
+## 2025-12-26T15:04:00Z
+- 完成实施计划第 6 步：新增主进程 AI 提供商适配层，抽象统一接口并实现 OpenAI（Responses API + JSON Schema 严格模式）、Gemini（官方 SDK generateContent）与无密钥可用的 Mock provider，包含提示词生成、输出截断与超时控制。
+- 新增单测 `src/main/__tests__/ai.test.ts` 覆盖 OpenAI 请求体/超时、Gemini 正常/错误分支与 Mock 固定输出，确保生成内容可解析并受限。
+- 依赖新增 `openai` 与 `@google/genai`；未跑测试由用户验证。
+
 ## 2025-12-26T12:27:02Z
 - 完成实施计划第 5 步：主进程存储层实现 `FileStorage`，负责 `words.jsonl`/`reviews.jsonl`/`activity.json` 的安全读写（临时文件再替换），新增词条时补全时间/SM-2 默认值并更新活跃度，提供复习日志写入与 session 计数。
 - 新增单测 `src/main/__tests__/storage.test.ts` 覆盖默认补全、JSONL 写入格式、活跃度累加与写入失败保留原文件；Vitest 配置补充 `@main` 别名。

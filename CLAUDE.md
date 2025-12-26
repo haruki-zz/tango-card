@@ -5,7 +5,15 @@
   - src/
     - main/index.ts：主进程入口，创建 BrowserWindow、绑定 preload，加载 dev URL 或打包文件。
     - main/storage.ts：主进程存储层，基于 `app.getPath('userData')` 管理 `words.jsonl`/`reviews.jsonl`/`activity.json`，使用临时文件写入保证原文件不损坏，新增词条时补全时间/SM-2 默认值并更新活跃度，提供复习日志写入与 session 计数累加。
+    - main/ai/：AI 提供商适配层
+      - types.ts：AI provider 接口、配置默认值与生成结果结构。
+      - utils.ts：提示词、输出截断与 JSON 解析、超时辅助。
+      - openai.ts：使用官方 Responses API（json_schema 严格模式）的 OpenAI provider。
+      - gemini.ts：使用 `@google/genai` SDK 的 Gemini provider，解析 JSON MIME。
+      - mock.ts：无密钥固定响应的 mock provider。
+      - index.ts：provider 工厂与出口。
     - main/__tests__/storage.test.ts：Vitest 单测验证存储层的默认补全、JSONL 写入、活跃度累加与写入失败时的文件安全。
+    - main/__tests__/ai.test.ts：Vitest 单测覆盖 AI provider 的解析、超时与 mock 行为。
     - preload/index.ts：contextBridge 暴露 platform/node/chrome/electron 版本信息。
     - renderer/index.html：渲染端 HTML 入口。
     - renderer/src/App.tsx|main.tsx|style.css|global.d.ts：React/Vite UI 骨架与类型声明，展示环境版本信息。
@@ -18,7 +26,7 @@
   - electron-builder.yml：electron-builder 打包配置（appId/productName、release 输出、mac dmg+zip、win nsis+portable、linux AppImage，入口 dist-electron/main/index.js）。
   - tsconfig.json：TypeScript 严格模式与路径别名配置，新增 `@shared` 指向 `src/shared`。
   - resources/icon.png：打包占位图标（512x512 PNG）。
-  - package.json / package-lock.json：ESM 元数据，依赖 Electron/React/Vite/electron-builder/vitest，scripts 使用 electron-vite dev/build/preview、`vitest run` 测试与 electron-builder 打包。
+  - package.json / package-lock.json：ESM 元数据，依赖 Electron/React/Vite/electron-builder/vitest，新增 `openai` 与 `@google/genai`；scripts 使用 electron-vite dev/build/preview、`vitest run` 测试与 electron-builder 打包。
   - vitest.config.ts：Vitest 配置（Node 环境、`@shared`/`@main` 路径别名解析）。
   - memory-bank/：设计文档、实施计划、架构记录、进度与技术栈说明。
   - prompts/：coding-style 与 system-prompt 约束。

@@ -1,7 +1,7 @@
 # 架构记录
 
 ## 阶段状态
-- 已完成实施计划第 5 步：主进程存储层（本地 JSONL/JSON 读写、补全与活跃度聚合）就绪；下一步进入 AI 提供商适配层。
+- 已完成实施计划第 6 步：主进程 AI 提供商适配层就绪（OpenAI Responses API、Google Gemini SDK、Mock），支撑词条生成；下一步进入 IPC 安全桥接。
 
 ## 文件作用
 - package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖；scripts 含 electron-vite dev/build/preview、lint/lint:fix、format/format:fix，build 调用 electron-builder 产出安装包。
@@ -16,7 +16,15 @@
 - resources/icon.png：占位应用图标（512x512 PNG），供 electron-builder 使用。
 - src/main/index.ts：主进程入口，创建 BrowserWindow、绑定 preload、处理 URL/文件加载与生命周期。
 - src/main/storage.ts：基于 `app.getPath('userData')` 的存储层，管理 `words.jsonl`/`reviews.jsonl`/`activity.json`，读写使用临时文件写入再替换；新增词条时补全时间与 SM-2 默认值并更新活跃度，复习日志写入与 session 计数累加。
+- src/main/ai：
+  - types.ts：AI provider 公共接口、请求/响应结构及默认超时/输出长度配置。
+  - utils.ts：提示词生成、模型输出截断与 JSON 解析辅助、超时包装。
+  - openai.ts：基于官方 Responses API 的 OpenAI provider，使用 `responses.create` + JSON Schema（strict 模式）生成词条内容。
+  - gemini.ts：基于官方 `@google/genai` SDK 的 Gemini provider，调用 `models.generateContent`，按 JSON MIME 返回解析。
+  - mock.ts：无密钥固定响应的 mock provider，用于 dev/测试。
+  - index.ts：provider 工厂与出口，支持 openai/gemini/mock 配置与兜底。
 - src/main/__tests__/storage.test.ts：FileStorage 的 Vitest 单测，覆盖默认补全、JSONL 格式、活跃度累加与写入失败保护。
+- src/main/__tests__/ai.test.ts：AI provider 单测，覆盖 OpenAI/Gemini 正常与错误/超时路径，以及 mock 截断输出。
 - src/preload/index.ts：预加载脚本，通过 contextBridge 暴露平台与版本信息。
 - src/renderer/index.html：渲染进程 HTML 入口。
 - src/renderer/src：渲染进程 React/Vite 骨架（App.tsx 展示版本信息、main.tsx 挂载、基础样式与类型声明）。
