@@ -5,8 +5,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "echo \"dev server not configured yet\"",
-    "build": "echo \"build not configured yet\"",
+    "dev": "electron-vite dev",
+    "build": "electron-vite build && electron-builder",
+    "preview": "electron-vite preview",
     "lint": "echo \"lint config pending\"",
     "test": "echo \"tests not configured yet\""
   },
@@ -23,5 +24,20 @@
   "bugs": {
     "url": "https://github.com/haruki-zz/tango-card/issues"
   },
-  "homepage": "https://github.com/haruki-zz/tango-card#readme"
+  "homepage": "https://github.com/haruki-zz/tango-card#readme",
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
+    "electron": "^39.2.7",
+    "electron-builder": "^26.0.12",
+    "electron-vite": "^5.0.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.0"
+  },
+  "dependencies": {
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  }
 }

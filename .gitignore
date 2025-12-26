@@ -1,7 +1,10 @@
 node_modules/
 dist/
+dist-electron/
 out/
 build/
+release/
+/.vite/
 coverage/
 *.log
 npm-debug.log*
