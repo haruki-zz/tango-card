@@ -1,3 +1,8 @@
+## 2025-12-26T12:04:29Z
+- 完成实施计划第 4 步：在 `src/shared` 定义词条/复习日志/活跃度类型与 SM-2 常量、默认补全与校验逻辑（时间与 SM-2 字段缺省时自动补齐），实现 SM-2 更新与复习队列排序纯函数。
+- 新增 Vitest 配置与单测覆盖补全、分数边界、队列排序与 EF/间隔更新；`package.json` 改为 `vitest run` 测试脚本。
+- 跑通命令：`npm test -- shared`。
+
 ## 2025-12-26T11:37:02Z
 - 完成实施计划第 3 步：接入 ESLint + Prettier 规范。新增 `.eslintrc.cjs` 与 `prettier.config.cjs`，覆盖 main/preload/renderer，统一单引号。
 - 更新 package.json/package-lock.json，添加 ESLint/Prettier 依赖与 `lint`/`lint:fix`/`format`/`format:fix` 脚本，`npm run lint` 全量通过。

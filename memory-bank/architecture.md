@@ -1,7 +1,7 @@
 # 架构记录
 
 ## 阶段状态
-- 已完成实施计划第 3 步：接入 ESLint + Prettier 统一规范，`npm run lint` 全量通过；后续继续补充共享类型与 SM-2 逻辑。
+- 已完成实施计划第 4 步：建立共享类型与 SM-2 逻辑，配套校验/补全与单元测试；下一步进入主进程存储层。
 
 ## 文件作用
 - package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖；scripts 含 electron-vite dev/build/preview、lint/lint:fix、format/format:fix，build 调用 electron-builder 产出安装包。
@@ -18,12 +18,17 @@
 - src/preload/index.ts：预加载脚本，通过 contextBridge 暴露平台与版本信息。
 - src/renderer/index.html：渲染进程 HTML 入口。
 - src/renderer/src：渲染进程 React/Vite 骨架（App.tsx 展示版本信息、main.tsx 挂载、基础样式与类型声明）。
+- src/shared：
+  - types.ts：词条、复习日志、活跃度类型定义，SM-2 常量（EF 下限、默认值、间隔基线）。
+  - sm2.ts：SM-2 默认状态生成、评分更新公式、复习队列排序与日期加成等纯函数。
+  - validation.ts：词条/复习日志/活跃度的 JSON 校验与补全逻辑；时间与 SM-2 字段缺失时按当前时刻与默认值填充。
+  - __tests__：使用 Vitest 覆盖 SM-2 更新、分数边界、队列排序与校验补全边界。
 - CLAUDE.md：仓库当前架构快照，描述目录与文件职责，需随架构变更同步。
 - AGENTS.md：贡献规范与全局约束的入口说明。
 - prompts/coding-style.md：代码风格与开发流程约定。
 - prompts/system-prompt.md：系统级工作规范与思考模式。
 - memory-bank/design-document.md：产品功能与数据设计说明。
-- memory-bank/implementation-plan.md：分步实施计划，当前执行至第 2 步。
+- memory-bank/implementation-plan.md：分步实施计划，当前执行至第 4 步。
 - memory-bank/tech-stack.md：技术栈清单与选型理由。
 - memory-bank/progress.md：阶段性变更记录，便于交接。
 - memory-bank/architecture.md：架构与文件职责记录（本文件），持续更新各阶段的结构洞察。

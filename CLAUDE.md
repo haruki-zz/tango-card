@@ -7,13 +7,19 @@
     - preload/index.ts：contextBridge 暴露 platform/node/chrome/electron 版本信息。
     - renderer/index.html：渲染端 HTML 入口。
     - renderer/src/App.tsx|main.tsx|style.css|global.d.ts：React/Vite UI 骨架与类型声明，展示环境版本信息。
+    - shared/：共享类型与纯逻辑
+      - types.ts：词条、复习日志、活跃度类型与 SM-2 常量。
+      - sm2.ts：SM-2 默认值、评分更新、复习队列排序等纯函数。
+      - validation.ts：词条/日志/活跃度 JSON 校验与补全逻辑（时间与 SM-2 默认值）。
+      - __tests__/*.test.ts：Vitest 单测覆盖补全逻辑与 SM-2 算法。
   - electron.vite.config.ts：electron-vite 配置（主/预加载输出至 dist-electron，渲染输出 dist，React 插件与路径别名）。
   - electron-builder.yml：electron-builder 打包配置（appId/productName、release 输出、mac dmg+zip、win nsis+portable、linux AppImage，入口 dist-electron/main/index.js）。
-  - tsconfig.json：TypeScript 严格模式与路径别名配置。
+  - tsconfig.json：TypeScript 严格模式与路径别名配置，新增 `@shared` 指向 `src/shared`。
   - resources/icon.png：打包占位图标（512x512 PNG）。
-  - package.json / package-lock.json：ESM 元数据，依赖 Electron/React/Vite/electron-builder，scripts 使用 electron-vite dev/build/preview 并调用 electron-builder。
+  - package.json / package-lock.json：ESM 元数据，依赖 Electron/React/Vite/electron-builder/vitest，scripts 使用 electron-vite dev/build/preview、`vitest run` 测试与 electron-builder 打包。
+  - vitest.config.ts：Vitest 配置（Node 环境、`@shared` 路径别名解析）。
   - memory-bank/：设计文档、实施计划、架构记录、进度与技术栈说明。
   - prompts/：coding-style 与 system-prompt 约束。
   - AGENTS.md：贡献与约束规则汇总。
   - .gitignore / .env.local：忽略构建产物、环境文件，密钥占位。
-- 依赖与模块：已安装 Electron、React、electron-vite、electron-builder、TypeScript；构建产物位于 dist（渲染）、dist-electron（主/预加载），打包输出 release/。
+- 依赖与模块：已安装 Electron、React、electron-vite、electron-builder、TypeScript、Vitest；构建产物位于 dist（渲染）、dist-electron（主/预加载），打包输出 release/。
