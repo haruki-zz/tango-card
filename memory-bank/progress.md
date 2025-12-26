@@ -1,3 +1,8 @@
+## 2025-12-26T12:27:02Z
+- 完成实施计划第 5 步：主进程存储层实现 `FileStorage`，负责 `words.jsonl`/`reviews.jsonl`/`activity.json` 的安全读写（临时文件再替换），新增词条时补全时间/SM-2 默认值并更新活跃度，提供复习日志写入与 session 计数。
+- 新增单测 `src/main/__tests__/storage.test.ts` 覆盖默认补全、JSONL 写入格式、活跃度累加与写入失败保留原文件；Vitest 配置补充 `@main` 别名。
+- 跑通命令：`npm test`。
+
 ## 2025-12-26T12:04:29Z
 - 完成实施计划第 4 步：在 `src/shared` 定义词条/复习日志/活跃度类型与 SM-2 常量、默认补全与校验逻辑（时间与 SM-2 字段缺省时自动补齐），实现 SM-2 更新与复习队列排序纯函数。
 - 新增 Vitest 配置与单测覆盖补全、分数边界、队列排序与 EF/间隔更新；`package.json` 改为 `vitest run` 测试脚本。
