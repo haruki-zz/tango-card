@@ -31,24 +31,35 @@ const createMainWindow = () => {
 
   const rendererUrl = process.env['ELECTRON_RENDERER_URL'];
   if (rendererUrl) {
-    mainWindow.loadURL(rendererUrl);
+    mainWindow.loadURL(rendererUrl).catch((error) => {
+      console.error('加载渲染进程 URL 失败', error);
+    });
     if (isDev) {
       mainWindow.webContents.openDevTools({ mode: 'detach' });
     }
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+    mainWindow
+      .loadFile(path.join(__dirname, '../renderer/index.html'))
+      .catch((error) => {
+        console.error('加载渲染进程文件失败', error);
+      });
   }
 };
 
-app.whenReady().then(() => {
-  createMainWindow();
+app
+  .whenReady()
+  .then(() => {
+    createMainWindow();
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createMainWindow();
-    }
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createMainWindow();
+      }
+    });
+  })
+  .catch((error) => {
+    console.error('应用初始化失败', error);
   });
-});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

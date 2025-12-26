@@ -1,13 +1,15 @@
 # 架构记录
 
 ## 阶段状态
-- 已完成实施计划第 2 步：搭建 Electron + React/Vite 基础骨架，`npm run dev` 可启动空白窗口，`npm run build` 生成可打包产物；后续步骤将接入 ESLint/Prettier 等规范与业务功能。
+- 已完成实施计划第 3 步：接入 ESLint + Prettier 统一规范，`npm run lint` 全量通过；后续继续补充共享类型与 SM-2 逻辑。
 
 ## 文件作用
-- package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖，scripts 使用 electron-vite 驱动 dev/build/preview，build 调用 electron-builder 产出安装包。
+- package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖；scripts 含 electron-vite dev/build/preview、lint/lint:fix、format/format:fix，build 调用 electron-builder 产出安装包。
 - package-lock.json：npm 锁定文件（包含 Electron、React、构建链依赖）。
 - .gitignore：忽略 node_modules、构建产物（dist、dist-electron、release）、日志、.env.* 与 .vite。
 - .env.local：存放 OpenAI/Google 密钥占位，避免读取缺失时报错，默认不提交。
+- .eslintrc.cjs：全局 ESLint 配置，启用 TypeScript/React/React Hooks/Prettier 规则集，设置浏览器与 Node 环境覆盖 main/preload/renderer，忽略 dist/dist-electron/release/out/node_modules。
+- prettier.config.cjs：Prettier 配置，统一单引号。
 - electron.vite.config.ts：electron-vite 配置，定义 main/preload 输出目录与 React 插件、渲染端别名。
 - electron-builder.yml：electron-builder 打包配置，指定 appId/productName、输出目录（release）、macOS/Windows/Linux 目标与主入口。
 - tsconfig.json：TypeScript 编译配置，启用 strict，路径别名覆盖 main/preload/renderer。

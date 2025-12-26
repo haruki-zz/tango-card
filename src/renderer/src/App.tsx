@@ -7,8 +7,8 @@ const App = () => {
         <p className="eyebrow">Tango Card</p>
         <h1>Desktop shell ready</h1>
         <p className="subtitle">
-          Electron + React + Vite scaffold is running. Start wiring data flows and UI features
-          next.
+          Electron + React + Vite scaffold is running. Start wiring data flows
+          and UI features next.
         </p>
       </header>
 
@@ -31,7 +31,9 @@ const App = () => {
         </div>
       </section>
 
-      <p className="hint">Edit src/renderer/src/App.tsx to start building the vocabulary screens.</p>
+      <p className="hint">
+        Edit src/renderer/src/App.tsx to start building the vocabulary screens.
+      </p>
     </div>
   );
 };
