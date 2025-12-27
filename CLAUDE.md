@@ -1,47 +1,49 @@
 # 项目架构快照
 
-- 目标：Electron + React/Vite 日语词汇桌面应用，已完成基础骨架，可通过 `npm run dev`/`npm run build` 启动与打包。
+- 目标：Electron + React/Vite 的日语词汇桌面应用，已完成新增、复习队列与活跃度展示，可通过 `npm run dev`/`npm run build` 运行与打包。
 - 目录结构：
   - src/
-    - main/index.ts：主进程入口，创建 BrowserWindow、绑定 preload，加载 dev URL 或打包文件。
-    - main/storage.ts：主进程存储层，基于 `app.getPath('userData')` 管理 `words.jsonl`/`reviews.jsonl`/`activity.json`，使用临时文件写入保证原文件不损坏；新增词条补全时间/SM-2 默认值并更新活跃度，提供复习日志写入、词库全量重写与 session 计数累加；支持 JSON/JSONL 导入（按 `word` 去重覆盖、非法行计入 skipped）与 JSON+CSV 导出（写入 `exports/` 子目录）。
-    - main/ai/：AI 提供商适配层
-      - types.ts：AI provider 接口、配置默认值与生成结果结构。
-      - utils.ts：提示词、输出截断与 JSON 解析、超时辅助。
-      - openai.ts：使用官方 Responses API（json_schema 严格模式）的 OpenAI provider。
-      - gemini.ts：使用 `@google/genai` SDK 的 Gemini provider，解析 JSON MIME。
+    - main/index.ts：主进程入口，创建 BrowserWindow、绑定 preload，处理 URL/文件加载与生命周期。
+    - main/storage.ts：基于 `app.getPath('userData')` 的存储层，管理 `words.jsonl`/`reviews.jsonl`/`activity.json`；临时文件写入保护；新增补全时间与 SM-2 默认值并更新活跃度，复习日志写入与 session 计数；支持全量保存、导入（JSON/JSONL 去重覆盖、非法记录计数）与导出 JSON+CSV（写入 `exports/`）。
+    - main/ipc/handlers.ts：集中注册 IPC 信道，校验参数并调用存储/AI/provider 配置；提供词条增/查、AI 生成、复习队列、提交评分（含 SM-2 更新与日志）、活跃度读取/累加、provider 设置、导入/导出接口。
+    - main/ai/：AI 提供商适配
+      - types.ts：AI provider 接口、默认配置与生成结果结构。
+      - utils.ts：提示词生成、输出截断与 JSON 解析、超时包装。
+      - openai.ts：官方 Responses API（JSON Schema 严格模式）实现。
+      - gemini.ts：`@google/genai` SDK 实现，解析 JSON MIME。
       - mock.ts：无密钥固定响应的 mock provider。
       - index.ts：provider 工厂与出口。
-    - main/ipc/handlers.ts：集中注册 IPC 信道，校验入参，调用存储层与 AI provider，暴露新增/列表词条、生成内容、复习队列、提交评分（含 SM-2 更新与日志写入）、活跃度读取/累加、provider 设置以及导入/导出接口。
-    - main/__tests__/storage.test.ts：Vitest 单测验证存储层的默认补全、JSONL 写入、活跃度累加与写入失败时的文件安全。
-    - main/__tests__/ai.test.ts：Vitest 单测覆盖 AI provider 的解析、超时与 mock 行为。
-    - main/__tests__/ipc.test.ts：Vitest 单测覆盖 IPC handlers 的入参校验、SM-2 更新（含 `next_review_at` 日期合法性）、活跃度日期校验、导入/导出链路与 provider 配置错误处理。
-    - main/__tests__/import-export.test.ts：Vitest 单测覆盖存储导入/导出（去重覆盖、非法输入跳过、导出 JSON/CSV 内容）。
-    - preload/index.ts：contextBridge 暴露 platform/node/chrome/electron 版本信息与受控 IPC API（新增词条、生成内容、复习队列、活跃度与 provider 设置等）。
+    - preload/index.ts：contextBridge 暴露版本信息与受控 IPC API（词库、复习、活跃度、provider 设置、导入/导出）。
     - renderer/index.html：渲染端 HTML 入口。
-    - renderer/src/App.tsx：前端主界面，初始化词库与活跃度，在布局中并列新增表单与复习队列，并展示最近新增列表。
-    - renderer/src/components/AddWordForm.tsx：新增流程组件，支持单词输入、AI 生成预填、手动编辑与保存后刷新词库和活跃度摘要。
-    - renderer/src/components/ReviewSession.tsx：复习队列组件，自动拉取待复习卡片，支持翻面查看释义与 0-5 评分，仅在完成整轮后调用 session 计数，可重置或重试。
+    - renderer/src/App.tsx：前端主界面，初始化词库与活跃度；并列新增表单与复习队列，展示活跃度方格与最近新增列表。
+    - renderer/src/components/AddWordForm.tsx：新增流程组件，输入单词、AI 生成预填、手动编辑并保存后刷新词库与活跃度。
+    - renderer/src/components/ReviewSession.tsx：复习队列组件，翻面查看释义/例句，0-5 评分后提交 IPC，完成整轮才计入 session，可重置或重试计数。
+    - renderer/src/components/ActivityHeatmap.tsx：活跃度方格组件，按最近 35 天的新增词条与复习 session 总和渲染绿色深浅，提供每日 tooltip 与汇总统计。
     - renderer/src/components/WordList.tsx：按创建时间倒序展示最新词条。
-    - renderer/src/store/useAppStore.ts：Zustand 全局状态，统一封装 IPC 动作（词库加载/新增、生成内容、复习队列与 session、提交评分、活跃度读取/计数、provider 设置、导入/导出）；`renderer/src/__tests__/useAppStore.test.ts` 以 mock window.api 覆盖状态更新与错误路径。
-    - renderer/src/__tests__/AddWordFlow.test.tsx：React Testing Library 覆盖空输入校验、生成填充、保存后刷新列表与活跃度摘要。
-    - renderer/src/__tests__/ReviewSession.test.tsx：组件测试覆盖翻面展示、评分时的 IPC 参数与 session 计数，以及空队列不计入 session。
+    - renderer/src/store/useAppStore.ts：Zustand 全局状态封装 IPC 动作（词库、复习队列/session、活跃度、provider 设置、导入/导出）；`renderer/src/__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
+    - renderer/src/__tests__/AddWordFlow.test.tsx：组件测试覆盖空输入校验、生成填充、保存后刷新列表与活跃度摘要。
+    - renderer/src/__tests__/ReviewSession.test.tsx：组件测试覆盖翻面展示、评分 IPC 参数与 session 计数，空队列不计入 session。
+    - renderer/src/__tests__/ActivityHeatmap.test.tsx：组件测试覆盖活跃度方格的颜色梯度与 tooltip 文案。
     - renderer/src/main.tsx|style.css|global.d.ts：渲染入口挂载、Tailwind 基础层与 UI 复用类、窗口 API 类型声明。
     - shared/：共享类型与纯逻辑
       - types.ts：词条、复习日志、活跃度类型与 SM-2 常量。
       - sm2.ts：SM-2 默认值、评分更新、复习队列排序等纯函数。
-      - validation.ts：词条/日志/活跃度 JSON 校验与补全逻辑（时间与 SM-2 默认值）。
-      - ipc.ts：IPC 信道常量、请求/响应与 Renderer API 类型，用于主进程 handler 与预加载桥的共享契约。
-      - __tests__/*.test.ts：Vitest 单测覆盖补全逻辑与 SM-2 算法。
-  - electron.vite.config.ts：electron-vite 配置（主/预加载输出至 dist-electron，渲染输出 dist，React 插件与路径别名）。
-  - electron-builder.yml：electron-builder 打包配置（appId/productName、release 输出、mac dmg+zip、win nsis+portable、linux AppImage，入口 dist-electron/main/index.js）。
-  - tsconfig.json：TypeScript 严格模式与路径别名配置，新增 `@shared` 指向 `src/shared`。
-  - resources/icon.png：打包占位图标（512x512 PNG）。
-  - package.json / package-lock.json：ESM 元数据，依赖 Electron/React/Vite/electron-builder/vitest/Zustand，含 `openai` 与 `@google/genai`；scripts 使用 electron-vite dev/build/preview、`vitest run` 测试与 electron-builder 打包；dev 依赖包含 Testing Library 与 jsdom。
-  - vitest.config.ts：Vitest 配置（jsdom 环境、`@shared`/`@main` 路径别名解析、全局 setup 引入 jest-dom）。
-  - vitest.setup.ts：测试环境初始化，注册 jest-dom matcher。
+      - validation.ts：词条/日志/活跃度校验与补全（缺失时间/SM-2 默认填充）。
+      - ipc.ts：IPC 信道常量与 Renderer API 类型，主进程 handler 与 preload 的共享契约。
+      - __tests__：Vitest 单测覆盖 SM-2 算法与校验补全。
+    - main/__tests__/storage.test.ts：验证存储层补全、JSONL 写入、活跃度累加与写入失败保护。
+    - main/__tests__/ai.test.ts：验证 OpenAI/Gemini 正常、错误与超时路径及 mock 行为。
+    - main/__tests__/ipc.test.ts：验证 IPC 校验、SM-2 更新、活跃度日期校验、导入/导出链路与 provider 配置错误。
+    - main/__tests__/import-export.test.ts：验证导入/导出去重覆盖、非法输入跳过与导出内容。
+  - electron.vite.config.ts：electron-vite 配置（主/预加载输出 dist-electron，渲染输出 dist，React 插件与路径别名）。
+  - electron-builder.yml：打包配置（appId/productName、release 输出、mac dmg+zip、win nsis+portable、linux AppImage，入口 dist-electron/main/index.js）。
+  - tsconfig.json：TypeScript 严格模式与路径别名（含 `@shared` 指向 `src/shared`）。
+  - resources/icon.png：打包占位图标。
+  - package.json / package-lock.json：ESM 元数据与依赖（Electron/React/electron-vite/electron-builder/TypeScript/Vitest/Zustand、openai、@google/genai），scripts 包含 dev/build/preview/lint/test/pack。
+  - vitest.config.ts：Vitest 配置（jsdom、`@shared`/`@main` 别名、全局 setup）。
+  - vitest.setup.ts：测试环境初始化，引入 jest-dom matcher。
   - memory-bank/：设计文档、实施计划、架构记录、进度与技术栈说明。
   - prompts/：coding-style 与 system-prompt 约束。
-  - AGENTS.md：贡献与约束规则汇总。
-  - .gitignore / .env.local：忽略构建产物、环境文件，密钥占位。
+  - AGENTS.md：贡献与全局约束说明。
+  - .gitignore / .env.local：忽略构建产物与环境文件，提供密钥占位。
 - 依赖与模块：已安装 Electron、React、electron-vite、electron-builder、TypeScript、Vitest；构建产物位于 dist（渲染）、dist-electron（主/预加载），打包输出 release/。

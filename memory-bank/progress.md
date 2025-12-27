@@ -1,3 +1,9 @@
+## 2025-12-27T15:14:19Z
+- 完成实施计划第 13 步：渲染端新增活跃度方格视图，按最近 35 天的新增词条与复习 session 之和渲染绿色深浅，悬停显示每日详情。
+- 新增组件 `src/renderer/src/components/ActivityHeatmap.tsx`，在 `App.tsx` 主界面中呈现汇总卡与方格，并复用全局活跃度数据。
+- 新增测试 `src/renderer/src/__tests__/ActivityHeatmap.test.tsx` 覆盖颜色梯度与 tooltip 文案。
+- 跑通命令：`npm test -- src/renderer/src/__tests__/ActivityHeatmap.test.tsx`。
+
 ## 2025-12-27T14:35:58Z
 - 完成实施计划第 11 步：渲染端实现新增词条最小流程，包含 AI 生成预填、手动编辑与保存后刷新词库/活跃度。
 - 新增组件 `src/renderer/src/components/AddWordForm.tsx` 与 `WordList.tsx`，`App.tsx` 切换为新增词条主界面并初始化词库与活跃度。

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import AddWordForm from './components/AddWordForm';
+import ActivityHeatmap from './components/ActivityHeatmap';
 import ReviewSession from './components/ReviewSession';
 import WordList from './components/WordList';
 import { useAppStore } from './store/useAppStore';
@@ -64,6 +65,7 @@ const App = () => {
           <AddWordForm />
           <ReviewSession />
         </div>
+        <ActivityHeatmap />
         <WordList words={words} loading={initializing} />
       </main>
     </div>
