@@ -20,6 +20,7 @@
     - preload/index.ts：contextBridge 暴露 platform/node/chrome/electron 版本信息与受控 IPC API（新增词条、生成内容、复习队列、活跃度与 provider 设置等）。
     - renderer/index.html：渲染端 HTML 入口。
     - renderer/src/App.tsx|main.tsx|style.css|global.d.ts：React/Vite UI 骨架与类型声明，展示环境版本信息；global.d.ts 声明 `window.api` IPC 调用接口。
+    - renderer/src/store/useAppStore.ts：Zustand 全局状态，统一封装 IPC 动作（词库加载/新增、生成内容、复习队列与 session、提交评分、活跃度读取/计数、provider 设置、导入/导出）；`renderer/src/__tests__/useAppStore.test.ts` 以 mock window.api 覆盖状态更新与错误路径。
     - shared/：共享类型与纯逻辑
       - types.ts：词条、复习日志、活跃度类型与 SM-2 常量。
       - sm2.ts：SM-2 默认值、评分更新、复习队列排序等纯函数。
@@ -30,7 +31,7 @@
   - electron-builder.yml：electron-builder 打包配置（appId/productName、release 输出、mac dmg+zip、win nsis+portable、linux AppImage，入口 dist-electron/main/index.js）。
   - tsconfig.json：TypeScript 严格模式与路径别名配置，新增 `@shared` 指向 `src/shared`。
   - resources/icon.png：打包占位图标（512x512 PNG）。
-  - package.json / package-lock.json：ESM 元数据，依赖 Electron/React/Vite/electron-builder/vitest，新增 `openai` 与 `@google/genai`；scripts 使用 electron-vite dev/build/preview、`vitest run` 测试与 electron-builder 打包。
+  - package.json / package-lock.json：ESM 元数据，依赖 Electron/React/Vite/electron-builder/vitest/Zustand，含 `openai` 与 `@google/genai`；scripts 使用 electron-vite dev/build/preview、`vitest run` 测试与 electron-builder 打包。
   - vitest.config.ts：Vitest 配置（Node 环境、`@shared`/`@main` 路径别名解析）。
   - memory-bank/：设计文档、实施计划、架构记录、进度与技术栈说明。
   - prompts/：coding-style 与 system-prompt 约束。

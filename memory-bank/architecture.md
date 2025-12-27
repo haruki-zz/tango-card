@@ -1,10 +1,10 @@
 # 架构记录
 
 ## 阶段状态
-- 已完成实施计划第 8 步：主进程导入/导出就绪（JSON/JSONL 导入去重覆盖、JSON+CSV 导出），IPC 信道贯通，渲染端仅能调用受控接口。
+- 已完成实施计划第 9 步：渲染端状态管理接入（Zustand store 覆盖词库/复习队列/session/活跃度/provider），IPC 异步动作封装完毕，等待 UI 层调用。
 
 ## 文件作用
-- package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖；scripts 含 electron-vite dev/build/preview、lint/lint:fix、format/format:fix，build 调用 electron-builder 产出安装包。
+- package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖，前端状态管理依赖 Zustand；scripts 含 electron-vite dev/build/preview、lint/lint:fix、format/format:fix，build 调用 electron-builder 产出安装包。
 - package-lock.json：npm 锁定文件（包含 Electron、React、构建链依赖）。
 - .gitignore：忽略 node_modules、构建产物（dist、dist-electron、release）、日志、.env.* 与 .vite。
 - .env.local：存放 OpenAI/Google 密钥占位，避免读取缺失时报错，默认不提交。
@@ -28,7 +28,7 @@
 - src/main/__tests__/ai.test.ts：AI provider 单测，覆盖 OpenAI/Gemini 正常与错误/超时路径，以及 mock 截断输出。
 - src/preload/index.ts：预加载脚本，通过 contextBridge 暴露平台与版本信息，以及受控 `window.api` IPC 调用集合（词条增/查、AI 生成、复习、活跃度、provider 设置、导入/导出）。
 - src/renderer/index.html：渲染进程 HTML 入口。
-- src/renderer/src：渲染进程 React/Vite 骨架（App.tsx 展示版本信息、main.tsx 挂载、基础样式与类型声明）。
+- src/renderer/src：渲染进程 React/Vite 骨架（App.tsx 展示版本信息、main.tsx 挂载、基础样式与类型声明）；store/useAppStore.ts 提供全局 Zustand store 封装 IPC 动作（词库、复习队列/session、活跃度、provider 设置、导入/导出），`__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
 - src/shared：
   - types.ts：词条、复习日志、活跃度类型定义，SM-2 常量（EF 下限、默认值、间隔基线）。
   - sm2.ts：SM-2 默认状态生成、评分更新公式、复习队列排序与日期加成等纯函数。

@@ -1,3 +1,8 @@
+## 2025-12-27T13:33:30Z
+- 完成实施计划第 9 步：渲染端接入 Zustand 全局 store，集中管理词库列表、复习队列/session、活跃度与 provider 配置，封装 IPC 异步动作（加载/新增词条、生成内容、提交复习、完成 session 计数、导入/导出与活动刷新），支持自动生成 sessionId 与队列同步。
+- 新增 `src/renderer/src/store/useAppStore.ts` 与单测 `useAppStore.test.ts`，mock `window.api` 覆盖状态更新与错误路径（空队列不重置 session、无 session 完成时抛错、导入后刷新词表、provider 设置失败不污染状态）。
+- 依赖新增 `zustand` 用于状态管理。测试由用户执行并验证通过。
+
 ## 2025-12-27T01:40:12Z
 - 完成实施计划第 8 步：主进程实现词库导入/导出，导入支持 JSON/JSONL 按 `word` 去重覆盖并校验无效记录计为 skipped，导出同时生成 JSON 与 CSV（输出路径随时间戳写入 `exports/` 子目录），返回词条数。
 - IPC 连接导入/导出信道，渲染端可直接请求文件生成或内容导入；共享类型更新导入/导出响应字段。
