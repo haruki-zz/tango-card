@@ -73,12 +73,14 @@ export interface ImportDataResponse {
 }
 
 export interface RendererApi {
-  generateWordContent(payload: GenerateWordPayload): Promise<GeneratedWordContent>;
+  generateWordContent(
+    payload: GenerateWordPayload,
+  ): Promise<GeneratedWordContent>;
   addWord(payload: AddWordPayload): Promise<WordEntry>;
   listWords(): Promise<WordEntry[]>;
   getReviewQueue(): Promise<WordEntry[]>;
   submitReview(
-    payload: ReviewSubmitPayload
+    payload: ReviewSubmitPayload,
   ): Promise<{ word: WordEntry; log: ReviewLog }>;
   getActivity(): Promise<ActivityByDay>;
   incrementSession(date?: string): Promise<ActivityByDay>;

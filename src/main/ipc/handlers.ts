@@ -1,6 +1,10 @@
 import { ipcMain, type IpcMainInvokeEvent } from 'electron';
 
-import { createProviderOrMock, type AiProvider, type ProviderConfig } from '@main/ai';
+import {
+  createProviderOrMock,
+  type AiProvider,
+  type ProviderConfig,
+} from '@main/ai';
 import { FileStorage, type WordInput } from '@main/storage';
 import {
   IPC_CHANNELS,
@@ -20,7 +24,7 @@ import type { WordEntry } from '@shared/types';
 
 type IpcHandler<K extends IpcChannel> = (
   event: IpcMainInvokeEvent,
-  payload: IpcRequestMap[K]
+  payload: IpcRequestMap[K],
 ) => Promise<IpcResponseMap[K]>;
 
 type HandlerMap = {
@@ -79,14 +83,16 @@ const normalizePositiveInteger = (value: unknown) => {
 };
 
 const normalizeProviderSettings = (
-  settings: ProviderSettings
+  settings: ProviderSettings,
 ): ProviderConfig & SafeProviderSettings => {
   const provider = normalizeProviderName(settings.provider);
   const model = settings.model?.trim() || undefined;
   const timeoutMs = normalizePositiveInteger(settings.timeoutMs);
   const maxOutputTokens = normalizePositiveInteger(settings.maxOutputTokens);
   const apiKey =
-    provider === 'mock' ? undefined : ensureNonEmptyString(settings.apiKey, 'apiKey');
+    provider === 'mock'
+      ? undefined
+      : ensureNonEmptyString(settings.apiKey, 'apiKey');
 
   return {
     provider,
@@ -114,15 +120,22 @@ const normalizeGeneratePayload = (payload: GenerateWordPayload) => ({
 
 const normalizeReviewPayload = (
   payload: ReviewSubmitPayload,
-  now: Date
-): { wordId: string; sessionId: string; score: number; reviewedAt: string } => ({
+  now: Date,
+): {
+  wordId: string;
+  sessionId: string;
+  score: number;
+  reviewedAt: string;
+} => ({
   wordId: ensureNonEmptyString(payload.wordId, 'wordId'),
   sessionId: ensureNonEmptyString(payload.sessionId, 'sessionId'),
   score: ensureScore(payload.score),
   reviewedAt: now.toISOString(),
 });
 
-const toSafeProviderSettings = (config: ProviderConfig): SafeProviderSettings => ({
+const toSafeProviderSettings = (
+  config: ProviderConfig,
+): SafeProviderSettings => ({
   provider: config.provider,
   model: config.model,
   timeoutMs: config.timeoutMs,
@@ -197,7 +210,7 @@ export const registerIpcHandlers = ({
           score: input.score,
           reviewed_at: input.reviewedAt,
         },
-        now
+        now,
       );
 
       return { word: updated, log };
@@ -207,11 +220,13 @@ export const registerIpcHandlers = ({
 
     [IPC_CHANNELS.ACTIVITY_INCREMENT_SESSION]: async (_event, payload) => {
       const date = payload?.date;
-      const target = date ? ensureIsoDate(date, 'date', getNow()) : getNow().toISOString();
+      const target = date
+        ? ensureIsoDate(date, 'date', getNow())
+        : getNow().toISOString();
       return storage.incrementSession(target);
     },
 
-    [IPC_CHANNELS.SET_PROVIDER]: async (_event, payload) => {
+    [IPC_CHANNELS.SET_PROVIDER]: (_event, payload) => {
       providerConfig = normalizeProviderSettings(payload);
       return toSafeProviderSettings(providerConfig);
     },
@@ -238,7 +253,7 @@ export const registerIpcHandlers = ({
 
   const invoke = async <K extends IpcChannel>(
     channel: K,
-    payload: IpcRequestMap[K]
+    payload: IpcRequestMap[K],
   ): Promise<IpcResponseMap[K]> => {
     const handler = handlers[channel];
     if (!handler) {

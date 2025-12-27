@@ -85,7 +85,7 @@ describe('normalizeReviewLog', () => {
     });
 
     expect(() =>
-      normalizeReviewLog({ session_id: 's1', word_id: 'w1', score: 9 })
+      normalizeReviewLog({ session_id: 's1', word_id: 'w1', score: 9 }),
     ).toThrow(/score 必须在 0-5 之间/);
 
     vi.useRealTimers();
@@ -126,7 +126,7 @@ describe('validateActivityByDay', () => {
     expect(() =>
       validateActivityByDay({
         '2025-01-03': { added: 'bad', sessions: 1 },
-      })
+      }),
     ).toThrow(/活跃度 2025-01-03 缺少有效数字/);
   });
 });

@@ -16,7 +16,10 @@ export const addDays = (date: Date, days: number) => {
 };
 
 export const calculateNextReviewAt = (interval: number, now = new Date()) => {
-  const normalizedInterval = Math.max(SM2_INITIAL_INTERVAL, Math.round(interval));
+  const normalizedInterval = Math.max(
+    SM2_INITIAL_INTERVAL,
+    Math.round(interval),
+  );
   return toIsoString(addDays(now, normalizedInterval));
 };
 
@@ -29,13 +32,15 @@ export const createDefaultSm2 = (now = new Date()): Sm2State => ({
 });
 
 const updateEaseFactor = (current: number, score: number) => {
-  const nextEf =
-    current +
-    (0.1 - (5 - score) * (0.08 + (5 - score) * 0.02));
+  const nextEf = current + (0.1 - (5 - score) * (0.08 + (5 - score) * 0.02));
   return Math.max(SM2_EASE_FACTOR_FLOOR, nextEf);
 };
 
-export const updateSm2 = (state: Sm2State, score: number, now = new Date()): Sm2State => {
+export const updateSm2 = (
+  state: Sm2State,
+  score: number,
+  now = new Date(),
+): Sm2State => {
   if (!Number.isFinite(score) || score < 0 || score > 5) {
     throw new Error('score 必须在 0-5 之间');
   }
@@ -59,10 +64,7 @@ export const updateSm2 = (state: Sm2State, score: number, now = new Date()): Sm2
   } else if (repetition === 2) {
     interval = SM2_SECOND_INTERVAL;
   } else {
-    interval = Math.max(
-      SM2_INITIAL_INTERVAL,
-      Math.round(state.interval * ef)
-    );
+    interval = Math.max(SM2_INITIAL_INTERVAL, Math.round(state.interval * ef));
   }
 
   return {
@@ -79,7 +81,10 @@ const safeTime = (iso: string, fallback: number) => {
   return Number.isNaN(ts) ? fallback : ts;
 };
 
-export const buildReviewQueue = (words: WordEntry[], now = new Date()): WordEntry[] => {
+export const buildReviewQueue = (
+  words: WordEntry[],
+  now = new Date(),
+): WordEntry[] => {
   const nowTime = now.getTime();
   const due: Array<{ word: WordEntry; ts: number }> = [];
   const upcoming: Array<{ word: WordEntry; ts: number }> = [];

@@ -30,12 +30,12 @@ interface AppActions {
   loadWords: () => Promise<WordEntry[]>;
   addWord: (payload: AddWordPayload) => Promise<WordEntry>;
   generateWordContent: (
-    payload: GenerateWordPayload
+    payload: GenerateWordPayload,
   ) => Promise<GeneratedWordContent>;
   loadReviewQueue: () => Promise<WordEntry[]>;
   submitReview: (
     wordId: string,
-    score: number
+    score: number,
   ) => Promise<{ word: WordEntry; log: ReviewLog }>;
   completeSession: (date?: string) => Promise<ActivityByDay>;
   refreshActivity: () => Promise<ActivityByDay>;
@@ -92,7 +92,8 @@ const createStoreState =
       return word;
     },
 
-    generateWordContent: (payload) => deps.getApi().generateWordContent(payload),
+    generateWordContent: (payload) =>
+      deps.getApi().generateWordContent(payload),
 
     loadReviewQueue: async () => {
       const queue = await deps.getApi().getReviewQueue();
@@ -100,7 +101,7 @@ const createStoreState =
         reviewQueue: queue,
         sessionId:
           queue.length > 0
-            ? state.sessionId ?? deps.createSessionId()
+            ? (state.sessionId ?? deps.createSessionId())
             : state.sessionId,
       }));
       return queue;

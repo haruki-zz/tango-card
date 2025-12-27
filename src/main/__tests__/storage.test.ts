@@ -15,11 +15,16 @@ const createTempDir = async () => {
   return dir;
 };
 
-const readJson = async (filePath: string) => JSON.parse(await readFile(filePath, 'utf8'));
+const readJson = async <T>(filePath: string): Promise<T> => {
+  const content = await readFile(filePath, 'utf8');
+  return JSON.parse(content) as T;
+};
 
 afterEach(async () => {
   const dirs = tempDirs.splice(0);
-  await Promise.all(dirs.map((dir) => rm(dir, { recursive: true, force: true })));
+  await Promise.all(
+    dirs.map((dir) => rm(dir, { recursive: true, force: true })),
+  );
   vi.restoreAllMocks();
 });
 
@@ -37,7 +42,7 @@ describe('FileStorage', () => {
         definition_ja: '学ぶこと',
         example_ja: '図書館で勉強する。',
       },
-      now
+      now,
     );
 
     expect(word.created_at).toBe('2025-01-20T09:00:00.000Z');
@@ -54,7 +59,9 @@ describe('FileStorage', () => {
     const wordsFile = await readFile(path.join(baseDir, 'words.jsonl'), 'utf8');
     expect(wordsFile.trim().split('\n')).toHaveLength(1);
 
-    const activity = await readJson(path.join(baseDir, 'activity.json'));
+    const activity = await readJson<
+      Record<string, { added: number; sessions: number }>
+    >(path.join(baseDir, 'activity.json'));
     expect(activity['2025-01-20']).toEqual({ added: 1, sessions: 0 });
   });
 
@@ -69,7 +76,7 @@ describe('FileStorage', () => {
         word_id: 'w1',
         score: 4,
       },
-      now
+      now,
     );
 
     expect(log.reviewed_at).toBe('2025-02-01T08:00:00.000Z');
@@ -77,7 +84,10 @@ describe('FileStorage', () => {
     const logs = await storage.loadReviewLogs(now);
     expect(logs).toEqual([log]);
 
-    const reviewsFile = await readFile(path.join(baseDir, 'reviews.jsonl'), 'utf8');
+    const reviewsFile = await readFile(
+      path.join(baseDir, 'reviews.jsonl'),
+      'utf8',
+    );
     expect(reviewsFile.trim().split('\n')).toHaveLength(1);
   });
 
@@ -105,11 +115,13 @@ describe('FileStorage', () => {
         definition_ja: '初始状态',
         example_ja: '初期化を行う。',
       },
-      now
+      now,
     );
 
     const before = await readFile(path.join(baseDir, 'words.jsonl'), 'utf8');
-    vi.spyOn(fs.promises, 'rename').mockRejectedValueOnce(new Error('rename failed'));
+    vi.spyOn(fs.promises, 'rename').mockRejectedValueOnce(
+      new Error('rename failed'),
+    );
 
     await expect(
       storage.addWord(
@@ -120,8 +132,8 @@ describe('FileStorage', () => {
           definition_ja: 'エラー',
           example_ja: '書き込みが失敗した。',
         },
-        now
-      )
+        now,
+      ),
     ).rejects.toThrow(/rename failed/);
 
     const after = await readFile(path.join(baseDir, 'words.jsonl'), 'utf8');

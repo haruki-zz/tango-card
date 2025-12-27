@@ -1,18 +1,20 @@
 # 架构记录
 
 ## 阶段状态
-- 已完成实施计划第 9 步：渲染端状态管理接入（Zustand store 覆盖词库/复习队列/session/活跃度/provider），IPC 异步动作封装完毕，等待 UI 层调用。
+- 已完成实施计划第 10 步：渲染端接入 Tailwind，落地浅色 + 绿色主题与可复用样式，示例 UI 已迁移到原子类。
 
 ## 文件作用
-- package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖，前端状态管理依赖 Zustand；scripts 含 electron-vite dev/build/preview、lint/lint:fix、format/format:fix，build 调用 electron-builder 产出安装包。
+- package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖，前端状态管理依赖 Zustand，样式链路使用 Tailwind + Autoprefixer；scripts 含 electron-vite dev/build/preview、lint/lint:fix、format/format:fix，build 调用 electron-builder 产出安装包。
 - package-lock.json：npm 锁定文件（包含 Electron、React、构建链依赖）。
 - .gitignore：忽略 node_modules、构建产物（dist、dist-electron、release）、日志、.env.* 与 .vite。
 - .env.local：存放 OpenAI/Google 密钥占位，避免读取缺失时报错，默认不提交。
-- .eslintrc.cjs：全局 ESLint 配置，启用 TypeScript/React/React Hooks/Prettier 规则集，设置浏览器与 Node 环境覆盖 main/preload/renderer，忽略 dist/dist-electron/release/out/node_modules。
+- .eslintrc.cjs：全局 ESLint 配置，启用 TypeScript/React/React Hooks/Prettier 规则集，设置浏览器与 Node 环境覆盖 main/preload/renderer，忽略 dist/dist-electron/release/out/node_modules/vitest.config.ts。
 - prettier.config.cjs：Prettier 配置，统一单引号。
+- postcss.config.cjs：PostCSS 插件配置，启用 tailwindcss 与 autoprefixer 处理渲染端样式。
 - electron.vite.config.ts：electron-vite 配置，定义 main/preload 输出目录与 React 插件、渲染端别名。
 - electron-builder.yml：electron-builder 打包配置，指定 appId/productName、输出目录（release）、macOS/Windows/Linux 目标与主入口。
 - tsconfig.json：TypeScript 编译配置，启用 strict，路径别名覆盖 main/preload/renderer。
+- tailwind.config.cjs：Tailwind 配置，扫描渲染端 HTML/TSX，定义绿色 accent 色板、ink/muted/surface 颜色、Inter + Noto Sans JP 字体与卡片阴影。
 - resources/icon.png：占位应用图标（512x512 PNG），供 electron-builder 使用。
 - src/main/index.ts：主进程入口，创建 BrowserWindow、绑定 preload、处理 URL/文件加载与生命周期。
 - src/main/storage.ts：基于 `app.getPath('userData')` 的存储层，管理 `words.jsonl`/`reviews.jsonl`/`activity.json`，读写使用临时文件写入再替换；新增词条补全时间与 SM-2 默认值并更新活跃度，复习日志写入与 session 计数累加；支持全量保存、JSON/JSONL 导入（按 `word` 去重覆盖、跳过非法记录计数）、导出 JSON+CSV（写入 `exports/` 子目录）。
@@ -28,7 +30,8 @@
 - src/main/__tests__/ai.test.ts：AI provider 单测，覆盖 OpenAI/Gemini 正常与错误/超时路径，以及 mock 截断输出。
 - src/preload/index.ts：预加载脚本，通过 contextBridge 暴露平台与版本信息，以及受控 `window.api` IPC 调用集合（词条增/查、AI 生成、复习、活跃度、provider 设置、导入/导出）。
 - src/renderer/index.html：渲染进程 HTML 入口。
-- src/renderer/src：渲染进程 React/Vite 骨架（App.tsx 展示版本信息、main.tsx 挂载、基础样式与类型声明）；store/useAppStore.ts 提供全局 Zustand store 封装 IPC 动作（词库、复习队列/session、活跃度、provider 设置、导入/导出），`__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
+- src/renderer/src：渲染进程 React/Vite 骨架（App.tsx 使用 Tailwind 原子类呈现示例壳，main.tsx 挂载，style.css 挂载全局 Tailwind 基础层与组件化类，global.d.ts 声明 window API）；store/useAppStore.ts 提供全局 Zustand store 封装 IPC 动作（词库、复习队列/session、活跃度、provider 设置、导入/导出），`__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
+- src/renderer/src/style.css：Tailwind 基础层入口，定义浅色径向背景、选区高亮与 surface-card/pill/stat-row 等复用类。
 - src/shared：
   - types.ts：词条、复习日志、活跃度类型定义，SM-2 常量（EF 下限、默认值、间隔基线）。
   - sm2.ts：SM-2 默认状态生成、评分更新公式、复习队列排序与日期加成等纯函数。
@@ -42,7 +45,7 @@
 - prompts/coding-style.md：代码风格与开发流程约定。
 - prompts/system-prompt.md：系统级工作规范与思考模式。
 - memory-bank/design-document.md：产品功能与数据设计说明。
-- memory-bank/implementation-plan.md：分步实施计划，当前执行至第 8 步。
+- memory-bank/implementation-plan.md：分步实施计划，当前执行至第 10 步。
 - memory-bank/tech-stack.md：技术栈清单与选型理由。
 - memory-bank/progress.md：阶段性变更记录，便于交接。
 - memory-bank/architecture.md：架构与文件职责记录（本文件），持续更新各阶段的结构洞察。

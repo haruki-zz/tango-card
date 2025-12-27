@@ -24,7 +24,9 @@ const createIpcMock = () => ({
 
 const cleanup = async () => {
   const dirs = tempDirs.splice(0);
-  await Promise.all(dirs.map((dir) => rm(dir, { recursive: true, force: true })));
+  await Promise.all(
+    dirs.map((dir) => rm(dir, { recursive: true, force: true })),
+  );
 };
 
 afterEach(async () => {
@@ -122,7 +124,7 @@ describe('IPC handlers', () => {
     expect(next['2025-07-01']).toEqual({ added: 0, sessions: 1 });
 
     await expect(
-      invoke(IPC_CHANNELS.ACTIVITY_INCREMENT_SESSION, { date: 'not-a-date' })
+      invoke(IPC_CHANNELS.ACTIVITY_INCREMENT_SESSION, { date: 'not-a-date' }),
     ).rejects.toThrow(/日期/);
 
     dispose();
@@ -174,7 +176,7 @@ describe('IPC handlers', () => {
     expect(fs.existsSync(exported.csvPath)).toBe(true);
 
     await expect(
-      invoke(IPC_CHANNELS.IMPORT_DATA, { content: '', format: 'json' })
+      invoke(IPC_CHANNELS.IMPORT_DATA, { content: '', format: 'json' }),
     ).rejects.toThrow(/content/);
 
     dispose();
@@ -187,11 +189,14 @@ describe('IPC handlers', () => {
     });
 
     await expect(
-      invoke(IPC_CHANNELS.SET_PROVIDER, { provider: 'openai' } as never)
+      invoke(IPC_CHANNELS.SET_PROVIDER, { provider: 'openai' } as never),
     ).rejects.toThrow(/apiKey/);
 
     await expect(
-      invoke('unknown-channel' as typeof IPC_CHANNELS[keyof typeof IPC_CHANNELS], undefined)
+      invoke(
+        'unknown-channel' as (typeof IPC_CHANNELS)[keyof typeof IPC_CHANNELS],
+        undefined,
+      ),
     ).rejects.toThrow(/未注册/);
 
     dispose();

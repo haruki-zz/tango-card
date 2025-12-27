@@ -104,7 +104,7 @@ export class GeminiProvider implements AiProvider {
       const response = await withTimeout(
         responsePromise,
         this.timeoutMs,
-        'Gemini 请求超时'
+        'Gemini 请求超时',
       );
       const text = pickTextContent(response);
       const parsed = extractJsonObject(text);

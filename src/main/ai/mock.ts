@@ -19,7 +19,9 @@ export class MockAiProvider implements AiProvider {
     this.response = response;
   }
 
-  async generateWordContent(input: WordGenerationRequest) {
-    return normalizeGeneratedContent(this.response, input);
+  generateWordContent(
+    input: WordGenerationRequest,
+  ): Promise<GeneratedWordContent> {
+    return Promise.resolve(normalizeGeneratedContent(this.response, input));
   }
 }

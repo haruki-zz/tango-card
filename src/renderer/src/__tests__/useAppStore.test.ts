@@ -44,9 +44,15 @@ const createApiMock = () =>
   ({
     listWords: vi.fn<[], Promise<WordEntry[]>>(),
     addWord: vi.fn<[AddWordPayload], Promise<WordEntry>>(),
-    generateWordContent: vi.fn<[GenerateWordPayload], Promise<GeneratedWordContent>>(),
+    generateWordContent: vi.fn<
+      [GenerateWordPayload],
+      Promise<GeneratedWordContent>
+    >(),
     getReviewQueue: vi.fn<[], Promise<WordEntry[]>>(),
-    submitReview: vi.fn<[ReviewSubmitPayload], Promise<{ word: WordEntry; log: ReviewLog }>>(),
+    submitReview: vi.fn<
+      [ReviewSubmitPayload],
+      Promise<{ word: WordEntry; log: ReviewLog }>
+    >(),
     getActivity: vi.fn<[], Promise<ActivityByDay>>(),
     incrementSession: vi.fn<[string?], Promise<ActivityByDay>>(),
     setProvider: vi.fn<[ProviderSettings], Promise<SafeProviderSettings>>(),
@@ -56,7 +62,7 @@ const createApiMock = () =>
 
 const createStore = (
   api: MockedRendererApi = createApiMock(),
-  sessionId = 'session-mock'
+  sessionId = 'session-mock',
 ): StoreWithApi => ({
   api,
   store: createAppStore({
@@ -184,7 +190,7 @@ describe('useAppStore', () => {
     const { store, api } = createStore();
 
     await expect(store.getState().completeSession()).rejects.toThrow(
-      '当前没有进行中的复习 session'
+      '当前没有进行中的复习 session',
     );
     expect(api.incrementSession).not.toHaveBeenCalled();
   });
@@ -217,7 +223,10 @@ describe('useAppStore', () => {
 
     expect(result).toEqual({ imported: 2, skipped: 1 });
     expect(store.getState().words).toEqual(importedWords);
-    expect(api.importData).toHaveBeenCalledWith({ content: '{}', format: 'json' });
+    expect(api.importData).toHaveBeenCalledWith({
+      content: '{}',
+      format: 'json',
+    });
     expect(api.listWords).toHaveBeenCalledTimes(1);
   });
 
@@ -227,7 +236,7 @@ describe('useAppStore', () => {
     api.setProvider.mockRejectedValue(new Error('provider failure'));
 
     await expect(
-      store.getState().setProvider({ provider: 'openai', apiKey: 'k' })
+      store.getState().setProvider({ provider: 'openai', apiKey: 'k' }),
     ).rejects.toThrow('provider failure');
     expect(store.getState().provider).toEqual({ provider: 'mock' });
   });

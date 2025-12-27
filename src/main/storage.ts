@@ -25,7 +25,8 @@ export type WordInput = Omit<WordEntry, 'created_at' | 'sm2'> &
 export type ReviewLogInput = Omit<ReviewLog, 'reviewed_at'> &
   Partial<Pick<ReviewLog, 'reviewed_at'>>;
 
-const ensureDir = async (dir: string) => fsPromises.mkdir(dir, { recursive: true });
+const ensureDir = async (dir: string) =>
+  fsPromises.mkdir(dir, { recursive: true });
 
 const readOptionalFile = async (filePath: string) => {
   try {
@@ -60,7 +61,10 @@ const safeWriteFile = async (filePath: string, data: string) => {
   }
 };
 
-const parseJsonLines = <T>(content: string, normalizer: (value: unknown) => T): T[] => {
+const parseJsonLines = <T>(
+  content: string,
+  normalizer: (value: unknown) => T,
+): T[] => {
   const lines = content
     .split('\n')
     .map((line) => line.trim())
@@ -89,7 +93,7 @@ const toDayKey = (isoDate: string) => isoDate.slice(0, 10);
 
 const parseImportContent = (
   content: string,
-  format: ImportFormat
+  format: ImportFormat,
 ): { records: unknown[]; skipped: number } => {
   if (format === 'json') {
     let parsed: unknown;
@@ -232,7 +236,10 @@ export class FileStorage {
     return parseJsonLines(content, (raw) => normalizeReviewLog(raw, now));
   }
 
-  async appendReviewLog(raw: ReviewLogInput, now = new Date()): Promise<ReviewLog> {
+  async appendReviewLog(
+    raw: ReviewLogInput,
+    now = new Date(),
+  ): Promise<ReviewLog> {
     const normalized = normalizeReviewLog(raw, now);
     const existing = await readOptionalFile(this.reviewsPath);
     const nextContent = appendJsonLine(existing, normalized);
@@ -260,7 +267,9 @@ export class FileStorage {
     return validateActivityByDay(JSON.parse(content));
   }
 
-  async incrementSession(date: string | Date = new Date()): Promise<ActivityByDay> {
+  async incrementSession(
+    date: string | Date = new Date(),
+  ): Promise<ActivityByDay> {
     const iso = date instanceof Date ? date.toISOString() : date;
     const day = toDayKey(iso);
     return this.updateActivity(day, { sessions: 1 });
@@ -268,7 +277,7 @@ export class FileStorage {
 
   private async updateActivity(
     day: string,
-    delta: Partial<ActivityDaySummary>
+    delta: Partial<ActivityDaySummary>,
   ): Promise<ActivityByDay> {
     const activity = await this.loadActivity();
     const current = activity[day] ?? { added: 0, sessions: 0 };
@@ -278,20 +287,26 @@ export class FileStorage {
       added: Math.max(0, current.added + added),
       sessions: Math.max(0, current.sessions + sessions),
     };
-    await safeWriteFile(this.activityPath, `${JSON.stringify(activity, null, 2)}\n`);
+    await safeWriteFile(
+      this.activityPath,
+      `${JSON.stringify(activity, null, 2)}\n`,
+    );
     return activity;
   }
 
   async importWords(
     content: string,
     format: ImportFormat,
-    now = new Date()
+    now = new Date(),
   ): Promise<{ imported: number; skipped: number }> {
     if (content.trim() === '') {
       throw new Error('导入内容不能为空');
     }
 
-    const { records, skipped: parseSkipped } = parseImportContent(content, format);
+    const { records, skipped: parseSkipped } = parseImportContent(
+      content,
+      format,
+    );
     const existing = await this.loadWords(now);
     const byWord = new Map(existing.map((word) => [word.word, word]));
 
@@ -334,6 +349,7 @@ export class FileStorage {
 
   private stripSource(input: WordInput) {
     const { source: _source, ...rest } = input;
+    void _source;
     return rest;
   }
 }

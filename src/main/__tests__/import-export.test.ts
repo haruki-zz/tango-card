@@ -17,7 +17,9 @@ const createTempDir = async () => {
 
 afterEach(async () => {
   const dirs = tempDirs.splice(0);
-  await Promise.all(dirs.map((dir) => rm(dir, { recursive: true, force: true })));
+  await Promise.all(
+    dirs.map((dir) => rm(dir, { recursive: true, force: true })),
+  );
 });
 
 describe('导入/导出', () => {
@@ -34,7 +36,7 @@ describe('导入/导出', () => {
         definition_ja: '初始',
         example_ja: '初期値。',
       },
-      now
+      now,
     );
 
     const content = [
@@ -98,14 +100,14 @@ describe('导入/导出', () => {
         definition_ja: '保持',
         example_ja: '保持する。',
       },
-      now
+      now,
     );
 
     const before = await readFile(path.join(baseDir, 'words.jsonl'), 'utf8');
 
-    await expect(storage.importWords('{"broken": true', 'json', now)).rejects.toThrow(
-      /JSON 导入解析失败/
-    );
+    await expect(
+      storage.importWords('{"broken": true', 'json', now),
+    ).rejects.toThrow(/JSON 导入解析失败/);
 
     const after = await readFile(path.join(baseDir, 'words.jsonl'), 'utf8');
     expect(after).toBe(before);
@@ -124,7 +126,7 @@ describe('导入/导出', () => {
         definition_ja: 'サンプル',
         example_ja: '例として。',
       },
-      now
+      now,
     );
     await storage.addWord(
       {
@@ -134,21 +136,21 @@ describe('导入/导出', () => {
         definition_ja: 'チェック',
         example_ja: '確認する。',
       },
-      now
+      now,
     );
 
     const exportResult = await storage.exportWords(now);
     expect(exportResult.count).toBe(2);
 
     const jsonContent = await readFile(exportResult.jsonPath, 'utf8');
-    const jsonData = JSON.parse(jsonContent);
+    const jsonData = JSON.parse(jsonContent) as unknown[];
     expect(Array.isArray(jsonData)).toBe(true);
     expect(jsonData).toHaveLength(2);
 
     const csvContent = await readFile(exportResult.csvPath, 'utf8');
     const [header, ...rows] = csvContent.trim().split('\n');
     expect(header).toBe(
-      'id,word,hiragana,definition_ja,example_ja,created_at,sm2.repetition,sm2.interval,sm2.ef,sm2.next_review_at,sm2.last_score'
+      'id,word,hiragana,definition_ja,example_ja,created_at,sm2.repetition,sm2.interval,sm2.ef,sm2.next_review_at,sm2.last_score',
     );
     expect(rows).toHaveLength(2);
     expect(rows[0]).toContain('例');

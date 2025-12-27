@@ -14,7 +14,9 @@ export interface WordGenerationRequest {
 
 export interface AiProvider {
   readonly name: ProviderName;
-  generateWordContent(input: WordGenerationRequest): Promise<GeneratedWordContent>;
+  generateWordContent(
+    input: WordGenerationRequest,
+  ): Promise<GeneratedWordContent>;
 }
 
 export interface ProviderConfig {

@@ -1,3 +1,9 @@
+## 2025-12-27T14:17:58Z
+- 完成实施计划第 10 步：渲染端接入 Tailwind，设置浅色+绿色主题变量与可复用组件样式（surface-card/pill/stat-row），`App.tsx` 示例 UI 改用原子类。
+- 依赖层新增 `tailwindcss`、`autoprefixer` 并切换 PostCSS 插件；保持 `tailwind.config.cjs` 色板与字体定义可复用。
+- 全局 lint 报错已修复：为 AI provider 测试补充类型标注避免 `any` 访问，Mock provider 去掉 require-await，preload/IPC 返回类型收紧，storage 移除未用变量；ESLint 忽略 `vitest.config.ts` 避免 parserServices 报错。
+- 测试由用户执行并验证通过。
+
 ## 2025-12-27T13:33:30Z
 - 完成实施计划第 9 步：渲染端接入 Zustand 全局 store，集中管理词库列表、复习队列/session、活跃度与 provider 配置，封装 IPC 异步动作（加载/新增词条、生成内容、提交复习、完成 session 计数、导入/导出与活动刷新），支持自动生成 sessionId 与队列同步。
 - 新增 `src/renderer/src/store/useAppStore.ts` 与单测 `useAppStore.test.ts`，mock `window.api` 覆盖状态更新与错误路径（空队列不重置 session、无 session 完成时抛错、导入后刷新词表、provider 设置失败不污染状态）。

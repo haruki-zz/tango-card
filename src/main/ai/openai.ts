@@ -1,7 +1,15 @@
 import OpenAI from 'openai';
 
-import { DEFAULT_MAX_OUTPUT_TOKENS, DEFAULT_TIMEOUT_MS, type AiProvider } from './types';
-import { buildWordPrompt, extractJsonObject, normalizeGeneratedContent } from './utils';
+import {
+  DEFAULT_MAX_OUTPUT_TOKENS,
+  DEFAULT_TIMEOUT_MS,
+  type AiProvider,
+} from './types';
+import {
+  buildWordPrompt,
+  extractJsonObject,
+  normalizeGeneratedContent,
+} from './utils';
 import type { WordGenerationRequest } from './types';
 
 interface OpenAiProviderOptions {
@@ -74,7 +82,7 @@ export class OpenAiProvider implements AiProvider {
           },
         },
       },
-      { signal: controller.signal }
+      { signal: controller.signal },
     );
 
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);

@@ -11,7 +11,14 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  ignorePatterns: ['dist', 'dist-electron', 'release', 'out', 'node_modules'],
+  ignorePatterns: [
+    'dist',
+    'dist-electron',
+    'release',
+    'out',
+    'node_modules',
+    'vitest.config.ts',
+  ],
   plugins: ['@typescript-eslint', 'react', 'react-hooks', 'prettier'],
   extends: [
     'eslint:recommended',

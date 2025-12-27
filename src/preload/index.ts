@@ -12,19 +12,16 @@ const api: RendererApi = {
   addWord: (payload) => ipcRenderer.invoke(IPC_CHANNELS.ADD_WORD, payload),
   listWords: () => ipcRenderer.invoke(IPC_CHANNELS.LIST_WORDS),
   getReviewQueue: () => ipcRenderer.invoke(IPC_CHANNELS.REVIEW_QUEUE),
-  submitReview: (payload) => ipcRenderer.invoke(IPC_CHANNELS.SUBMIT_REVIEW, payload),
+  submitReview: (payload) =>
+    ipcRenderer.invoke(IPC_CHANNELS.SUBMIT_REVIEW, payload),
   getActivity: () => ipcRenderer.invoke(IPC_CHANNELS.ACTIVITY_GET),
   incrementSession: (date) =>
     ipcRenderer.invoke(IPC_CHANNELS.ACTIVITY_INCREMENT_SESSION, { date }),
-  setProvider: async (config) => {
-    const result = await ipcRenderer.invoke(
-      IPC_CHANNELS.SET_PROVIDER,
-      config
-    );
-    return result as SafeProviderSettings;
-  },
+  setProvider: (config) =>
+    ipcRenderer.invoke<SafeProviderSettings>(IPC_CHANNELS.SET_PROVIDER, config),
   exportData: () => ipcRenderer.invoke(IPC_CHANNELS.EXPORT_DATA),
-  importData: (payload) => ipcRenderer.invoke(IPC_CHANNELS.IMPORT_DATA, payload),
+  importData: (payload) =>
+    ipcRenderer.invoke(IPC_CHANNELS.IMPORT_DATA, payload),
 };
 
 contextBridge.exposeInMainWorld('platformInfo', {

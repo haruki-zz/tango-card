@@ -28,7 +28,7 @@ describe('updateSm2', () => {
         last_score: 5,
       },
       2,
-      now
+      now,
     );
 
     expect(updated).toEqual({
@@ -51,7 +51,7 @@ describe('updateSm2', () => {
         last_score: 4,
       },
       5,
-      now
+      now,
     );
 
     expect(firstPass.repetition).toBe(2);
@@ -75,8 +75,8 @@ describe('updateSm2', () => {
           next_review_at: '2025-03-02T00:00:00Z',
           last_score: null,
         },
-        7
-      )
+        7,
+      ),
     ).toThrow(/score 必须在 0-5 之间/);
   });
 });
@@ -91,7 +91,7 @@ describe('buildReviewQueue', () => {
         buildWord('future-2', '2025-02-01T00:00:00Z'),
         buildWord('due-2', '2025-01-08T00:00:00Z'),
       ],
-      now
+      now,
     );
 
     expect(queue.map((word) => word.id)).toEqual([

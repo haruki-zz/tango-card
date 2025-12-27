@@ -1,83 +1,43 @@
-:root {
-  color-scheme: light;
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  background: radial-gradient(circle at 20% 20%, #f0f8ff 0, #ffffff 50%);
-  color: #0f172a;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply m-0 min-h-screen bg-[radial-gradient(circle_at_20%_20%,#f0fdf4_0,#ffffff_52%)] text-ink antialiased font-sans;
+  }
+
+  ::selection {
+    @apply bg-accent-200 text-ink;
+  }
 }
 
-* {
-  box-sizing: border-box;
-}
+@layer components {
+  .surface-card {
+    @apply w-full max-w-3xl rounded-2xl bg-white/90 p-6 shadow-card ring-1 ring-slate-100 backdrop-blur;
+  }
 
-body {
-  margin: 0;
-}
+  .pill {
+    @apply inline-flex items-center gap-2 rounded-full bg-accent-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-700;
+  }
 
-.app-shell {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 64px 24px 48px;
-  gap: 24px;
-}
+  .stat-row {
+    @apply flex items-center justify-between text-sm text-ink;
+  }
 
-.hero {
-  max-width: 720px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+  .stat-label {
+    @apply text-muted;
+  }
 
-.eyebrow {
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-size: 12px;
-  color: #22c55e;
-  margin: 0;
-}
-
-h1 {
-  margin: 0;
-  font-size: 36px;
-}
-
-.subtitle {
-  margin: 0;
-  font-size: 16px;
-  color: #475569;
-}
-
-.card {
-  width: min(720px, 100%);
-  background: #0f172a;
-  color: #e2e8f0;
-  border-radius: 16px;
-  padding: 20px 24px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.card-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 15px;
-}
-
-.label {
-  color: #94a3b8;
-}
-
-.value {
-  font-weight: 600;
-}
-
-.hint {
-  margin: 0;
-  color: #64748b;
-  font-size: 14px;
+  .stat-value {
+    @apply font-semibold;
+  }
 }

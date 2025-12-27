@@ -25,10 +25,20 @@ describe('OpenAiProvider', () => {
       timeoutMs: 200,
     });
 
-    const result = await provider.generateWordContent({ word: 'テスト', maxOutputChars: 8 });
+    const result = await provider.generateWordContent({
+      word: 'テスト',
+      maxOutputChars: 8,
+    });
 
     expect(createMock).toHaveBeenCalledTimes(1);
-    const [body, options] = createMock.mock.calls[0];
+    type OpenAiRequest = {
+      model: string;
+      text: { format: { type: string } };
+    };
+    type OpenAiOptions = { signal?: AbortSignal };
+    const [[body, options]] = createMock.mock.calls as Array<
+      [OpenAiRequest, OpenAiOptions | undefined]
+    >;
     expect(body.model).toBe('gpt-4o-mini');
     expect(body.text.format.type).toBe('json_schema');
     expect(options?.signal).toBeDefined();
@@ -48,9 +58,11 @@ describe('OpenAiProvider', () => {
             error.name = 'AbortError';
             reject(error);
           });
-        })
+        }),
     );
-    const client = { responses: { create: createMock } } as unknown as import('openai').OpenAI;
+    const client = {
+      responses: { create: createMock },
+    } as unknown as import('openai').OpenAI;
     const provider = new OpenAiProvider({
       apiKey: 'test-key',
       client,
@@ -75,7 +87,9 @@ describe('GeminiProvider', () => {
         example_ja: '猫は窓辺で昼寝している。',
       }),
     });
-    const client = { models: { generateContent } } as unknown as import('@google/genai').GoogleGenAI;
+    const client = {
+      models: { generateContent },
+    } as unknown as import('@google/genai').GoogleGenAI;
     const provider = new GeminiProvider({
       apiKey: 'test-key',
       client,
@@ -85,7 +99,11 @@ describe('GeminiProvider', () => {
     const result = await provider.generateWordContent({ word: '猫' });
 
     expect(generateContent).toHaveBeenCalledTimes(1);
-    const request = generateContent.mock.calls[0][0];
+    type GeminiRequest = {
+      model: string;
+      config?: { responseMimeType?: string };
+    };
+    const [[request]] = generateContent.mock.calls as Array<[GeminiRequest]>;
     expect(request.model).toBe('gemini-2.5-flash-lite');
     expect(request.config?.responseMimeType).toBe('application/json');
     expect(result.hiragana).toBe('ねこ');
@@ -96,14 +114,18 @@ describe('GeminiProvider', () => {
     const generateContent = vi.fn().mockResolvedValue({
       text: 'not-a-json',
     });
-    const client = { models: { generateContent } } as unknown as import('@google/genai').GoogleGenAI;
+    const client = {
+      models: { generateContent },
+    } as unknown as import('@google/genai').GoogleGenAI;
     const provider = new GeminiProvider({
       apiKey: 'test-key',
       client,
       timeoutMs: 200,
     });
 
-    await expect(provider.generateWordContent({ word: '犬' })).rejects.toThrow(/JSON/);
+    await expect(provider.generateWordContent({ word: '犬' })).rejects.toThrow(
+      /JSON/,
+    );
   });
 });
 

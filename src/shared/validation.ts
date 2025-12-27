@@ -44,7 +44,12 @@ const normalizeIsoDate = (value: unknown, now: Date) => {
 };
 
 const normalizeScore = (value: unknown) => {
-  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 5) {
+  if (
+    typeof value !== 'number' ||
+    !Number.isFinite(value) ||
+    value < 0 ||
+    value > 5
+  ) {
     throw new Error('score 必须在 0-5 之间');
   }
   return Math.floor(value);
@@ -74,7 +79,8 @@ export const normalizeSm2 = (raw: unknown, now = new Date()): Sm2State => {
         : null;
 
   const nextReview =
-    typeof sm2.next_review_at === 'string' && isIsoDateString(sm2.next_review_at)
+    typeof sm2.next_review_at === 'string' &&
+    isIsoDateString(sm2.next_review_at)
       ? sm2.next_review_at
       : calculateNextReviewAt(interval, now);
 
@@ -87,7 +93,10 @@ export const normalizeSm2 = (raw: unknown, now = new Date()): Sm2State => {
   };
 };
 
-export const normalizeWordRecord = (input: unknown, now = new Date()): WordEntry => {
+export const normalizeWordRecord = (
+  input: unknown,
+  now = new Date(),
+): WordEntry => {
   if (!isRecord(input)) {
     throw new Error('词条必须是对象');
   }
@@ -106,7 +115,10 @@ export const normalizeWordRecord = (input: unknown, now = new Date()): WordEntry
   };
 };
 
-export const normalizeReviewLog = (input: unknown, now = new Date()): ReviewLog => {
+export const normalizeReviewLog = (
+  input: unknown,
+  now = new Date(),
+): ReviewLog => {
   if (!isRecord(input)) {
     throw new Error('复习日志必须是对象');
   }
@@ -119,7 +131,10 @@ export const normalizeReviewLog = (input: unknown, now = new Date()): ReviewLog 
   };
 };
 
-const normalizeActivityDay = (value: unknown, day: string): ActivityDaySummary => {
+const normalizeActivityDay = (
+  value: unknown,
+  day: string,
+): ActivityDaySummary => {
   if (!isRecord(value)) {
     throw new Error(`活跃度 ${day} 必须是对象`);
   }

@@ -34,7 +34,7 @@ const pickString = (raw: unknown, field: string, maxChars: number) => {
 
 export const buildWordPrompt = (
   word: string,
-  maxChars: number = DEFAULT_FIELD_CHAR_LIMIT
+  maxChars: number = DEFAULT_FIELD_CHAR_LIMIT,
 ) => {
   const limit = normalizeLimit(maxChars);
   return [
@@ -54,12 +54,12 @@ export const extractJsonObject = (text: string) => {
     throw new Error('模型输出缺少 JSON 对象');
   }
   const jsonText = text.slice(start, end + 1);
-  return JSON.parse(jsonText);
+  return JSON.parse(jsonText) as unknown;
 };
 
 export const normalizeGeneratedContent = (
   raw: unknown,
-  request: WordGenerationRequest
+  request: WordGenerationRequest,
 ): GeneratedWordContent => {
   if (!isRecord(raw)) {
     throw new Error('模型输出不是对象');
@@ -75,7 +75,7 @@ export const normalizeGeneratedContent = (
 export const withTimeout = async <T>(
   promise: Promise<T>,
   timeoutMs: number,
-  timeoutMessage: string
+  timeoutMessage: string,
 ): Promise<T> => {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeoutPromise = new Promise<never>((_, reject) => {
