@@ -138,6 +138,18 @@ export class FileStorage {
     return normalized;
   }
 
+  async saveWords(words: WordEntry[], now = new Date()): Promise<WordEntry[]> {
+    if (words.length === 0) {
+      await safeWriteFile(this.wordsPath, '');
+      return [];
+    }
+
+    const normalized = words.map((word) => normalizeWordRecord(word, now));
+    const content = normalized.map((word) => JSON.stringify(word)).join('\n');
+    await safeWriteFile(this.wordsPath, `${content}\n`);
+    return normalized;
+  }
+
   async loadActivity(): Promise<ActivityByDay> {
     const content = await readOptionalFile(this.activityPath);
     if (content.trim() === '') {

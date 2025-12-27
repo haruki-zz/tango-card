@@ -15,6 +15,12 @@ export default defineConfig({
         },
       },
     },
+    resolve: {
+      alias: {
+        '@main': path.resolve(__dirname, 'src/main'),
+        '@shared': path.resolve(__dirname, 'src/shared'),
+      },
+    },
     plugins: [externalizeDepsPlugin()],
   },
   preload: {
@@ -24,6 +30,12 @@ export default defineConfig({
         output: {
           entryFileNames: '[name].js',
         },
+      },
+    },
+    resolve: {
+      alias: {
+        '@preload': path.resolve(__dirname, 'src/preload'),
+        '@shared': path.resolve(__dirname, 'src/shared'),
       },
     },
     plugins: [externalizeDepsPlugin()],

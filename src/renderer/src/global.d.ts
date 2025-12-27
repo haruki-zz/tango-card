@@ -1,3 +1,5 @@
+import type { RendererApi } from '@shared/ipc';
+
 declare global {
   interface Window {
     platformInfo: {
@@ -6,6 +8,7 @@ declare global {
       chrome: string;
       electron: string;
     };
+    api: RendererApi;
   }
 }
 

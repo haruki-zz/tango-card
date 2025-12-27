@@ -7,8 +7,9 @@ export {
   updateSm2,
 } from './sm2';
 export {
-  normalizeActivityByDay,
   normalizeReviewLog,
   normalizeSm2,
   normalizeWordRecord,
+  validateActivityByDay,
 } from './validation';
+export * from './ipc';

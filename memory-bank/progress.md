@@ -1,3 +1,9 @@
+## 2025-12-27T01:20:38Z
+- 完成实施计划第 7 步：定义 IPC 合同与安全桥接，新增共享信道/请求响应类型（`src/shared/ipc.ts`），集中主进程 handler（`src/main/ipc/handlers.ts`）校验入参并调用存储/AI，实现复习评分时的 SM-2 更新与日志写入、活跃度接口与 provider 配置校验，预留导入/导出占位。
+- 预加载暴露受控 `window.api`，渲染端类型声明更新；存储层补充 `saveWords` 支撑全量重写。
+- electron.vite 添加 main/preload 别名修复 dev 构建解析；新增 IPC 集成单测覆盖入参校验、SM-2 更新与活跃度日期验证；`ai.test.ts` 消除超时未捕获警告。
+- 跑通命令：`npm test`。
+
 ## 2025-12-26T15:04:00Z
 - 完成实施计划第 6 步：新增主进程 AI 提供商适配层，抽象统一接口并实现 OpenAI（Responses API + JSON Schema 严格模式）、Gemini（官方 SDK generateContent）与无密钥可用的 Mock provider，包含提示词生成、输出截断与超时控制。
 - 新增单测 `src/main/__tests__/ai.test.ts` 覆盖 OpenAI 请求体/超时、Gemini 正常/错误分支与 Mock 固定输出，确保生成内容可解析并受限。

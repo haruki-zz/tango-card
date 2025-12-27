@@ -58,6 +58,7 @@ describe('OpenAiProvider', () => {
     });
 
     const promise = provider.generateWordContent({ word: '遅い' });
+    promise.catch(() => {});
     await vi.advanceTimersByTimeAsync(25);
 
     await expect(promise).rejects.toThrow(/超时/);

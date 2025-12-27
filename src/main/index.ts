@@ -3,6 +3,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { registerIpcHandlers } from '@main/ipc/handlers';
+import { FileStorage } from '@main/storage';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = process.env.NODE_ENV === 'development';
 const preloadScript = (() => {
@@ -49,6 +52,8 @@ const createMainWindow = () => {
 app
   .whenReady()
   .then(() => {
+    const storage = new FileStorage();
+    registerIpcHandlers({ storage });
     createMainWindow();
 
     app.on('activate', () => {
