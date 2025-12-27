@@ -1,7 +1,7 @@
 # 架构记录
 
 ## 阶段状态
-- 已完成实施计划第 10 步：渲染端接入 Tailwind，落地浅色 + 绿色主题与可复用样式，示例 UI 已迁移到原子类。
+- 已完成实施计划第 11 步：渲染端实现新增词条最小流程（输入/生成/编辑/保存），列表与活跃度摘要可刷新。
 
 ## 文件作用
 - package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖，前端状态管理依赖 Zustand，样式链路使用 Tailwind + Autoprefixer；scripts 含 electron-vite dev/build/preview、lint/lint:fix、format/format:fix，build 调用 electron-builder 产出安装包。
@@ -30,8 +30,15 @@
 - src/main/__tests__/ai.test.ts：AI provider 单测，覆盖 OpenAI/Gemini 正常与错误/超时路径，以及 mock 截断输出。
 - src/preload/index.ts：预加载脚本，通过 contextBridge 暴露平台与版本信息，以及受控 `window.api` IPC 调用集合（词条增/查、AI 生成、复习、活跃度、provider 设置、导入/导出）。
 - src/renderer/index.html：渲染进程 HTML 入口。
-- src/renderer/src：渲染进程 React/Vite 骨架（App.tsx 使用 Tailwind 原子类呈现示例壳，main.tsx 挂载，style.css 挂载全局 Tailwind 基础层与组件化类，global.d.ts 声明 window API）；store/useAppStore.ts 提供全局 Zustand store 封装 IPC 动作（词库、复习队列/session、活跃度、provider 设置、导入/导出），`__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
-- src/renderer/src/style.css：Tailwind 基础层入口，定义浅色径向背景、选区高亮与 surface-card/pill/stat-row 等复用类。
+- src/renderer/src：
+  - App.tsx：新增词条主界面，初始化词库与活跃度，呈现新增表单与最近新增列表。
+  - components/AddWordForm.tsx：新增流程组件，支持单词输入、AI 生成预填、手动编辑与保存后刷新词库与活跃度摘要。
+  - components/WordList.tsx：按创建时间倒序展示最新词条列表。
+  - store/useAppStore.ts：Zustand 全局 store 封装 IPC 动作（词库、复习队列/session、活跃度、provider 设置、导入/导出），`__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
+  - __tests__/AddWordFlow.test.tsx：React Testing Library 覆盖空输入校验、生成填充与保存后刷新列表/活跃度。
+  - main.tsx：渲染入口挂载 React。
+  - style.css：Tailwind 基础层与复用类（surface-card/pill/stat-row 等）。
+  - global.d.ts：声明 `window.platformInfo` 与受控 `window.api`。
 - src/shared：
   - types.ts：词条、复习日志、活跃度类型定义，SM-2 常量（EF 下限、默认值、间隔基线）。
   - sm2.ts：SM-2 默认状态生成、评分更新公式、复习队列排序与日期加成等纯函数。
@@ -45,8 +52,9 @@
 - prompts/coding-style.md：代码风格与开发流程约定。
 - prompts/system-prompt.md：系统级工作规范与思考模式。
 - memory-bank/design-document.md：产品功能与数据设计说明。
-- memory-bank/implementation-plan.md：分步实施计划，当前执行至第 10 步。
+- memory-bank/implementation-plan.md：分步实施计划，当前执行至第 11 步。
 - memory-bank/tech-stack.md：技术栈清单与选型理由。
 - memory-bank/progress.md：阶段性变更记录，便于交接。
 - memory-bank/architecture.md：架构与文件职责记录（本文件），持续更新各阶段的结构洞察。
-- vitest.config.ts：Vitest 配置（Node 环境、路径别名 `@shared`/`@main` 解析）。
+- vitest.config.ts：Vitest 配置（jsdom 环境、路径别名 `@shared`/`@main` 解析、全局 setup 引入 jest-dom）。
+- vitest.setup.ts：测试环境初始化，引入 Testing Library 的 jest-dom matcher。

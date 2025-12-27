@@ -1,3 +1,9 @@
+## 2025-12-27T14:35:58Z
+- 完成实施计划第 11 步：渲染端实现新增词条最小流程，包含 AI 生成预填、手动编辑与保存后刷新词库/活跃度。
+- 新增组件 `src/renderer/src/components/AddWordForm.tsx` 与 `WordList.tsx`，`App.tsx` 切换为新增词条主界面并初始化词库与活跃度。
+- 前端测试栈接入 Testing Library（jsdom 环境、全局 matcher），新增用例 `AddWordFlow.test.tsx` 覆盖空输入校验、生成填充、保存后刷新摘要。
+- 依赖新增 `@testing-library/react`、`@testing-library/jest-dom`、`jsdom`。测试由用户执行并验证通过。
+
 ## 2025-12-27T14:17:58Z
 - 完成实施计划第 10 步：渲染端接入 Tailwind，设置浅色+绿色主题变量与可复用组件样式（surface-card/pill/stat-row），`App.tsx` 示例 UI 改用原子类。
 - 依赖层新增 `tailwindcss`、`autoprefixer` 并切换 PostCSS 插件；保持 `tailwind.config.cjs` 色板与字体定义可复用。
