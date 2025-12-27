@@ -57,6 +57,7 @@ describe('新增词条流程', () => {
     setRendererApi(api);
     api.listWords.mockResolvedValue([]);
     api.getActivity.mockResolvedValue({});
+    api.getReviewQueue.mockResolvedValue([]);
   });
 
   afterEach(() => {

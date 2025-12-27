@@ -15,15 +15,17 @@
     - main/ipc/handlers.ts：集中注册 IPC 信道，校验入参，调用存储层与 AI provider，暴露新增/列表词条、生成内容、复习队列、提交评分（含 SM-2 更新与日志写入）、活跃度读取/累加、provider 设置以及导入/导出接口。
     - main/__tests__/storage.test.ts：Vitest 单测验证存储层的默认补全、JSONL 写入、活跃度累加与写入失败时的文件安全。
     - main/__tests__/ai.test.ts：Vitest 单测覆盖 AI provider 的解析、超时与 mock 行为。
-    - main/__tests__/ipc.test.ts：Vitest 单测覆盖 IPC handlers 的入参校验、SM-2 更新、活跃度日期校验、导入/导出链路与 provider 配置错误处理。
+    - main/__tests__/ipc.test.ts：Vitest 单测覆盖 IPC handlers 的入参校验、SM-2 更新（含 `next_review_at` 日期合法性）、活跃度日期校验、导入/导出链路与 provider 配置错误处理。
     - main/__tests__/import-export.test.ts：Vitest 单测覆盖存储导入/导出（去重覆盖、非法输入跳过、导出 JSON/CSV 内容）。
     - preload/index.ts：contextBridge 暴露 platform/node/chrome/electron 版本信息与受控 IPC API（新增词条、生成内容、复习队列、活跃度与 provider 设置等）。
     - renderer/index.html：渲染端 HTML 入口。
-    - renderer/src/App.tsx：新增词条主界面，初始化词库与活跃度，串联新增表单与最近新增列表。
+    - renderer/src/App.tsx：前端主界面，初始化词库与活跃度，在布局中并列新增表单与复习队列，并展示最近新增列表。
     - renderer/src/components/AddWordForm.tsx：新增流程组件，支持单词输入、AI 生成预填、手动编辑与保存后刷新词库和活跃度摘要。
+    - renderer/src/components/ReviewSession.tsx：复习队列组件，自动拉取待复习卡片，支持翻面查看释义与 0-5 评分，仅在完成整轮后调用 session 计数，可重置或重试。
     - renderer/src/components/WordList.tsx：按创建时间倒序展示最新词条。
     - renderer/src/store/useAppStore.ts：Zustand 全局状态，统一封装 IPC 动作（词库加载/新增、生成内容、复习队列与 session、提交评分、活跃度读取/计数、provider 设置、导入/导出）；`renderer/src/__tests__/useAppStore.test.ts` 以 mock window.api 覆盖状态更新与错误路径。
     - renderer/src/__tests__/AddWordFlow.test.tsx：React Testing Library 覆盖空输入校验、生成填充、保存后刷新列表与活跃度摘要。
+    - renderer/src/__tests__/ReviewSession.test.tsx：组件测试覆盖翻面展示、评分时的 IPC 参数与 session 计数，以及空队列不计入 session。
     - renderer/src/main.tsx|style.css|global.d.ts：渲染入口挂载、Tailwind 基础层与 UI 复用类、窗口 API 类型声明。
     - shared/：共享类型与纯逻辑
       - types.ts：词条、复习日志、活跃度类型与 SM-2 常量。

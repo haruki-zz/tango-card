@@ -1,7 +1,7 @@
 # 架构记录
 
 ## 阶段状态
-- 已完成实施计划第 11 步：渲染端实现新增词条最小流程（输入/生成/编辑/保存），列表与活跃度摘要可刷新。
+- 已完成实施计划第 12 步：渲染端实现复习队列 UI（翻面、评分、session 计数），新增与复习双列布局串联活跃度。
 
 ## 文件作用
 - package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖，前端状态管理依赖 Zustand，样式链路使用 Tailwind + Autoprefixer；scripts 含 electron-vite dev/build/preview、lint/lint:fix、format/format:fix，build 调用 electron-builder 产出安装包。
@@ -31,11 +31,13 @@
 - src/preload/index.ts：预加载脚本，通过 contextBridge 暴露平台与版本信息，以及受控 `window.api` IPC 调用集合（词条增/查、AI 生成、复习、活跃度、provider 设置、导入/导出）。
 - src/renderer/index.html：渲染进程 HTML 入口。
 - src/renderer/src：
-  - App.tsx：新增词条主界面，初始化词库与活跃度，呈现新增表单与最近新增列表。
+  - App.tsx：前端主界面，初始化词库与活跃度，在双列布局中并列新增表单与复习队列，底部展示最近新增列表。
   - components/AddWordForm.tsx：新增流程组件，支持单词输入、AI 生成预填、手动编辑与保存后刷新词库与活跃度摘要。
+  - components/ReviewSession.tsx：复习队列组件，拉取待复习词条、翻面查看释义/例句、0-5 评分后提交 IPC，完成整轮时计入 session，可重置队列或重试计数。
   - components/WordList.tsx：按创建时间倒序展示最新词条列表。
   - store/useAppStore.ts：Zustand 全局 store 封装 IPC 动作（词库、复习队列/session、活跃度、provider 设置、导入/导出），`__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
-  - __tests__/AddWordFlow.test.tsx：React Testing Library 覆盖空输入校验、生成填充与保存后刷新列表/活跃度。
+  - __tests__/AddWordFlow.test.tsx：React Testing Library 覆盖空输入校验、生成填充、保存后刷新列表/活跃度；适配默认复习队列刷新。
+  - __tests__/ReviewSession.test.tsx：组件测试覆盖翻面、评分 IPC 参数与 session 计数，校验空队列不计入活跃度。
   - main.tsx：渲染入口挂载 React。
   - style.css：Tailwind 基础层与复用类（surface-card/pill/stat-row 等）。
   - global.d.ts：声明 `window.platformInfo` 与受控 `window.api`。

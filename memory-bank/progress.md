@@ -4,6 +4,12 @@
 - 前端测试栈接入 Testing Library（jsdom 环境、全局 matcher），新增用例 `AddWordFlow.test.tsx` 覆盖空输入校验、生成填充、保存后刷新摘要。
 - 依赖新增 `@testing-library/react`、`@testing-library/jest-dom`、`jsdom`。测试由用户执行并验证通过。
 
+## 2025-12-27T15:05:07Z
+- 完成实施计划第 12 步：渲染端接入复习队列 UI，支持拉取 SM-2 队列、翻面查看释义、0-5 评分并在清空队列后计入 session，提供重置与重试计数入口。
+- 新增组件 `src/renderer/src/components/ReviewSession.tsx` 并在 `App.tsx` 并排展示新增与复习模块；复习流程测试 `src/renderer/src/__tests__/ReviewSession.test.tsx` 覆盖翻面、评分 IPC 参数与 session 计数，`AddWordFlow.test.tsx` 适配默认队列刷新。
+- 后端 IPC 测试 `src/main/__tests__/ipc.test.ts` 补充 SM-2 `next_review_at` 日期断言确保更新后时间合法。
+- 跑通命令：`npm test -- src/renderer/src/__tests__/ReviewSession.test.tsx src/renderer/src/__tests__/AddWordFlow.test.tsx src/main/__tests__/ipc.test.ts`。
+
 ## 2025-12-27T14:17:58Z
 - 完成实施计划第 10 步：渲染端接入 Tailwind，设置浅色+绿色主题变量与可复用组件样式（surface-card/pill/stat-row），`App.tsx` 示例 UI 改用原子类。
 - 依赖层新增 `tailwindcss`、`autoprefixer` 并切换 PostCSS 插件；保持 `tailwind.config.cjs` 色板与字体定义可复用。

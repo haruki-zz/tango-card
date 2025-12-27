@@ -98,6 +98,7 @@ describe('IPC handlers', () => {
 
     expect(result.word.sm2.last_score).toBe(5);
     expect(result.word.sm2.repetition).toBe(1);
+    expect(result.word.sm2.next_review_at).toBe('2025-06-12T12:00:00.000Z');
     expect(result.log.reviewed_at).toBe(times[1].toISOString());
 
     const reviews = await readFile(path.join(baseDir, 'reviews.jsonl'), 'utf8');
