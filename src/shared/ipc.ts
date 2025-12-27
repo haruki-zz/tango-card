@@ -53,13 +53,18 @@ export interface ReviewSubmitPayload {
   score: number;
 }
 
+export type ImportFormat = 'json' | 'jsonl';
+export type ExportFormat = 'json' | 'csv';
+
 export interface ImportDataPayload {
   content: string;
-  format: 'json' | 'jsonl' | 'csv';
+  format: ImportFormat;
 }
 
 export interface ExportDataResponse {
-  path: string;
+  jsonPath: string;
+  csvPath: string;
+  count: number;
 }
 
 export interface ImportDataResponse {

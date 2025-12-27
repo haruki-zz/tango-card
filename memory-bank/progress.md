@@ -1,3 +1,9 @@
+## 2025-12-27T01:40:12Z
+- 完成实施计划第 8 步：主进程实现词库导入/导出，导入支持 JSON/JSONL 按 `word` 去重覆盖并校验无效记录计为 skipped，导出同时生成 JSON 与 CSV（输出路径随时间戳写入 `exports/` 子目录），返回词条数。
+- IPC 连接导入/导出信道，渲染端可直接请求文件生成或内容导入；共享类型更新导入/导出响应字段。
+- 新增单测 `src/main/__tests__/import-export.test.ts` 覆盖去重、非法输入保护与导出文件内容；`src/main/__tests__/ipc.test.ts` 补充导入/导出链路与空内容校验。
+- 跑通命令：`npm test -- src/main/__tests__/import-export.test.ts src/main/__tests__/ipc.test.ts`。
+
 ## 2025-12-27T01:20:38Z
 - 完成实施计划第 7 步：定义 IPC 合同与安全桥接，新增共享信道/请求响应类型（`src/shared/ipc.ts`），集中主进程 handler（`src/main/ipc/handlers.ts`）校验入参并调用存储/AI，实现复习评分时的 SM-2 更新与日志写入、活跃度接口与 provider 配置校验，预留导入/导出占位。
 - 预加载暴露受控 `window.api`，渲染端类型声明更新；存储层补充 `saveWords` 支撑全量重写。

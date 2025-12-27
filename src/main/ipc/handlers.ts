@@ -13,6 +13,7 @@ import {
   type ProviderSettings,
   type ReviewSubmitPayload,
   type SafeProviderSettings,
+  type ImportDataPayload,
 } from '@shared/ipc';
 import { buildReviewQueue, updateSm2 } from '@shared/sm2';
 import type { WordEntry } from '@shared/types';
@@ -128,6 +129,21 @@ const toSafeProviderSettings = (config: ProviderConfig): SafeProviderSettings =>
   maxOutputTokens: config.maxOutputTokens,
 });
 
+const normalizeImportPayload = (payload: ImportDataPayload) => {
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('导入参数缺失');
+  }
+
+  if (payload.format !== 'json' && payload.format !== 'jsonl') {
+    throw new Error('导入 format 仅支持 json/jsonl');
+  }
+
+  return {
+    content: ensureNonEmptyString(payload.content, 'content'),
+    format: payload.format,
+  };
+};
+
 export const registerIpcHandlers = ({
   storage,
   getNow = defaultNow,
@@ -200,12 +216,12 @@ export const registerIpcHandlers = ({
       return toSafeProviderSettings(providerConfig);
     },
 
-    [IPC_CHANNELS.EXPORT_DATA]: async () => {
-      throw new Error('导出功能尚未实现');
-    },
+    [IPC_CHANNELS.EXPORT_DATA]: async () => storage.exportWords(getNow()),
 
-    [IPC_CHANNELS.IMPORT_DATA]: async () => {
-      throw new Error('导入功能尚未实现');
+    [IPC_CHANNELS.IMPORT_DATA]: async (_event, payload) => {
+      const now = getNow();
+      const input = normalizeImportPayload(payload);
+      return storage.importWords(input.content, input.format, now);
     },
   };
 

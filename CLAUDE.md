@@ -4,7 +4,7 @@
 - 目录结构：
   - src/
     - main/index.ts：主进程入口，创建 BrowserWindow、绑定 preload，加载 dev URL 或打包文件。
-    - main/storage.ts：主进程存储层，基于 `app.getPath('userData')` 管理 `words.jsonl`/`reviews.jsonl`/`activity.json`，使用临时文件写入保证原文件不损坏，新增词条时补全时间/SM-2 默认值并更新活跃度，提供复习日志写入、词库全量重写与 session 计数累加。
+    - main/storage.ts：主进程存储层，基于 `app.getPath('userData')` 管理 `words.jsonl`/`reviews.jsonl`/`activity.json`，使用临时文件写入保证原文件不损坏；新增词条补全时间/SM-2 默认值并更新活跃度，提供复习日志写入、词库全量重写与 session 计数累加；支持 JSON/JSONL 导入（按 `word` 去重覆盖、非法行计入 skipped）与 JSON+CSV 导出（写入 `exports/` 子目录）。
     - main/ai/：AI 提供商适配层
       - types.ts：AI provider 接口、配置默认值与生成结果结构。
       - utils.ts：提示词、输出截断与 JSON 解析、超时辅助。
@@ -12,10 +12,11 @@
       - gemini.ts：使用 `@google/genai` SDK 的 Gemini provider，解析 JSON MIME。
       - mock.ts：无密钥固定响应的 mock provider。
       - index.ts：provider 工厂与出口。
-    - main/ipc/handlers.ts：集中注册 IPC 信道，校验入参，调用存储层与 AI provider，暴露新增/列表词条、生成内容、复习队列、提交评分（含 SM-2 更新与日志写入）、活跃度读取/累加与 provider 设置的接口。
+    - main/ipc/handlers.ts：集中注册 IPC 信道，校验入参，调用存储层与 AI provider，暴露新增/列表词条、生成内容、复习队列、提交评分（含 SM-2 更新与日志写入）、活跃度读取/累加、provider 设置以及导入/导出接口。
     - main/__tests__/storage.test.ts：Vitest 单测验证存储层的默认补全、JSONL 写入、活跃度累加与写入失败时的文件安全。
     - main/__tests__/ai.test.ts：Vitest 单测覆盖 AI provider 的解析、超时与 mock 行为。
-    - main/__tests__/ipc.test.ts：Vitest 单测覆盖 IPC handlers 的入参校验、SM-2 更新、活跃度日期校验与 provider 配置错误处理。
+    - main/__tests__/ipc.test.ts：Vitest 单测覆盖 IPC handlers 的入参校验、SM-2 更新、活跃度日期校验、导入/导出链路与 provider 配置错误处理。
+    - main/__tests__/import-export.test.ts：Vitest 单测覆盖存储导入/导出（去重覆盖、非法输入跳过、导出 JSON/CSV 内容）。
     - preload/index.ts：contextBridge 暴露 platform/node/chrome/electron 版本信息与受控 IPC API（新增词条、生成内容、复习队列、活跃度与 provider 设置等）。
     - renderer/index.html：渲染端 HTML 入口。
     - renderer/src/App.tsx|main.tsx|style.css|global.d.ts：React/Vite UI 骨架与类型声明，展示环境版本信息；global.d.ts 声明 `window.api` IPC 调用接口。

@@ -128,6 +128,58 @@ describe('IPC handlers', () => {
     dispose();
   });
 
+  it('导入/导出信道可去重并生成文件路径', async () => {
+    const now = new Date('2025-10-10T00:00:00Z');
+    const baseDir = await createTempDir();
+    const storage = new FileStorage(baseDir);
+    const { invoke, dispose } = registerIpcHandlers({
+      storage,
+      getNow: () => now,
+      ipc: createIpcMock(),
+    });
+
+    await invoke(IPC_CHANNELS.ADD_WORD, {
+      id: 'w1',
+      word: '単語',
+      hiragana: 'たんご',
+      definition_ja: '説明',
+      example_ja: '例文。',
+    });
+
+    const summary = await invoke(IPC_CHANNELS.IMPORT_DATA, {
+      content: JSON.stringify([
+        {
+          id: 'override',
+          word: '単語',
+          hiragana: 'たんご2',
+          definition_ja: '更新',
+          example_ja: '上書き。',
+        },
+        {
+          id: 'w2',
+          word: '追加',
+          hiragana: 'ついか',
+          definition_ja: '新規',
+          example_ja: '追加した。',
+        },
+      ]),
+      format: 'json',
+    });
+
+    expect(summary).toEqual({ imported: 2, skipped: 0 });
+
+    const exported = await invoke(IPC_CHANNELS.EXPORT_DATA, undefined as never);
+    expect(exported.count).toBe(2);
+    expect(fs.existsSync(exported.jsonPath)).toBe(true);
+    expect(fs.existsSync(exported.csvPath)).toBe(true);
+
+    await expect(
+      invoke(IPC_CHANNELS.IMPORT_DATA, { content: '', format: 'json' })
+    ).rejects.toThrow(/content/);
+
+    dispose();
+  });
+
   it('设置 provider 时要求密钥，未知信道拒绝调用', async () => {
     const { invoke, dispose } = registerIpcHandlers({
       storage: new FileStorage(await createTempDir()),
