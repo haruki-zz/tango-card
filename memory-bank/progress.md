@@ -1,3 +1,9 @@
+## 2025-12-29T06:22:11Z
+- 完成实施计划第 14 步：前端提供导入/导出入口与错误提示，连接主进程数据迁移能力。
+- 新增组件 `src/renderer/src/components/ImportExportPanel.tsx`，支持选择 JSON/JSONL 文件导入（显示新增/跳过计数与重复覆盖说明）及导出 JSON+CSV 路径提示，状态/错误文案可见。
+- `src/renderer/src/App.tsx` 挂载导入导出面板；新增测试 `src/renderer/src/__tests__/ImportExportPanel.test.tsx` 覆盖导入成功、格式不支持、后端错误与导出路径提示。
+- 测试由用户执行并验证通过。
+
 ## 2025-12-27T15:14:19Z
 - 完成实施计划第 13 步：渲染端新增活跃度方格视图，按最近 35 天的新增词条与复习 session 之和渲染绿色深浅，悬停显示每日详情。
 - 新增组件 `src/renderer/src/components/ActivityHeatmap.tsx`，在 `App.tsx` 主界面中呈现汇总卡与方格，并复用全局活跃度数据。

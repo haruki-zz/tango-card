@@ -15,15 +15,17 @@
       - index.ts：provider 工厂与出口。
     - preload/index.ts：contextBridge 暴露版本信息与受控 IPC API（词库、复习、活跃度、provider 设置、导入/导出）。
     - renderer/index.html：渲染端 HTML 入口。
-    - renderer/src/App.tsx：前端主界面，初始化词库与活跃度；并列新增表单与复习队列，展示活跃度方格与最近新增列表。
+    - renderer/src/App.tsx：前端主界面，初始化词库与活跃度；并列新增表单与复习队列，展示活跃度方格、导入导出面板与最近新增列表。
     - renderer/src/components/AddWordForm.tsx：新增流程组件，输入单词、AI 生成预填、手动编辑并保存后刷新词库与活跃度。
     - renderer/src/components/ReviewSession.tsx：复习队列组件，翻面查看释义/例句，0-5 评分后提交 IPC，完成整轮才计入 session，可重置或重试计数。
     - renderer/src/components/ActivityHeatmap.tsx：活跃度方格组件，按最近 35 天的新增词条与复习 session 总和渲染绿色深浅，提供每日 tooltip 与汇总统计。
+    - renderer/src/components/ImportExportPanel.tsx：导入/导出组件，选择 JSON/JSONL 文件导入（显示新增/跳过计数与重复覆盖提示），导出时提示 JSON/CSV 路径与记录数，含忙碌与错误状态文案。
     - renderer/src/components/WordList.tsx：按创建时间倒序展示最新词条。
     - renderer/src/store/useAppStore.ts：Zustand 全局状态封装 IPC 动作（词库、复习队列/session、活跃度、provider 设置、导入/导出）；`renderer/src/__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
     - renderer/src/__tests__/AddWordFlow.test.tsx：组件测试覆盖空输入校验、生成填充、保存后刷新列表与活跃度摘要。
     - renderer/src/__tests__/ReviewSession.test.tsx：组件测试覆盖翻面展示、评分 IPC 参数与 session 计数，空队列不计入 session。
     - renderer/src/__tests__/ActivityHeatmap.test.tsx：组件测试覆盖活跃度方格的颜色梯度与 tooltip 文案。
+    - renderer/src/__tests__/ImportExportPanel.test.tsx：组件测试覆盖导入成功（计数与覆盖提示）、不支持格式错误、后端失败提示与导出路径展示。
     - renderer/src/main.tsx|style.css|global.d.ts：渲染入口挂载、Tailwind 基础层与 UI 复用类、窗口 API 类型声明。
     - shared/：共享类型与纯逻辑
       - types.ts：词条、复习日志、活跃度类型与 SM-2 常量。

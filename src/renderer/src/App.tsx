@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import AddWordForm from './components/AddWordForm';
 import ActivityHeatmap from './components/ActivityHeatmap';
+import ImportExportPanel from './components/ImportExportPanel';
 import ReviewSession from './components/ReviewSession';
 import WordList from './components/WordList';
 import { useAppStore } from './store/useAppStore';
@@ -66,6 +67,7 @@ const App = () => {
           <ReviewSession />
         </div>
         <ActivityHeatmap />
+        <ImportExportPanel />
         <WordList words={words} loading={initializing} />
       </main>
     </div>
