@@ -7,13 +7,15 @@
   "main": "dist-electron/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
-    "build": "electron-vite build && electron-builder",
+    "build": "npm run build:dist && electron-builder",
+    "build:dist": "electron-vite build",
     "preview": "electron-vite preview",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier . --check",
     "format:fix": "prettier . --write",
-    "test": "vitest run"
+    "test": "vitest run",
+    "pack": "npm run build:dist && electron-builder --dir"
   },
   "repository": {
     "type": "git",

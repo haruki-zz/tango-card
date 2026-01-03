@@ -1,10 +1,10 @@
 # 架构记录
 
 ## 阶段状态
-- 已完成实施计划第 15 步：LLM provider 设置页与 keychain 安全存储落地，支持 openai/gemini/mock 切换与密钥持久化。
+- 已完成实施计划第 16 步：打包与发布烟测（生产入口指向 dist/index.html，build/pack 脚本完善，打包链路验证）。
 
 ## 文件作用
-- package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖，前端状态管理依赖 Zustand，样式链路使用 Tailwind + Autoprefixer；新增 keytar 供密钥安全存储；scripts 含 electron-vite dev/build/preview、lint/lint:fix、format/format:fix，build 调用 electron-builder 产出安装包。
+- package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖，前端状态管理依赖 Zustand，样式链路使用 Tailwind + Autoprefixer；新增 keytar 供密钥安全存储；scripts 含 electron-vite dev/preview、lint/lint:fix、format/format:fix、test，`build:dist` 产出 dist 与 dist-electron，`build` 调用 electron-builder 生成安装包，`pack` 用 electron-builder --dir 生成未压缩目录便于快速烟测。
 - package-lock.json：npm 锁定文件（包含 Electron、React、构建链依赖）。
 - .gitignore：忽略 node_modules、构建产物（dist、dist-electron、release）、日志、.env.* 与 .vite。
 - .env.local：存放 OpenAI/Google 密钥占位，避免读取缺失时报错，默认不提交。
@@ -16,7 +16,7 @@
 - tsconfig.json：TypeScript 编译配置，启用 strict，路径别名覆盖 main/preload/renderer。
 - tailwind.config.cjs：Tailwind 配置，扫描渲染端 HTML/TSX，定义绿色 accent 色板、ink/muted/surface 颜色、Inter + Noto Sans JP 字体与卡片阴影。
 - resources/icon.png：占位应用图标（512x512 PNG），供 electron-builder 使用。
-- src/main/index.ts：主进程入口，创建 BrowserWindow、绑定 preload、处理 URL/文件加载与生命周期。
+- src/main/index.ts：主进程入口，创建 BrowserWindow、绑定 preload、处理 URL/文件加载与生命周期；开发模式走 `ELECTRON_RENDERER_URL`，生产模式直接加载 `dist/index.html`，确保打包后渲染入口正确。
 - src/main/storage.ts：基于 `app.getPath('userData')` 的存储层，管理 `words.jsonl`/`reviews.jsonl`/`activity.json`，读写使用临时文件写入再替换；新增词条补全时间与 SM-2 默认值并更新活跃度，复习日志写入与 session 计数累加；支持全量保存、JSON/JSONL 导入（按 `word` 去重覆盖、跳过非法记录计数）、导出 JSON+CSV（写入 `exports/` 子目录）。
 - src/main/provider-settings.ts：provider 设置与密钥持久化，provider/模型/超时存 JSON，密钥写入 keytar，返回 `hasKey` 标记供前端判断是否已保存。
 - src/main/ipc/handlers.ts：集中注册 IPC 信道，校验参数并调用存储/AI/provider 配置；提供词条列表/新增、AI 生成、复习队列、提交评分（含 SM-2 更新与日志写入）、活跃度读取/累加、provider 读取/设置、导入/导出接口。

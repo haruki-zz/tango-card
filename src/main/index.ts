@@ -14,6 +14,7 @@ const preloadScript = (() => {
   const preloadJs = path.join(__dirname, '../preload/index.js');
   return fs.existsSync(preloadMjs) ? preloadMjs : preloadJs;
 })();
+const rendererIndexFile = path.join(__dirname, '..', '..', 'dist', 'index.html');
 
 const createMainWindow = () => {
   const mainWindow = new BrowserWindow({
@@ -43,7 +44,7 @@ const createMainWindow = () => {
     }
   } else {
     mainWindow
-      .loadFile(path.join(__dirname, '../renderer/index.html'))
+      .loadFile(rendererIndexFile)
       .catch((error) => {
         console.error('加载渲染进程文件失败', error);
       });

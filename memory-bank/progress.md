@@ -1,3 +1,9 @@
+## 2026-01-03T05:29:11Z
+- 完成实施计划第 16 步：打包与发布烟测，确保生产构建加载打包后的渲染入口并提供可重复的打包脚本。
+- `src/main/index.ts` 生产分支改为加载 `dist/index.html`，避免打包后找不到渲染入口。
+- `package.json` 抽出 `build:dist`，`build` 复用并新增 `pack`（`electron-builder --dir`），便于快速生成未签名包做回归。
+- 已跑通 `npm run build`（生成 dmg/zip；签名因无证书跳过）与 `npm run pack`，打包链路验证通过；测试由用户执行并确认通过。
+
 ## 2026-01-03T04:31:52Z
 - 完成实施计划第 15 步：LLM provider 设置页与 keychain 安全存储落地，支持 openai/gemini/mock 切换与密钥持久化。
 - 新增主进程 `src/main/provider-settings.ts` 持久化 provider 设置（keytar 写密钥、JSON 写模型/超时），IPC 增补 `config:get-provider`，preload/共享类型同步 `hasKey` 标记。
