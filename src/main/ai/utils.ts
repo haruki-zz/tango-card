@@ -48,13 +48,53 @@ export const buildWordPrompt = (
 };
 
 export const extractJsonObject = (text: string) => {
-  const start = text.indexOf('{');
-  const end = text.lastIndexOf('}');
-  if (start === -1 || end === -1 || end < start) {
-    throw new Error('模型输出缺少 JSON 对象');
+  let inString = false;
+  let escaped = false;
+  let start = -1;
+  let depth = 0;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+
+    if (char === '\\') {
+      escaped = true;
+      continue;
+    }
+
+    if (char === '"') {
+      inString = !inString;
+      continue;
+    }
+
+    if (inString) {
+      continue;
+    }
+
+    if (char === '{') {
+      if (start === -1) {
+        start = i;
+      }
+      depth += 1;
+    } else if (char === '}' && start !== -1) {
+      depth -= 1;
+      if (depth === 0) {
+        const candidate = text.slice(start, i + 1);
+        try {
+          return JSON.parse(candidate) as unknown;
+        } catch {
+          start = -1;
+          depth = 0;
+        }
+      }
+    }
   }
-  const jsonText = text.slice(start, end + 1);
-  return JSON.parse(jsonText) as unknown;
+
+  throw new Error('模型输出缺少 JSON 对象');
 };
 
 export const normalizeGeneratedContent = (

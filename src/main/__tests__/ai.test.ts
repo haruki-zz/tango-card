@@ -127,6 +127,40 @@ describe('GeminiProvider', () => {
       /JSON/,
     );
   });
+
+  it('ignores trailing chunks after the first valid JSON object', async () => {
+    const payload = {
+      hiragana: 'うみ',
+      definition_ja: '広い水域のこと。',
+      example_ja: '夏に海で泳いだ。',
+    };
+    const generateContent = vi.fn().mockResolvedValue({
+      candidates: [
+        {
+          content: {
+            parts: [
+              {
+                text: `${JSON.stringify(payload)}\n{"extra":"ignored"}`,
+              },
+            ],
+          },
+        },
+      ],
+    });
+    const client = {
+      models: { generateContent },
+    } as unknown as import('@google/genai').GoogleGenAI;
+    const provider = new GeminiProvider({
+      apiKey: 'test-key',
+      client,
+      timeoutMs: 200,
+    });
+
+    const result = await provider.generateWordContent({ word: '海' });
+
+    expect(result.hiragana).toBe(payload.hiragana);
+    expect(result.example_ja).toBe(payload.example_ja);
+  });
 });
 
 describe('MockAiProvider', () => {
