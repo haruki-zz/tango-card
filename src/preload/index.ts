@@ -17,6 +17,8 @@ const api: RendererApi = {
   getActivity: () => ipcRenderer.invoke(IPC_CHANNELS.ACTIVITY_GET),
   incrementSession: (date) =>
     ipcRenderer.invoke(IPC_CHANNELS.ACTIVITY_INCREMENT_SESSION, { date }),
+  getProvider: () =>
+    ipcRenderer.invoke<SafeProviderSettings>(IPC_CHANNELS.GET_PROVIDER),
   setProvider: (config) =>
     ipcRenderer.invoke<SafeProviderSettings>(IPC_CHANNELS.SET_PROVIDER, config),
   exportData: () => ipcRenderer.invoke(IPC_CHANNELS.EXPORT_DATA),

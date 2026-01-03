@@ -1,10 +1,10 @@
 # 架构记录
 
 ## 阶段状态
-- 已完成实施计划第 14 步：前端导入/导出入口对接主进程数据迁移，支持 JSON/JSONL 导入与 JSON/CSV 导出提示。
+- 已完成实施计划第 15 步：LLM provider 设置页与 keychain 安全存储落地，支持 openai/gemini/mock 切换与密钥持久化。
 
 ## 文件作用
-- package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖，前端状态管理依赖 Zustand，样式链路使用 Tailwind + Autoprefixer；scripts 含 electron-vite dev/build/preview、lint/lint:fix、format/format:fix，build 调用 electron-builder 产出安装包。
+- package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖，前端状态管理依赖 Zustand，样式链路使用 Tailwind + Autoprefixer；新增 keytar 供密钥安全存储；scripts 含 electron-vite dev/build/preview、lint/lint:fix、format/format:fix，build 调用 electron-builder 产出安装包。
 - package-lock.json：npm 锁定文件（包含 Electron、React、构建链依赖）。
 - .gitignore：忽略 node_modules、构建产物（dist、dist-electron、release）、日志、.env.* 与 .vite。
 - .env.local：存放 OpenAI/Google 密钥占位，避免读取缺失时报错，默认不提交。
@@ -18,7 +18,8 @@
 - resources/icon.png：占位应用图标（512x512 PNG），供 electron-builder 使用。
 - src/main/index.ts：主进程入口，创建 BrowserWindow、绑定 preload、处理 URL/文件加载与生命周期。
 - src/main/storage.ts：基于 `app.getPath('userData')` 的存储层，管理 `words.jsonl`/`reviews.jsonl`/`activity.json`，读写使用临时文件写入再替换；新增词条补全时间与 SM-2 默认值并更新活跃度，复习日志写入与 session 计数累加；支持全量保存、JSON/JSONL 导入（按 `word` 去重覆盖、跳过非法记录计数）、导出 JSON+CSV（写入 `exports/` 子目录）。
-- src/main/ipc/handlers.ts：集中注册 IPC 信道，校验参数并调用存储/AI/provider 配置；提供词条列表/新增、AI 生成、复习队列、提交评分（含 SM-2 更新与日志写入）、活跃度读取/累加、provider 设置、导入/导出接口。
+- src/main/provider-settings.ts：provider 设置与密钥持久化，provider/模型/超时存 JSON，密钥写入 keytar，返回 `hasKey` 标记供前端判断是否已保存。
+- src/main/ipc/handlers.ts：集中注册 IPC 信道，校验参数并调用存储/AI/provider 配置；提供词条列表/新增、AI 生成、复习队列、提交评分（含 SM-2 更新与日志写入）、活跃度读取/累加、provider 读取/设置、导入/导出接口。
 - src/main/ai：
   - types.ts：AI provider 公共接口、请求/响应结构及默认超时/输出长度配置。
   - utils.ts：提示词生成、模型输出截断与 JSON 解析辅助、超时包装。
@@ -28,7 +29,10 @@
   - index.ts：provider 工厂与出口，支持 openai/gemini/mock 配置与兜底。
 - src/main/__tests__/storage.test.ts：FileStorage 的 Vitest 单测，覆盖默认补全、JSONL 格式、活跃度累加与写入失败保护。
 - src/main/__tests__/ai.test.ts：AI provider 单测，覆盖 OpenAI/Gemini 正常与错误/超时路径，以及 mock 截断输出。
-- src/preload/index.ts：预加载脚本，通过 contextBridge 暴露平台与版本信息，以及受控 `window.api` IPC 调用集合（词条增/查、AI 生成、复习、活跃度、provider 设置、导入/导出）。
+- src/main/__tests__/ipc.test.ts：主进程 IPC handler 集成单测，覆盖入参校验、SM-2 更新、活跃度日期验证、provider 读写与 `hasKey` 标记、导入/导出链路与未知信道拒绝。
+- src/main/__tests__/import-export.test.ts：FileStorage 导入/导出单测，覆盖去重覆盖、非法输入保护与导出 JSON/CSV 内容。
+- src/main/__tests__/provider-settings.test.ts：ProviderSettingsStore 单测，验证密钥只入 keytar、配置文件不含密钥、hasApiKey 行为。
+- src/preload/index.ts：预加载脚本，通过 contextBridge 暴露平台与版本信息，以及受控 `window.api` IPC 调用集合（词条增/查、AI 生成、复习、活跃度、provider 读取/设置、导入/导出）。
 - src/renderer/index.html：渲染进程 HTML 入口。
 - src/renderer/src：
   - App.tsx：前端主界面，初始化词库与活跃度，在双列布局中并列新增表单与复习队列，展示活跃度方格、导入导出面板与最近新增列表。
@@ -36,12 +40,14 @@
   - components/ReviewSession.tsx：复习队列组件，拉取待复习词条、翻面查看释义/例句、0-5 评分后提交 IPC，完成整轮时计入 session，可重置队列或重试计数。
   - components/ActivityHeatmap.tsx：按最近 35 天的新增与复习 session 总和渲染绿色深浅方格，提供每日汇总与 tooltip。
   - components/ImportExportPanel.tsx：导入/导出组件，选择 JSON/JSONL 文件导入（显示新增/跳过计数与重复覆盖说明），导出时提示 JSON/CSV 保存路径与记录数，并显示忙碌和错误状态。
+  - components/SettingsPanel.tsx：LLM 设置面板，选择 openai/gemini/mock，输入密钥后调用 IPC 持久化至 keychain 并提示密钥状态。
   - components/WordList.tsx：按创建时间倒序展示最新词条列表。
-  - store/useAppStore.ts：Zustand 全局 store 封装 IPC 动作（词库、复习队列/session、活跃度、provider 设置、导入/导出），`__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
+  - store/useAppStore.ts：Zustand 全局 store 封装 IPC 动作（词库、复习队列/session、活跃度、provider 读取/设置、导入/导出），`__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
   - __tests__/AddWordFlow.test.tsx：React Testing Library 覆盖空输入校验、生成填充、保存后刷新列表/活跃度；适配默认复习队列刷新。
   - __tests__/ReviewSession.test.tsx：组件测试覆盖翻面、评分 IPC 参数与 session 计数，校验空队列不计入活跃度。
   - __tests__/ActivityHeatmap.test.tsx：组件测试覆盖活跃度方格的颜色梯度与 tooltip 文案。
   - __tests__/ImportExportPanel.test.tsx：组件测试覆盖导入成功（计数与覆盖提示）、不支持格式报错、后端失败提示与导出路径展示。
+  - __tests__/SettingsPanel.test.tsx：组件测试覆盖 provider 选择/密钥必填校验与保存后提示和输入清空。
   - main.tsx：渲染入口挂载 React。
   - style.css：Tailwind 基础层与复用类（surface-card/pill/stat-row 等）。
   - global.d.ts：声明 `window.platformInfo` 与受控 `window.api`。
@@ -49,16 +55,14 @@
   - types.ts：词条、复习日志、活跃度类型定义，SM-2 常量（EF 下限、默认值、间隔基线）。
   - sm2.ts：SM-2 默认状态生成、评分更新公式、复习队列排序与日期加成等纯函数。
   - validation.ts：词条/复习日志/活跃度的 JSON 校验与补全逻辑；时间与 SM-2 字段缺失时按当前时刻与默认值填充。
-  - ipc.ts：IPC 信道常量、请求/响应类型、渲染端 API 类型（含导入/导出格式与返回路径），供主进程 handler 与 preload 共享。
+  - ipc.ts：IPC 信道常量、请求/响应类型、渲染端 API 类型（含 provider 读取/设置与导入/导出格式与返回路径），供主进程 handler 与 preload 共享。
   - __tests__：使用 Vitest 覆盖 SM-2 更新、分数边界、队列排序与校验补全边界。
-- src/main/__tests__/ipc.test.ts：主进程 IPC handler 集成单测，覆盖入参校验、SM-2 更新、活跃度日期验证、provider 配置错误、导入/导出链路与未知信道拒绝。
-- src/main/__tests__/import-export.test.ts：FileStorage 导入/导出单测，覆盖去重覆盖、非法输入跳过与导出 JSON/CSV 内容。
 - CLAUDE.md：仓库当前架构快照，描述目录与文件职责，需随架构变更同步。
 - AGENTS.md：贡献规范与全局约束的入口说明。
 - prompts/coding-style.md：代码风格与开发流程约定。
 - prompts/system-prompt.md：系统级工作规范与思考模式。
 - memory-bank/design-document.md：产品功能与数据设计说明。
-- memory-bank/implementation-plan.md：分步实施计划，当前执行至第 14 步。
+- memory-bank/implementation-plan.md：分步实施计划，当前执行至第 15 步。
 - memory-bank/tech-stack.md：技术栈清单与选型理由。
 - memory-bank/progress.md：阶段性变更记录，便于交接。
 - memory-bank/architecture.md：架构与文件职责记录（本文件），持续更新各阶段的结构洞察。

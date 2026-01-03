@@ -5,6 +5,12 @@ import {
   type AiProvider,
   type ProviderConfig,
 } from '@main/ai';
+import {
+  normalizePositiveInteger,
+  normalizeProviderSettings,
+  toSafeProviderSettings,
+  type ProviderSettingsStore,
+} from '@main/provider-settings';
 import { FileStorage, type WordInput } from '@main/storage';
 import {
   IPC_CHANNELS,
@@ -13,10 +19,7 @@ import {
   type IpcChannel,
   type IpcRequestMap,
   type IpcResponseMap,
-  type ProviderName,
-  type ProviderSettings,
   type ReviewSubmitPayload,
-  type SafeProviderSettings,
   type ImportDataPayload,
 } from '@shared/ipc';
 import { buildReviewQueue, updateSm2 } from '@shared/sm2';
@@ -35,6 +38,8 @@ interface HandlerOptions {
   storage: FileStorage;
   getNow?: () => Date;
   createProvider?: (config: ProviderConfig) => AiProvider;
+  providerStore?: ProviderSettingsStore;
+  initialProviderConfig?: ProviderConfig;
   ipc?: Pick<typeof ipcMain, 'handle' | 'removeHandler'>;
 }
 
@@ -68,41 +73,6 @@ const ensureScore = (value: unknown) => {
   return rounded;
 };
 
-const normalizeProviderName = (value: unknown): ProviderName => {
-  if (value === 'openai' || value === 'gemini' || value === 'mock') {
-    return value;
-  }
-  throw new Error('provider 仅支持 openai/gemini/mock');
-};
-
-const normalizePositiveInteger = (value: unknown) => {
-  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) {
-    return undefined;
-  }
-  return Math.floor(value);
-};
-
-const normalizeProviderSettings = (
-  settings: ProviderSettings,
-): ProviderConfig & SafeProviderSettings => {
-  const provider = normalizeProviderName(settings.provider);
-  const model = settings.model?.trim() || undefined;
-  const timeoutMs = normalizePositiveInteger(settings.timeoutMs);
-  const maxOutputTokens = normalizePositiveInteger(settings.maxOutputTokens);
-  const apiKey =
-    provider === 'mock'
-      ? undefined
-      : ensureNonEmptyString(settings.apiKey, 'apiKey');
-
-  return {
-    provider,
-    apiKey,
-    model,
-    timeoutMs,
-    maxOutputTokens,
-  };
-};
-
 const toWordInput = (payload: AddWordPayload, now: Date): WordInput => ({
   id: ensureNonEmptyString(payload.id, 'id'),
   word: ensureNonEmptyString(payload.word, 'word'),
@@ -133,15 +103,6 @@ const normalizeReviewPayload = (
   reviewedAt: now.toISOString(),
 });
 
-const toSafeProviderSettings = (
-  config: ProviderConfig,
-): SafeProviderSettings => ({
-  provider: config.provider,
-  model: config.model,
-  timeoutMs: config.timeoutMs,
-  maxOutputTokens: config.maxOutputTokens,
-});
-
 const normalizeImportPayload = (payload: ImportDataPayload) => {
   if (!payload || typeof payload !== 'object') {
     throw new Error('导入参数缺失');
@@ -161,9 +122,28 @@ export const registerIpcHandlers = ({
   storage,
   getNow = defaultNow,
   createProvider = createProviderOrMock,
+  providerStore,
+  initialProviderConfig,
   ipc = ipcMain,
 }: HandlerOptions) => {
-  let providerConfig: ProviderConfig = { provider: 'mock' };
+  let providerConfig: ProviderConfig =
+    initialProviderConfig ?? { provider: 'mock' };
+
+  const resolveHasKey = async () => {
+    if (providerConfig.provider === 'mock') {
+      return false;
+    }
+
+    if (providerConfig.apiKey) {
+      return true;
+    }
+
+    if (!providerStore) {
+      return false;
+    }
+
+    return providerStore.hasApiKey(providerConfig.provider);
+  };
 
   const handlers: HandlerMap = {
     [IPC_CHANNELS.LIST_WORDS]: async () => storage.loadWords(getNow()),
@@ -226,9 +206,21 @@ export const registerIpcHandlers = ({
       return storage.incrementSession(target);
     },
 
-    [IPC_CHANNELS.SET_PROVIDER]: (_event, payload) => {
-      providerConfig = normalizeProviderSettings(payload);
-      return toSafeProviderSettings(providerConfig);
+    [IPC_CHANNELS.SET_PROVIDER]: async (_event, payload) => {
+      const normalized = normalizeProviderSettings(payload);
+      providerConfig = providerStore
+        ? await providerStore.save(normalized)
+        : normalized;
+      const hasKey = await resolveHasKey();
+      return toSafeProviderSettings(providerConfig, hasKey);
+    },
+
+    [IPC_CHANNELS.GET_PROVIDER]: async () => {
+      if (providerStore) {
+        providerConfig = await providerStore.load();
+      }
+      const hasKey = await resolveHasKey();
+      return toSafeProviderSettings(providerConfig, hasKey);
     },
 
     [IPC_CHANNELS.EXPORT_DATA]: async () => storage.exportWords(getNow()),

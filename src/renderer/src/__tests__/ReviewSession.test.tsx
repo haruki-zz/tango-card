@@ -15,6 +15,7 @@ type ApiMock = RendererApi & {
   submitReview: ReturnType<typeof vi.fn>;
   getActivity: ReturnType<typeof vi.fn>;
   incrementSession: ReturnType<typeof vi.fn>;
+  getProvider: ReturnType<typeof vi.fn>;
   setProvider: ReturnType<typeof vi.fn>;
   exportData: ReturnType<typeof vi.fn>;
   importData: ReturnType<typeof vi.fn>;
@@ -29,6 +30,7 @@ const createApiMock = (): ApiMock =>
     submitReview: vi.fn(),
     getActivity: vi.fn(),
     incrementSession: vi.fn(),
+    getProvider: vi.fn(),
     setProvider: vi.fn(),
     exportData: vi.fn(),
     importData: vi.fn(),
@@ -64,6 +66,7 @@ describe('复习队列', () => {
     setRendererApi(api);
     api.listWords.mockResolvedValue([]);
     api.getActivity.mockResolvedValue({});
+    api.getProvider.mockResolvedValue({ provider: 'mock', hasKey: false });
     randomIdSpy = vi.spyOn(global.crypto, 'randomUUID').mockReturnValue('session-review');
   });
 

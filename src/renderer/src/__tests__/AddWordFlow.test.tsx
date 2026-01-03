@@ -12,6 +12,7 @@ type ApiMock = RendererApi & {
   getActivity: ReturnType<typeof vi.fn>;
   generateWordContent: ReturnType<typeof vi.fn>;
   addWord: ReturnType<typeof vi.fn>;
+  getProvider: ReturnType<typeof vi.fn>;
 };
 
 const createApiMock = (): ApiMock =>
@@ -23,6 +24,7 @@ const createApiMock = (): ApiMock =>
     submitReview: vi.fn(),
     getActivity: vi.fn(),
     incrementSession: vi.fn(),
+    getProvider: vi.fn(),
     setProvider: vi.fn(),
     exportData: vi.fn(),
     importData: vi.fn(),
@@ -58,6 +60,7 @@ describe('新增词条流程', () => {
     api.listWords.mockResolvedValue([]);
     api.getActivity.mockResolvedValue({});
     api.getReviewQueue.mockResolvedValue([]);
+    api.getProvider.mockResolvedValue({ provider: 'mock', hasKey: false });
   });
 
   afterEach(() => {

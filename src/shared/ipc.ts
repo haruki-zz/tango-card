@@ -9,6 +9,7 @@ export const IPC_CHANNELS = {
   ACTIVITY_GET: 'activity:get',
   ACTIVITY_INCREMENT_SESSION: 'activity:increment-session',
   SET_PROVIDER: 'config:set-provider',
+  GET_PROVIDER: 'config:get-provider',
   EXPORT_DATA: 'data:export',
   IMPORT_DATA: 'data:import',
 } as const;
@@ -25,7 +26,9 @@ export interface ProviderSettings {
   maxOutputTokens?: number;
 }
 
-export type SafeProviderSettings = Omit<ProviderSettings, 'apiKey'>;
+export type SafeProviderSettings = Omit<ProviderSettings, 'apiKey'> & {
+  hasKey?: boolean;
+};
 
 export interface GenerateWordPayload {
   word: string;
@@ -84,6 +87,7 @@ export interface RendererApi {
   ): Promise<{ word: WordEntry; log: ReviewLog }>;
   getActivity(): Promise<ActivityByDay>;
   incrementSession(date?: string): Promise<ActivityByDay>;
+  getProvider(): Promise<SafeProviderSettings>;
   setProvider(config: ProviderSettings): Promise<SafeProviderSettings>;
   exportData(): Promise<ExportDataResponse>;
   importData(payload: ImportDataPayload): Promise<ImportDataResponse>;
@@ -97,6 +101,7 @@ export interface IpcRequestMap {
   [IPC_CHANNELS.SUBMIT_REVIEW]: ReviewSubmitPayload;
   [IPC_CHANNELS.ACTIVITY_GET]: void;
   [IPC_CHANNELS.ACTIVITY_INCREMENT_SESSION]: { date?: string };
+  [IPC_CHANNELS.GET_PROVIDER]: void;
   [IPC_CHANNELS.SET_PROVIDER]: ProviderSettings;
   [IPC_CHANNELS.EXPORT_DATA]: void;
   [IPC_CHANNELS.IMPORT_DATA]: ImportDataPayload;
@@ -110,6 +115,7 @@ export interface IpcResponseMap {
   [IPC_CHANNELS.SUBMIT_REVIEW]: { word: WordEntry; log: ReviewLog };
   [IPC_CHANNELS.ACTIVITY_GET]: ActivityByDay;
   [IPC_CHANNELS.ACTIVITY_INCREMENT_SESSION]: ActivityByDay;
+  [IPC_CHANNELS.GET_PROVIDER]: SafeProviderSettings;
   [IPC_CHANNELS.SET_PROVIDER]: SafeProviderSettings;
   [IPC_CHANNELS.EXPORT_DATA]: ExportDataResponse;
   [IPC_CHANNELS.IMPORT_DATA]: ImportDataResponse;

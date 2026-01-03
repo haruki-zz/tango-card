@@ -5,6 +5,7 @@
   - src/
     - main/index.ts：主进程入口，创建 BrowserWindow、绑定 preload，处理 URL/文件加载与生命周期。
     - main/storage.ts：基于 `app.getPath('userData')` 的存储层，管理 `words.jsonl`/`reviews.jsonl`/`activity.json`；临时文件写入保护；新增补全时间与 SM-2 默认值并更新活跃度，复习日志写入与 session 计数；支持全量保存、导入（JSON/JSONL 去重覆盖、非法记录计数）与导出 JSON+CSV（写入 `exports/`）。
+    - main/provider-settings.ts：provider 设置与密钥持久化，使用 keytar 写入系统安全存储，仅将 provider/模型/超时写入 `provider-settings.json`，提供输入归一化与安全返回结构。
     - main/ipc/handlers.ts：集中注册 IPC 信道，校验参数并调用存储/AI/provider 配置；提供词条增/查、AI 生成、复习队列、提交评分（含 SM-2 更新与日志）、活跃度读取/累加、provider 设置、导入/导出接口。
     - main/ai/：AI 提供商适配
       - types.ts：AI provider 接口、默认配置与生成结果结构。
@@ -20,28 +21,31 @@
     - renderer/src/components/ReviewSession.tsx：复习队列组件，翻面查看释义/例句，0-5 评分后提交 IPC，完成整轮才计入 session，可重置或重试计数。
     - renderer/src/components/ActivityHeatmap.tsx：活跃度方格组件，按最近 35 天的新增词条与复习 session 总和渲染绿色深浅，提供每日 tooltip 与汇总统计。
     - renderer/src/components/ImportExportPanel.tsx：导入/导出组件，选择 JSON/JSONL 文件导入（显示新增/跳过计数与重复覆盖提示），导出时提示 JSON/CSV 路径与记录数，含忙碌与错误状态文案。
+    - renderer/src/components/SettingsPanel.tsx：LLM 设置面板，选择 openai/gemini/mock 并输入密钥，提示 keychain 存储状态，不在界面回显密钥。
     - renderer/src/components/WordList.tsx：按创建时间倒序展示最新词条。
-    - renderer/src/store/useAppStore.ts：Zustand 全局状态封装 IPC 动作（词库、复习队列/session、活跃度、provider 设置、导入/导出）；`renderer/src/__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
+    - renderer/src/store/useAppStore.ts：Zustand 全局状态封装 IPC 动作（词库、复习队列/session、活跃度、provider 设置/读取、导入/导出）；`renderer/src/__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
     - renderer/src/__tests__/AddWordFlow.test.tsx：组件测试覆盖空输入校验、生成填充、保存后刷新列表与活跃度摘要。
     - renderer/src/__tests__/ReviewSession.test.tsx：组件测试覆盖翻面展示、评分 IPC 参数与 session 计数，空队列不计入 session。
     - renderer/src/__tests__/ActivityHeatmap.test.tsx：组件测试覆盖活跃度方格的颜色梯度与 tooltip 文案。
     - renderer/src/__tests__/ImportExportPanel.test.tsx：组件测试覆盖导入成功（计数与覆盖提示）、不支持格式错误、后端失败提示与导出路径展示。
+    - renderer/src/__tests__/SettingsPanel.test.tsx：验证 provider 选择与密钥校验、成功保存后的提示与输入清空。
     - renderer/src/main.tsx|style.css|global.d.ts：渲染入口挂载、Tailwind 基础层与 UI 复用类、窗口 API 类型声明。
     - shared/：共享类型与纯逻辑
       - types.ts：词条、复习日志、活跃度类型与 SM-2 常量。
       - sm2.ts：SM-2 默认值、评分更新、复习队列排序等纯函数。
       - validation.ts：词条/日志/活跃度校验与补全（缺失时间/SM-2 默认填充）。
-      - ipc.ts：IPC 信道常量与 Renderer API 类型，主进程 handler 与 preload 的共享契约。
+      - ipc.ts：IPC 信道常量与 Renderer API 类型，包含 provider 设置/读取、安全设置类型。
       - __tests__：Vitest 单测覆盖 SM-2 算法与校验补全。
     - main/__tests__/storage.test.ts：验证存储层补全、JSONL 写入、活跃度累加与写入失败保护。
     - main/__tests__/ai.test.ts：验证 OpenAI/Gemini 正常、错误与超时路径及 mock 行为。
-    - main/__tests__/ipc.test.ts：验证 IPC 校验、SM-2 更新、活跃度日期校验、导入/导出链路与 provider 配置错误。
+    - main/__tests__/ipc.test.ts：验证 IPC 校验、SM-2 更新、活跃度日期校验、导入/导出链路与 provider 配置错误/读取。
     - main/__tests__/import-export.test.ts：验证导入/导出去重覆盖、非法输入跳过与导出内容。
+    - main/__tests__/provider-settings.test.ts：验证 provider 设置文件不泄露密钥、keychain 存储与 hasApiKey 行为。
   - electron.vite.config.ts：electron-vite 配置（主/预加载输出 dist-electron，渲染输出 dist，React 插件与路径别名）。
   - electron-builder.yml：打包配置（appId/productName、release 输出、mac dmg+zip、win nsis+portable、linux AppImage，入口 dist-electron/main/index.js）。
   - tsconfig.json：TypeScript 严格模式与路径别名（含 `@shared` 指向 `src/shared`）。
   - resources/icon.png：打包占位图标。
-  - package.json / package-lock.json：ESM 元数据与依赖（Electron/React/electron-vite/electron-builder/TypeScript/Vitest/Zustand、openai、@google/genai），scripts 包含 dev/build/preview/lint/test/pack。
+  - package.json / package-lock.json：ESM 元数据与依赖（Electron/React/electron-vite/electron-builder/TypeScript/Vitest/Zustand、openai、@google/genai、keytar），scripts 包含 dev/build/preview/lint/test/pack。
   - vitest.config.ts：Vitest 配置（jsdom、`@shared`/`@main` 别名、全局 setup）。
   - vitest.setup.ts：测试环境初始化，引入 jest-dom matcher。
   - memory-bank/：设计文档、实施计划、架构记录、进度与技术栈说明。

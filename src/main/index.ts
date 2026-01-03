@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { registerIpcHandlers } from '@main/ipc/handlers';
+import { ProviderSettingsStore } from '@main/provider-settings';
 import { FileStorage } from '@main/storage';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -51,9 +52,11 @@ const createMainWindow = () => {
 
 app
   .whenReady()
-  .then(() => {
+  .then(async () => {
     const storage = new FileStorage();
-    registerIpcHandlers({ storage });
+    const providerStore = new ProviderSettingsStore();
+    const initialProviderConfig = await providerStore.load();
+    registerIpcHandlers({ storage, providerStore, initialProviderConfig });
     createMainWindow();
 
     app.on('activate', () => {

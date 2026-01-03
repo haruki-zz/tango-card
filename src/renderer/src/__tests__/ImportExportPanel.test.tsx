@@ -16,6 +16,7 @@ type ApiMock = RendererApi & {
   getReviewQueue: ReturnType<typeof vi.fn>;
   importData: ReturnType<typeof vi.fn<[ImportDataPayload], Promise<ImportDataResponse>>>;
   exportData: ReturnType<typeof vi.fn>;
+  getProvider: ReturnType<typeof vi.fn>;
 };
 
 const createApiMock = (): ApiMock =>
@@ -27,6 +28,7 @@ const createApiMock = (): ApiMock =>
     submitReview: vi.fn(),
     getActivity: vi.fn(),
     incrementSession: vi.fn(),
+    getProvider: vi.fn(),
     setProvider: vi.fn(),
     exportData: vi.fn(),
     importData: vi.fn(),
@@ -45,6 +47,7 @@ describe('导入/导出面板', () => {
     api.listWords.mockResolvedValue([]);
     api.getActivity.mockResolvedValue({});
     api.getReviewQueue.mockResolvedValue([]);
+    api.getProvider.mockResolvedValue({ provider: 'mock', hasKey: false });
   });
 
   afterEach(() => {

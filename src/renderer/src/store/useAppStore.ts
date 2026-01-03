@@ -39,6 +39,7 @@ interface AppActions {
   ) => Promise<{ word: WordEntry; log: ReviewLog }>;
   completeSession: (date?: string) => Promise<ActivityByDay>;
   refreshActivity: () => Promise<ActivityByDay>;
+  loadProvider: () => Promise<SafeProviderSettings>;
   setProvider: (settings: ProviderSettings) => Promise<SafeProviderSettings>;
   exportData: () => Promise<ExportDataResponse>;
   importData: (payload: ImportDataPayload) => Promise<ImportDataResponse>;
@@ -135,6 +136,12 @@ const createStoreState =
       const activity = await deps.getApi().getActivity();
       set({ activity });
       return activity;
+    },
+
+    loadProvider: async () => {
+      const provider = await deps.getApi().getProvider();
+      set({ provider });
+      return provider;
     },
 
     setProvider: async (settings) => {

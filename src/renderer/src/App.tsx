@@ -4,6 +4,7 @@ import AddWordForm from './components/AddWordForm';
 import ActivityHeatmap from './components/ActivityHeatmap';
 import ImportExportPanel from './components/ImportExportPanel';
 import ReviewSession from './components/ReviewSession';
+import SettingsPanel from './components/SettingsPanel';
 import WordList from './components/WordList';
 import { useAppStore } from './store/useAppStore';
 
@@ -18,6 +19,7 @@ const App = () => {
   const words = useAppStore((state) => state.words);
   const loadWords = useAppStore((state) => state.loadWords);
   const refreshActivity = useAppStore((state) => state.refreshActivity);
+  const loadProvider = useAppStore((state) => state.loadProvider);
   const [initializing, setInitializing] = useState(true);
   const [initError, setInitError] = useState('');
 
@@ -25,7 +27,7 @@ const App = () => {
     let active = true;
     const bootstrap = async () => {
       try {
-        await Promise.all([loadWords(), refreshActivity()]);
+        await Promise.all([loadWords(), refreshActivity(), loadProvider()]);
       } catch (error) {
         if (!active) {
           return;
@@ -67,6 +69,7 @@ const App = () => {
           <ReviewSession />
         </div>
         <ActivityHeatmap />
+        <SettingsPanel />
         <ImportExportPanel />
         <WordList words={words} loading={initializing} />
       </main>

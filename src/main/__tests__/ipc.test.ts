@@ -3,6 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
+import type { ProviderConfig } from '@main/ai';
 import { registerIpcHandlers } from '@main/ipc/handlers';
 import { FileStorage } from '@main/storage';
 import { IPC_CHANNELS } from '@shared/ipc';
@@ -21,6 +22,18 @@ const createIpcMock = () => ({
   handle: vi.fn(),
   removeHandler: vi.fn(),
 });
+
+const createProviderStoreMock = (config: ProviderConfig) => {
+  let current = config;
+  return {
+    load: vi.fn(async () => current),
+    save: vi.fn(async (next: ProviderConfig) => {
+      current = next;
+      return current;
+    }),
+    hasApiKey: vi.fn(async () => Boolean(current.apiKey)),
+  };
+};
 
 const cleanup = async () => {
   const dirs = tempDirs.splice(0);
@@ -199,6 +212,36 @@ describe('IPC handlers', () => {
         undefined,
       ),
     ).rejects.toThrow(/未注册/);
+
+    dispose();
+  });
+
+  it('读取持久化的 provider 配置并隐藏密钥', async () => {
+    const providerStore = createProviderStoreMock({
+      provider: 'openai',
+      apiKey: 'secret',
+      model: 'gpt-4.1-mini',
+    });
+    const { invoke, dispose } = registerIpcHandlers({
+      storage: new FileStorage(await createTempDir()),
+      ipc: createIpcMock(),
+      providerStore,
+      initialProviderConfig: await providerStore.load(),
+    });
+
+    const current = await invoke(IPC_CHANNELS.GET_PROVIDER, undefined as never);
+    expect(current).toEqual({
+      provider: 'openai',
+      model: 'gpt-4.1-mini',
+      hasKey: true,
+    });
+
+    const mockSettings = await invoke(
+      IPC_CHANNELS.SET_PROVIDER,
+      { provider: 'mock' } as never,
+    );
+    expect(mockSettings).toEqual({ provider: 'mock', hasKey: false });
+    expect(providerStore.save).toHaveBeenCalled();
 
     dispose();
   });

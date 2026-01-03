@@ -55,6 +55,7 @@ const createApiMock = () =>
     >(),
     getActivity: vi.fn<[], Promise<ActivityByDay>>(),
     incrementSession: vi.fn<[string?], Promise<ActivityByDay>>(),
+    getProvider: vi.fn<[], Promise<SafeProviderSettings>>(),
     setProvider: vi.fn<[ProviderSettings], Promise<SafeProviderSettings>>(),
     exportData: vi.fn<[], Promise<ExportDataResponse>>(),
     importData: vi.fn<[ImportDataPayload], Promise<ImportDataResponse>>(),
@@ -63,13 +64,16 @@ const createApiMock = () =>
 const createStore = (
   api: MockedRendererApi = createApiMock(),
   sessionId = 'session-mock',
-): StoreWithApi => ({
-  api,
-  store: createAppStore({
-    getApi: () => api,
-    createSessionId: () => sessionId,
-  }),
-});
+): StoreWithApi => {
+  api.getProvider.mockResolvedValue({ provider: 'mock', hasKey: false });
+  return {
+    api,
+    store: createAppStore({
+      getApi: () => api,
+      createSessionId: () => sessionId,
+    }),
+  };
+};
 
 afterEach(() => {
   vi.clearAllMocks();
@@ -86,6 +90,25 @@ describe('useAppStore', () => {
     expect(result).toEqual(words);
     expect(store.getState().words).toEqual(words);
     expect(api.listWords).toHaveBeenCalledTimes(1);
+  });
+
+  it('加载 provider 设置但不暴露密钥', async () => {
+    const { store, api } = createStore();
+    api.getProvider.mockResolvedValue({
+      provider: 'gemini',
+      model: 'flash-2.5',
+      hasKey: true,
+    });
+
+    const result = await store.getState().loadProvider();
+
+    expect(result).toEqual({
+      provider: 'gemini',
+      model: 'flash-2.5',
+      hasKey: true,
+    });
+    expect(store.getState().provider).toEqual(result);
+    expect(api.getProvider).toHaveBeenCalledTimes(1);
   });
 
   it('creates a session when queue is loaded and none exists', async () => {

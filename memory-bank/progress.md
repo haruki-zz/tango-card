@@ -1,3 +1,10 @@
+## 2026-01-03T04:31:52Z
+- 完成实施计划第 15 步：LLM provider 设置页与 keychain 安全存储落地，支持 openai/gemini/mock 切换与密钥持久化。
+- 新增主进程 `src/main/provider-settings.ts` 持久化 provider 设置（keytar 写密钥、JSON 写模型/超时），IPC 增补 `config:get-provider`，preload/共享类型同步 `hasKey` 标记。
+- 前端新增 `src/renderer/src/components/SettingsPanel.tsx`，App 初始化读取 provider 状态，Zustand store 增加 `loadProvider`/`setProvider` 流程，界面提示密钥存在与校验必填。
+- 新测覆盖 provider 存储与 UI：`src/main/__tests__/provider-settings.test.ts`、`src/main/__tests__/ipc.test.ts`（provider 读写）、`src/renderer/src/__tests__/SettingsPanel.test.tsx` 及现有用例更新 mock。
+- 测试由用户执行并验证通过。
+
 ## 2025-12-29T06:22:11Z
 - 完成实施计划第 14 步：前端提供导入/导出入口与错误提示，连接主进程数据迁移能力。
 - 新增组件 `src/renderer/src/components/ImportExportPanel.tsx`，支持选择 JSON/JSONL 文件导入（显示新增/跳过计数与重复覆盖说明）及导出 JSON+CSV 路径提示，状态/错误文案可见。

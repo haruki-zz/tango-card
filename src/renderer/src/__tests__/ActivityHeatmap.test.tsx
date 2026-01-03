@@ -14,6 +14,7 @@ type ApiMock = RendererApi & {
   addWord: ReturnType<typeof vi.fn>;
   submitReview: ReturnType<typeof vi.fn>;
   incrementSession: ReturnType<typeof vi.fn>;
+  getProvider: ReturnType<typeof vi.fn>;
   setProvider: ReturnType<typeof vi.fn>;
   exportData: ReturnType<typeof vi.fn>;
   importData: ReturnType<typeof vi.fn>;
@@ -28,6 +29,7 @@ const createApiMock = (): ApiMock =>
     submitReview: vi.fn(),
     getActivity: vi.fn(),
     incrementSession: vi.fn(),
+    getProvider: vi.fn(),
     setProvider: vi.fn(),
     exportData: vi.fn(),
     importData: vi.fn(),
@@ -51,6 +53,7 @@ describe('活跃度方格', () => {
     setRendererApi(api);
     api.listWords.mockResolvedValue([]);
     api.getReviewQueue.mockResolvedValue([]);
+    api.getProvider.mockResolvedValue({ provider: 'mock', hasKey: false });
   });
 
   afterEach(() => {
