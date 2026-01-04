@@ -236,4 +236,186 @@
   .divider {
     border-color: rgba(var(--color-border), 0.9);
   }
+
+  .progress-track {
+    width: min(440px, 100%);
+    height: 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--color-primary-200), 0.9);
+    background: linear-gradient(
+      90deg,
+      rgba(var(--color-panel), 0.95),
+      rgba(var(--color-primary-50), 0.8)
+    );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      var(--shadow-hairline);
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      rgb(var(--color-primary-400)),
+      rgb(var(--color-primary-500)),
+      rgb(var(--color-primary-600))
+    );
+    box-shadow: 0 4px 14px rgba(var(--color-primary-500), 0.35);
+    transition: width var(--transition-slow) var(--ease-gentle);
+  }
+
+  .kbd-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 10px;
+    border: 1px solid rgba(var(--color-border), 0.9);
+    background: rgba(var(--color-panel), 0.92);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  .review-card {
+    position: relative;
+    perspective: 1200px;
+  }
+
+  .review-card-inner {
+    position: relative;
+    width: 100%;
+    min-height: 240px;
+    transform-style: preserve-3d;
+    transition: transform var(--transition-slow) var(--ease-gentle),
+      box-shadow var(--transition-base) var(--ease-gentle);
+  }
+
+  .review-card-inner.is-flipped {
+    transform: rotateY(180deg);
+  }
+
+  .review-card-face {
+    position: absolute;
+    inset: 0;
+    padding: 1.25rem 1.5rem;
+    border-radius: 16px;
+    border: 2px solid rgba(var(--color-primary-300), 0.9);
+    background: linear-gradient(
+      135deg,
+      rgba(var(--color-panel), 0.98),
+      rgba(var(--color-primary-50), 0.9)
+    );
+    box-shadow:
+      0 18px 36px rgba(var(--color-ink), 0.08),
+      inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .review-card-face::after {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    border-radius: 20px;
+    border: 1px dashed rgba(var(--color-primary-200), 0.9);
+    pointer-events: none;
+    opacity: 0.8;
+    animation: dash-glow 220ms ease-out forwards;
+  }
+
+  .review-card-back {
+    transform: rotateY(180deg);
+  }
+
+  .word-display {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: rgb(var(--color-ink));
+    text-align: center;
+    word-break: keep-all;
+    line-height: 1.2;
+  }
+
+  .score-button {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    padding: 0.85rem 0.9rem;
+    border-radius: 12px;
+    border: 1px solid rgba(var(--color-primary-200), 0.9);
+    background: linear-gradient(
+      145deg,
+      rgba(var(--color-panel), 0.96),
+      rgba(var(--color-primary-50), 0.9)
+    );
+    color: rgb(var(--color-ink));
+    transition:
+      transform var(--transition-fast) var(--ease-gentle),
+      box-shadow var(--transition-fast) var(--ease-gentle),
+      background-color var(--transition-fast) var(--ease-gentle);
+  }
+
+  .score-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-soft);
+    background: rgba(var(--color-primary-100), 0.95);
+  }
+
+  .score-button:active:not(:disabled) {
+    transform: translateY(0);
+    background: rgb(var(--color-primary-200));
+  }
+
+  .score-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+    background: rgba(var(--color-panel), 0.8);
+  }
+
+  .score-value {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgb(var(--color-muted));
+  }
+
+  .score-label {
+    font-weight: 600;
+  }
+
+  .message {
+    padding: 0.75rem 0.9rem;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+
+  .message.success {
+    color: #166534;
+    background: rgba(var(--color-leaf-200), 0.45);
+    border: 1px solid rgba(var(--color-leaf-300), 0.8);
+  }
+
+  .message.error {
+    color: #b91c1c;
+    background: rgba(var(--color-primary-100), 0.55);
+    border: 1px solid rgba(var(--color-primary-300), 0.8);
+  }
+}
+
+@keyframes dash-glow {
+  from {
+    opacity: 0.35;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 0.8;
+    transform: scale(1);
+  }
 }

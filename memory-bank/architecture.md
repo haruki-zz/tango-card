@@ -1,7 +1,7 @@
 # 架构记录
 
 ## 阶段状态
-- 已完成实施计划第 18 步：主界面重构为 24%/46%/30% 三列布局并加入顶部工具区占位，新增区视觉重写（描边按钮、Noto Serif JP 结果卡、浅橙提示条）。
+- 已完成实施计划第 19 步：复习卡片立体描边与 200ms+ 翻转动效落地，补齐 0–5 评分按钮、进度条/百分比、长词自适应字号与左右箭头导航，并增加键盘快捷键提示与监听。
 
 ## 文件作用
 - package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖，前端状态管理依赖 Zustand，样式链路使用 Tailwind + Autoprefixer；新增 keytar 供密钥安全存储；scripts 含 electron-vite dev/preview、lint/lint:fix、format/format:fix、test，`build:dist` 产出 dist 与 dist-electron，`build` 调用 electron-builder 生成安装包，`pack` 用 electron-builder --dir 生成未压缩目录便于快速烟测。
@@ -37,19 +37,19 @@
 - src/renderer/src：
   - App.tsx：前端主界面，初始化词库、活跃度与 provider，顶部含设置/全屏/明暗占位工具栏；主体为 24%/46%/30% 三列（左：新增+最近词条，中：复习，右：活跃度/导入导出/设置），列间使用浅色虚线分割。
   - components/AddWordForm.tsx：新增流程组件，单词输入改为日文占位与描边生成按钮，生成结果卡片采用 Noto Serif JP 字体与虚线描边，成功/错误提示使用浅橙背景条，保存后刷新词库与活跃度摘要。
-  - components/ReviewSession.tsx：复习队列组件，拉取待复习词条、翻面查看释义/例句、0-5 评分后提交 IPC，完成整轮时计入 session，可重置队列或重试计数，统一按钮与面板风格。
+  - components/ReviewSession.tsx：复习队列组件，支持立体描边卡片的 Y 轴翻转动画、长词字号自适应、进度条与百分比展示、左右箭头/按钮切换卡片，空格/Enter/数字键快捷键操作，0-5 评分后提交 IPC 并完成整轮计入 session，可重置或重试计数。
   - components/ActivityHeatmap.tsx：按最近 35 天的新增与复习 session 总和渲染绿阶方格，使用 leaf 色板映射深浅，提供每日汇总与 tooltip。
   - components/ImportExportPanel.tsx：导入/导出组件，选择 JSON/JSONL 文件导入（显示新增/跳过计数与重复覆盖说明），导出时提示 JSON/CSV 保存路径与记录数，并显示忙碌和错误状态，使用统一面板与按钮。
   - components/SettingsPanel.tsx：LLM 设置面板，选择 openai/gemini/mock，输入密钥后调用 IPC 持久化至 keychain 并提示密钥状态，复用全局表单控件样式。
   - components/WordList.tsx：按创建时间倒序展示最新词条列表，面板与日期标记应用全局配色。
   - store/useAppStore.ts：Zustand 全局 store 封装 IPC 动作（词库、复习队列/session、活跃度、provider 读取/设置、导入/导出），`__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
   - __tests__/AddWordFlow.test.tsx：React Testing Library 覆盖空输入校验、生成填充、保存后刷新列表/活跃度；适配默认复习队列刷新。
-  - __tests__/ReviewSession.test.tsx：组件测试覆盖翻面、评分 IPC 参数与 session 计数，校验空队列不计入活跃度。
+  - __tests__/ReviewSession.test.tsx：组件测试覆盖翻面、进度条与卡片导航、键盘快捷键评分/翻转、评分 IPC 参数与 session 计数，校验空队列不计入活跃度。
   - __tests__/ActivityHeatmap.test.tsx：组件测试覆盖活跃度方格的颜色梯度与 tooltip 文案。
   - __tests__/ImportExportPanel.test.tsx：组件测试覆盖导入成功（计数与覆盖提示）、不支持格式报错、后端失败提示与导出路径展示。
   - __tests__/SettingsPanel.test.tsx：组件测试覆盖 provider 选择/密钥必填校验与保存后提示和输入清空。
   - main.tsx：渲染入口挂载 React。
-  - style.css：全局样式层与复用类，包含颜色/阴影/间距/动效 CSS 变量、米色纸纹理背景、按钮/输入/选择器/图标尺寸的统一外观。
+  - style.css：全局样式层与复用类，包含颜色/阴影/间距/动效 CSS 变量、米色纸纹理背景、按钮/输入/选择器/图标尺寸的统一外观，并提供进度条、立体翻转卡片、描边虚线、评分按钮与提示消息/键盘提示徽标的样式。
   - global.d.ts：声明 `window.platformInfo` 与受控 `window.api`。
 - src/shared：
   - types.ts：词条、复习日志、活跃度类型定义，SM-2 常量（EF 下限、默认值、间隔基线）。

@@ -45,13 +45,14 @@ const ReviewSession = () => {
 
   const [status, setStatus] = useState<QueueStatus>('idle');
   const [flipped, setFlipped] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [initialTotal, setInitialTotal] = useState(0);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [hasReviewed, setHasReviewed] = useState(false);
   const [sessionCompleted, setSessionCompleted] = useState(false);
 
-  const currentWord = reviewQueue[0];
+  const currentWord = reviewQueue[activeIndex];
 
   const stats = useMemo(() => {
     const remaining = reviewQueue.length;
@@ -61,8 +62,34 @@ const ReviewSession = () => {
     };
   }, [initialTotal, reviewQueue.length]);
 
+  const progressPercent = useMemo(() => {
+    if (!initialTotal) {
+      return 0;
+    }
+    const ratio = stats.completed / initialTotal;
+    return Math.min(100, Math.round(ratio * 100));
+  }, [initialTotal, stats.completed]);
+
+  const wordSizeClass = useMemo(() => {
+    if (!currentWord) {
+      return '';
+    }
+    const length = currentWord.word.length;
+    if (length > 12) {
+      return 'text-2xl sm:text-3xl';
+    }
+    if (length > 8) {
+      return 'text-[1.75rem] sm:text-[2.25rem]';
+    }
+    return 'text-3xl sm:text-4xl';
+  }, [currentWord]);
+
+  const isBusy = status !== 'idle';
+
   const resetLocalState = useCallback(() => {
     setFlipped(false);
+    setActiveIndex(0);
+    setInitialTotal(0);
     setMessage('');
     setError('');
     setHasReviewed(false);
@@ -90,6 +117,14 @@ const ReviewSession = () => {
     void handleLoadQueue();
   }, [handleLoadQueue]);
 
+  useEffect(() => {
+    if (reviewQueue.length === 0) {
+      setActiveIndex(0);
+      return;
+    }
+    setActiveIndex((prev) => Math.min(prev, reviewQueue.length - 1));
+  }, [reviewQueue.length]);
+
   const finalizeSession = useCallback(async () => {
     setStatus('finalizing');
     try {
@@ -103,10 +138,42 @@ const ReviewSession = () => {
     }
   }, [completeSession]);
 
+  const handleFlip = useCallback(() => {
+    if (!currentWord || isBusy) {
+      return;
+    }
+    setMessage('');
+    setError('');
+    setFlipped((prev) => !prev);
+  }, [currentWord, isBusy]);
+
+  const handlePrevCard = useCallback(() => {
+    if (isBusy || reviewQueue.length === 0) {
+      return;
+    }
+    setMessage('');
+    setError('');
+    setFlipped(false);
+    setActiveIndex((index) => Math.max(0, index - 1));
+  }, [isBusy, reviewQueue.length]);
+
+  const handleNextCard = useCallback(() => {
+    if (isBusy || reviewQueue.length === 0) {
+      return;
+    }
+    setMessage('');
+    setError('');
+    setFlipped(false);
+    setActiveIndex((index) => Math.min(reviewQueue.length - 1, index + 1));
+  }, [isBusy, reviewQueue.length]);
+
   const handleScore = useCallback(
     async (score: number) => {
       if (!currentWord) {
         setError('当前没有待复习的卡片');
+        return;
+      }
+      if (isBusy) {
         return;
       }
 
@@ -117,6 +184,13 @@ const ReviewSession = () => {
         await submitReview(currentWord.id, score);
         setHasReviewed(true);
         setFlipped(false);
+        setActiveIndex((index) => {
+          const remainingQueue = useAppStore.getState().reviewQueue.length;
+          if (remainingQueue === 0) {
+            return 0;
+          }
+          return Math.min(index, remainingQueue - 1);
+        });
         const remaining = useAppStore.getState().reviewQueue.length;
         if (remaining === 0) {
           await finalizeSession();
@@ -129,17 +203,59 @@ const ReviewSession = () => {
         setStatus('idle');
       }
     },
-    [currentWord, finalizeSession, submitReview],
+    [currentWord, finalizeSession, isBusy, submitReview],
+  );
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (isBusy || !currentWord) {
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.tagName === 'SELECT' ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      if (event.key === ' ' || event.key === 'Enter') {
+        event.preventDefault();
+        handleFlip();
+        return;
+      }
+      if (/^[0-5]$/.test(event.key)) {
+        event.preventDefault();
+        void handleScore(Number(event.key));
+        return;
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        handleNextCard();
+        return;
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        handlePrevCard();
+      }
+    },
+    [currentWord, handleFlip, handleNextCard, handlePrevCard, handleScore, isBusy],
   );
 
   const handleReset = useCallback(() => {
     resetReviewSession();
-    setInitialTotal(0);
     resetLocalState();
     setMessage('已重置本轮复习，可重新加载队列。');
   }, [resetLocalState, resetReviewSession]);
 
-  const isBusy = status !== 'idle';
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
 
   return (
     <section className="surface-card" aria-label="复习队列">
@@ -171,7 +287,7 @@ const ReviewSession = () => {
         </div>
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
         <div className="stat-row">
           <span className="stat-label">待复习</span>
           <span className="stat-value">{stats.remaining}</span>
@@ -182,80 +298,150 @@ const ReviewSession = () => {
             {stats.completed} / {initialTotal}
           </span>
         </div>
+        <div className="stat-row">
+          <span className="stat-label">当前卡片</span>
+          <span className="stat-value">
+            {reviewQueue.length > 0 ? activeIndex + 1 : 0} / {reviewQueue.length || 0}
+          </span>
+        </div>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-border bg-panel px-5 py-4 shadow-inner">
-        {currentWord ? (
-          <>
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex flex-col gap-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">
-                  当前卡片
-                </p>
-                <p className="text-2xl font-semibold text-ink">{currentWord.word}</p>
-                {!flipped ? (
-                  <p className="text-xs text-muted">点击“查看释义”翻面后再评分。</p>
-                ) : null}
-              </div>
-              <button
-                type="button"
-                className="btn"
-                onClick={() => setFlipped((prev) => !prev)}
-                disabled={isBusy}
+      <div className="mt-6 rounded-2xl border border-border bg-panel px-5 py-5 shadow-inner">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">进度</p>
+            <div className="flex flex-col gap-1">
+              <div
+                className="progress-track"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={progressPercent}
               >
-                {flipped ? '返回正面' : '查看释义'}
-              </button>
+                <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-lg font-semibold text-ink">{progressPercent}%</span>
+                <span className="text-xs text-muted">
+                  {stats.completed} / {initialTotal || 0} 已计入
+                </span>
+              </div>
             </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+            <span className="kbd-hint">空格 / Enter 翻面</span>
+            <span className="kbd-hint">数字 0-5 评分</span>
+            <span className="kbd-hint">← / → 切换卡片</span>
+          </div>
+        </div>
 
-            {flipped ? (
-              <div className="mt-4 space-y-2 rounded-xl border border-border bg-panel px-4 py-3 shadow-sm">
-                <p className="text-sm font-semibold text-accent-700">{currentWord.hiragana}</p>
-                <p className="text-sm leading-relaxed text-ink">{currentWord.definition_ja}</p>
-                <p className="text-sm text-muted">
-                  例句：<span className="italic">{currentWord.example_ja}</span>
-                </p>
-                <p className="text-xs text-muted">
-                  下次复习：{formatIsoDate(currentWord.sm2.next_review_at)}
-                </p>
-              </div>
+        <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="text-sm text-muted">
+            {currentWord ? (
+              <span className="font-semibold text-ink">
+                卡片 {activeIndex + 1} / {reviewQueue.length}
+              </span>
             ) : (
-              <div className="mt-4 rounded-xl border border-dashed border-accent-200 bg-panel px-4 py-3 text-sm text-muted">
-                正面仅展示单词，翻面后查看读音、释义与例句。
-              </div>
+              <span className="font-semibold text-ink">暂无卡片</span>
             )}
-          </>
+            <span className="mx-2 hidden text-muted lg:inline">•</span>
+            <span>剩余 {stats.remaining}，完成后自动计入 session</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={handlePrevCard}
+              disabled={isBusy || activeIndex === 0 || reviewQueue.length === 0}
+            >
+              ← 上一张
+            </button>
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={handleNextCard}
+              disabled={
+                isBusy || reviewQueue.length === 0 || activeIndex >= reviewQueue.length - 1
+              }
+            >
+              下一张 →
+            </button>
+            <button
+              type="button"
+              className="btn"
+              onClick={handleFlip}
+              disabled={isBusy || !currentWord}
+            >
+              {flipped ? '返回正面' : '查看释义'}
+            </button>
+          </div>
+        </div>
+
+        {currentWord ? (
+          <div className="mt-3 review-card">
+            <div className={`review-card-inner ${flipped ? 'is-flipped' : ''}`}>
+              <div className="review-card-face review-card-front">
+                <p className={`word-display ${wordSizeClass}`}>{currentWord.word}</p>
+                <p className="text-sm text-muted">按空格或按钮翻面查看释义与例句</p>
+              </div>
+              <div className="review-card-face review-card-back">
+                <div className="space-y-2">
+                  <p className={`word-display ${wordSizeClass}`}>{currentWord.word}</p>
+                  <p className="text-base font-semibold text-accent-700">{currentWord.hiragana}</p>
+                  <p className="text-sm leading-relaxed text-ink">{currentWord.definition_ja}</p>
+                  <p className="text-sm text-muted">
+                    例句：<span className="italic">{currentWord.example_ja}</span>
+                  </p>
+                  <p className="text-xs text-muted">
+                    下次复习：{formatIsoDate(currentWord.sm2.next_review_at)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         ) : (
-          <p className="text-sm text-muted">当前没有待复习的词条，刷新后再试。</p>
+          <div className="mt-4 rounded-xl border border-dashed border-accent-200 bg-panel px-4 py-3 text-sm text-muted">
+            当前没有待复习的词条，刷新后再试。
+          </div>
         )}
       </div>
 
       <div className="mt-5">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-semibold text-ink">评分（0-5）</p>
-          <p className="text-xs text-muted">仅在完成全部队列后计入 session</p>
+          <div>
+            <p className="text-sm font-semibold text-ink">评分（0-5）</p>
+            <p className="text-xs text-muted">翻面后使用数字键或按钮，完成全部后计入 session</p>
+          </div>
+          <span className="text-xs text-muted">剩余 {stats.remaining} 张</span>
         </div>
         <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-6">
           {SCORE_OPTIONS.map((option) => (
             <button
               key={option.value}
               type="button"
-              className="btn flex-col items-start text-left"
+              className="score-button"
               aria-label={`评分 ${option.value} ${option.label}`}
               onClick={() => handleScore(option.value)}
               disabled={!currentWord || isBusy}
             >
-              <span className="block text-xs uppercase tracking-[0.08em] text-muted">
-                {option.value}
-              </span>
-              <span className="block">{option.label}</span>
+              <span className="score-value">{option.value}</span>
+              <span className="score-label">{option.label}</span>
             </button>
           ))}
         </div>
       </div>
 
       <div className="mt-4 space-y-2">
-        {message ? <p className="text-sm font-semibold text-emerald-700">{message}</p> : null}
-        {error ? <p className="text-sm font-semibold text-red-600">{error}</p> : null}
+        {message ? (
+          <p className="message success" role="status">
+            {message}
+          </p>
+        ) : null}
+        {error ? (
+          <p className="message error" role="alert">
+            {error}
+          </p>
+        ) : null}
         {hasReviewed && !sessionCompleted && reviewQueue.length === 0 ? (
           <button
             type="button"

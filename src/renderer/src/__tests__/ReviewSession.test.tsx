@@ -140,6 +140,84 @@ describe('复习队列', () => {
     expect(await screen.findByText(/复习已完成/)).toBeInTheDocument();
   });
 
+  it('展示进度并支持左右箭头切换当前卡片', async () => {
+    const first = makeWord({ id: 'first', word: '復習' });
+    const second = makeWord({ id: 'second', word: '勉強' });
+    api.getReviewQueue.mockResolvedValue([first, second]);
+    api.submitReview.mockImplementation(async ({ wordId, score }) => {
+      const chosen = wordId === second.id ? second : first;
+      return {
+        word: { ...chosen, sm2: { ...chosen.sm2, last_score: score } },
+        log: {
+          session_id: 'session-review',
+          word_id: chosen.id,
+          score,
+          reviewed_at: new Date().toISOString(),
+        },
+      };
+    });
+
+    render(<App />);
+
+    await screen.findByText(first.word);
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0');
+
+    fireEvent.keyDown(window, { key: 'ArrowRight' });
+    expect(await screen.findByText(second.word)).toBeInTheDocument();
+
+    fireEvent.keyDown(window, { key: 'ArrowLeft' });
+    expect(await screen.findByText(first.word)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByLabelText('评分 4 较熟练'));
+    await waitFor(() =>
+      expect(api.submitReview).toHaveBeenCalledWith({
+        wordId: first.id,
+        score: 4,
+        sessionId: 'session-review',
+      }),
+    );
+
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
+    expect(screen.getByText(/1 \/ 2 已计入/)).toBeInTheDocument();
+    expect(api.incrementSession).not.toHaveBeenCalled();
+  });
+
+  it('支持键盘翻转并使用数字键评分', async () => {
+    const word = makeWord({ id: 'keyboard-word' });
+    const updated = {
+      ...word,
+      sm2: { ...word.sm2, last_score: 5 },
+    };
+    const log: ReviewLog = {
+      session_id: 'session-review',
+      word_id: word.id,
+      score: 5,
+      reviewed_at: new Date().toISOString(),
+    };
+    api.getReviewQueue.mockResolvedValue([word]);
+    api.submitReview.mockResolvedValue({ word: updated, log });
+    api.incrementSession.mockResolvedValue({
+      [updated.sm2.next_review_at.slice(0, 10)]: { added: 0, sessions: 1 },
+    });
+
+    render(<App />);
+
+    await screen.findByText(word.word);
+    fireEvent.keyDown(window, { key: ' ' });
+    expect(await screen.findByText(word.definition_ja)).toBeInTheDocument();
+
+    fireEvent.keyDown(window, { key: '5' });
+
+    await waitFor(() =>
+      expect(api.submitReview).toHaveBeenCalledWith({
+        wordId: word.id,
+        score: 5,
+        sessionId: 'session-review',
+      }),
+    );
+    await waitFor(() => expect(api.incrementSession).toHaveBeenCalledTimes(1));
+  });
+
   it('空队列不触发 session 计数', async () => {
     api.getReviewQueue.mockResolvedValue([]);
 
