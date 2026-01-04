@@ -154,7 +154,7 @@ const ReviewSession = () => {
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-ink shadow-sm transition hover:border-slate-300 disabled:cursor-not-allowed disabled:opacity-60"
+            className="btn"
             onClick={handleReset}
             disabled={isBusy}
           >
@@ -162,7 +162,7 @@ const ReviewSession = () => {
           </button>
           <button
             type="button"
-            className="rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+            className="btn btn-primary"
             onClick={handleLoadQueue}
             disabled={isBusy}
           >
@@ -184,7 +184,7 @@ const ReviewSession = () => {
         </div>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-slate-100 bg-slate-50 px-5 py-4 shadow-inner">
+      <div className="mt-6 rounded-2xl border border-border bg-panel px-5 py-4 shadow-inner">
         {currentWord ? (
           <>
             <div className="flex items-start justify-between gap-3">
@@ -199,7 +199,7 @@ const ReviewSession = () => {
               </div>
               <button
                 type="button"
-                className="rounded-lg border border-accent-200 bg-white px-3 py-2 text-xs font-semibold text-accent-800 shadow-sm transition hover:border-accent-300 disabled:cursor-not-allowed disabled:opacity-60"
+                className="btn"
                 onClick={() => setFlipped((prev) => !prev)}
                 disabled={isBusy}
               >
@@ -208,7 +208,7 @@ const ReviewSession = () => {
             </div>
 
             {flipped ? (
-              <div className="mt-4 space-y-2 rounded-xl bg-white px-4 py-3 shadow-sm">
+              <div className="mt-4 space-y-2 rounded-xl border border-border bg-panel px-4 py-3 shadow-sm">
                 <p className="text-sm font-semibold text-accent-700">{currentWord.hiragana}</p>
                 <p className="text-sm leading-relaxed text-ink">{currentWord.definition_ja}</p>
                 <p className="text-sm text-muted">
@@ -219,7 +219,7 @@ const ReviewSession = () => {
                 </p>
               </div>
             ) : (
-              <div className="mt-4 rounded-xl border border-dashed border-accent-200 bg-white px-4 py-3 text-sm text-muted">
+              <div className="mt-4 rounded-xl border border-dashed border-accent-200 bg-panel px-4 py-3 text-sm text-muted">
                 正面仅展示单词，翻面后查看读音、释义与例句。
               </div>
             )}
@@ -239,7 +239,7 @@ const ReviewSession = () => {
             <button
               key={option.value}
               type="button"
-              className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-left text-sm font-semibold text-ink shadow-sm transition hover:border-accent-200 disabled:cursor-not-allowed disabled:opacity-60"
+              className="btn flex-col items-start text-left"
               aria-label={`评分 ${option.value} ${option.label}`}
               onClick={() => handleScore(option.value)}
               disabled={!currentWord || isBusy}

@@ -5,6 +5,47 @@
 @layer base {
   :root {
     color-scheme: light;
+
+    --color-primary-50: 253 241 232;
+    --color-primary-100: 248 222 207;
+    --color-primary-200: 241 191 161;
+    --color-primary-300: 231 159 114;
+    --color-primary-400: 221 130 75;
+    --color-primary-500: 196 94 27;
+    --color-primary-600: 169 78 20;
+    --color-primary-700: 139 63 16;
+    --color-primary-800: 109 50 12;
+    --color-primary-900: 61 27 6;
+
+    --color-leaf-50: 243 248 235;
+    --color-leaf-100: 224 241 203;
+    --color-leaf-200: 201 235 163;
+    --color-leaf-300: 156 207 112;
+    --color-leaf-400: 91 162 63;
+    --color-leaf-500: 63 122 45;
+
+    --color-ink: 90 52 21;
+    --color-muted: 122 84 48;
+    --color-subtle: 176 138 101;
+    --color-canvas: 248 244 239;
+    --color-panel: 253 251 248;
+    --color-border: 233 219 201;
+    --color-focus: 240 165 98;
+
+    --space-unit: 8px;
+    --radius-card: 12px;
+    --shadow-card: 0 12px 40px rgba(90, 52, 21, 0.08);
+    --shadow-soft: 0 8px 20px rgba(196, 94, 27, 0.12);
+    --shadow-hairline: 0 1px 0 rgba(90, 52, 21, 0.05);
+
+    --transition-fast: 120ms;
+    --transition-base: 180ms;
+    --transition-slow: 240ms;
+    --ease-gentle: cubic-bezier(0.33, 1, 0.68, 1);
+
+    --font-heading: 'Noto Serif JP', 'Noto Sans JP', serif;
+    --font-body: 'Noto Sans JP', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', ui-monospace, monospace;
   }
 
   * {
@@ -12,32 +53,187 @@
   }
 
   body {
-    @apply m-0 min-h-screen bg-[radial-gradient(circle_at_20%_20%,#f0fdf4_0,#ffffff_52%)] text-ink antialiased font-sans;
+    margin: 0;
+    min-height: 100vh;
+    color: rgb(var(--color-ink));
+    background-color: rgb(var(--color-canvas));
+    background-image:
+      radial-gradient(
+        circle at 1px 1px,
+        rgba(var(--color-primary-500), 0.08) 0.8px,
+        transparent 0
+      ),
+      linear-gradient(120deg, rgba(var(--color-primary-400), 0.06), rgba(var(--color-primary-500), 0.03)),
+      linear-gradient(180deg, rgba(var(--color-panel), 0.92), rgba(var(--color-canvas), 0.96));
+    background-size: 22px 22px, 100% 100%, 100% 100%;
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    color: rgb(var(--color-ink));
+    letter-spacing: 0.01em;
+  }
+
+  code,
+  pre {
+    font-family: var(--font-mono);
   }
 
   ::selection {
-    @apply bg-accent-200 text-ink;
+    background: rgba(var(--color-primary-200), 0.4);
+    color: rgb(var(--color-ink));
   }
 }
 
 @layer components {
   .surface-card {
-    @apply w-full max-w-3xl rounded-2xl bg-white/90 p-6 shadow-card ring-1 ring-slate-100 backdrop-blur;
+    background: rgb(var(--color-panel));
+    border: 1px solid rgb(var(--color-border));
+    border-radius: var(--radius-card);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-card);
+    backdrop-filter: saturate(1.02);
   }
 
   .pill {
-    @apply inline-flex items-center gap-2 rounded-full bg-accent-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-700;
+    @apply inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em];
+    background: rgba(var(--color-primary-50), 0.8);
+    color: rgb(var(--color-primary-700));
+    border: 1px solid rgba(var(--color-primary-100), 0.9);
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem;
+    letter-spacing: 0.16em;
   }
 
   .stat-row {
-    @apply flex items-center justify-between text-sm text-ink;
+    @apply flex items-center justify-between text-sm;
+    color: rgb(var(--color-ink));
   }
 
   .stat-label {
-    @apply text-muted;
+    color: rgb(var(--color-muted));
   }
 
   .stat-value {
-    @apply font-semibold;
+    font-weight: 600;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 text-sm font-semibold transition;
+    padding: 0.65rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(var(--color-primary-200), 0.9);
+    color: rgb(var(--color-ink));
+    background: rgba(var(--color-primary-50), 0.55);
+    box-shadow: var(--shadow-hairline);
+    transition-duration: var(--transition-base);
+    transition-timing-function: var(--ease-gentle);
+  }
+
+  .btn:hover:not(:disabled) {
+    background: rgba(var(--color-primary-100), 0.9);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .btn:active:not(:disabled) {
+    background: rgb(var(--color-primary-200));
+    transform: translateY(0.5px);
+  }
+
+  .btn-primary {
+    color: #fff;
+    background: rgb(var(--color-primary-500));
+    border-color: rgb(var(--color-primary-600));
+    box-shadow: var(--shadow-soft);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: rgb(var(--color-primary-400));
+  }
+
+  .btn-primary:active:not(:disabled) {
+    background: rgb(var(--color-primary-600));
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border-color: rgba(var(--color-border), 0.9);
+    color: rgb(var(--color-muted));
+  }
+
+  .btn-ghost:hover:not(:disabled) {
+    background: rgba(var(--color-primary-50), 0.6);
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid rgb(var(--color-focus));
+    outline-offset: 2px;
+    box-shadow: var(--shadow-focus);
+  }
+
+  .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .field-input,
+  .field-textarea,
+  .field-select {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgb(var(--color-border));
+    background: rgb(var(--color-panel));
+    color: rgb(var(--color-ink));
+    padding: 0.625rem 0.75rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), var(--shadow-hairline);
+    transition: border-color var(--transition-base), box-shadow var(--transition-base),
+      background-color var(--transition-base);
+    transition-timing-function: var(--ease-gentle);
+  }
+
+  .field-textarea {
+    resize: vertical;
+    min-height: 6rem;
+  }
+
+  .field-input::placeholder,
+  .field-textarea::placeholder {
+    color: rgb(var(--color-subtle));
+  }
+
+  .field-input:focus-visible,
+  .field-textarea:focus-visible,
+  .field-select:focus-visible {
+    outline: none;
+    border-color: rgb(var(--color-focus));
+    box-shadow: var(--shadow-focus);
+  }
+
+  .field-input:disabled,
+  .field-textarea:disabled,
+  .field-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: rgba(var(--color-panel), 0.8);
+  }
+
+  .icon-16 {
+    width: 16px;
+    height: 16px;
+    stroke-width: 1.6;
+    color: inherit;
+    flex-shrink: 0;
+  }
+
+  .divider {
+    border-color: rgba(var(--color-border), 0.9);
   }
 }

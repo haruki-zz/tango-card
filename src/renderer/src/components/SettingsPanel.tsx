@@ -96,7 +96,7 @@ const SettingsPanel = () => {
           <span className="text-sm font-medium text-ink">Provider</span>
           <select
             aria-label="LLM 提供商"
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none ring-accent-200 ring-offset-1 transition focus:ring-2 disabled:opacity-60"
+            className="field-select"
             value={selectedProvider}
             onChange={(event) =>
               setSelectedProvider(event.target.value as ProviderName)
@@ -120,7 +120,7 @@ const SettingsPanel = () => {
           <input
             aria-label="API 密钥"
             type="password"
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none ring-accent-200 ring-offset-1 transition focus:ring-2 disabled:opacity-60"
+            className="field-input"
             placeholder={
               needsKey ? 'sk-...' : 'mock 模式无需密钥，留空即可'
             }
@@ -135,7 +135,7 @@ const SettingsPanel = () => {
       <div className="mt-5 flex items-center gap-3">
         <button
           type="submit"
-          className="rounded-xl bg-ink px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+          className="btn btn-primary"
           disabled={isSaving}
         >
           {isSaving ? '保存中…' : '保存设置'}

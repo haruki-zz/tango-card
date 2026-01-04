@@ -120,7 +120,7 @@ const AddWordForm = () => {
             输入日语单词，AI 生成读音、释义与例句后可手动修订再保存。
           </p>
         </div>
-        <div className="rounded-xl bg-accent-50 px-4 py-3 text-right text-sm text-accent-800">
+        <div className="rounded-xl border border-accent-100 bg-accent-50 px-4 py-3 text-right text-sm text-ink shadow-inner">
           <div className="font-semibold">今日 {todaySummary.label}</div>
           <div className="mt-1 flex items-center justify-end gap-2">
             <span>新增 {todaySummary.added}</span>
@@ -137,7 +137,7 @@ const AddWordForm = () => {
             <input
               id="word"
               aria-label="单词"
-              className="flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none ring-accent-200 ring-offset-1 transition focus:ring-2 disabled:opacity-60"
+              className="field-input"
               placeholder="例如：勉強"
               value={wordInput}
               onChange={(event) => setWordInput(event.target.value)}
@@ -145,7 +145,7 @@ const AddWordForm = () => {
             />
             <button
               type="button"
-              className="rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+              className="btn"
               onClick={handleGenerate}
               disabled={isBusy}
             >
@@ -158,7 +158,7 @@ const AddWordForm = () => {
           <span className="text-sm font-medium text-ink">平假名读音</span>
           <input
             aria-label="读音"
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none ring-accent-200 ring-offset-1 transition focus:ring-2 disabled:opacity-60"
+            className="field-input"
             placeholder="生成后可在此调整"
             value={hiragana}
             onChange={(event) => setHiragana(event.target.value)}
@@ -170,7 +170,7 @@ const AddWordForm = () => {
           <span className="text-sm font-medium text-ink">日文释义</span>
           <textarea
             aria-label="释义"
-            className="h-24 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none ring-accent-200 ring-offset-1 transition focus:ring-2 disabled:opacity-60"
+            className="field-textarea h-24"
             placeholder="简要说明含义与语境"
             value={definition}
             onChange={(event) => setDefinition(event.target.value)}
@@ -182,7 +182,7 @@ const AddWordForm = () => {
           <span className="text-sm font-medium text-ink">日文例句</span>
           <textarea
             aria-label="例句"
-            className="h-24 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-ink shadow-sm outline-none ring-accent-200 ring-offset-1 transition focus:ring-2 disabled:opacity-60"
+            className="field-textarea h-24"
             placeholder="生成后可自由修改"
             value={example}
             onChange={(event) => setExample(event.target.value)}
@@ -194,7 +194,7 @@ const AddWordForm = () => {
       <div className="mt-5 flex items-center gap-3">
         <button
           type="submit"
-          className="rounded-xl bg-accent-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-accent-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className="btn btn-primary"
           disabled={isBusy}
         >
           {isSaving ? '保存中…' : '保存到词库'}

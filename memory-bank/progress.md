@@ -4,6 +4,12 @@
 - `package.json` 抽出 `build:dist`，`build` 复用并新增 `pack`（`electron-builder --dir`），便于快速生成未签名包做回归。
 - 已跑通 `npm run build`（生成 dmg/zip；签名因无证书跳过）与 `npm run pack`，打包链路验证通过；测试由用户执行并确认通过。
 
+## 2026-01-03T06:05:00Z
+- 完成实施计划第 17 步：落地 UI 设计规范主题与资源，将琥珀主色、绿阶活跃度色板、字体与阴影转为全局 CSS 变量并接入 Tailwind 主题。
+- `tailwind.config.cjs` 改为读取 CSS 变量映射 accent/leaf/ink 等色板与字体/阴影配置；`src/renderer/src/style.css` 引入纸纹理背景、基础按钮/输入/卡片/图标样式与动效时序变量。
+- 渲染组件切换到新基底样式与配色：新增表单、设置、导入导出、复习、词表统一按钮/输入描边与面板底色；活跃度热力图改用绿阶映射并更新提示容器。
+- 测试由用户执行并验证通过。
+
 ## 2026-01-03T04:31:52Z
 - 完成实施计划第 15 步：LLM provider 设置页与 keychain 安全存储落地，支持 openai/gemini/mock 切换与密钥持久化。
 - 新增主进程 `src/main/provider-settings.ts` 持久化 provider 设置（keytar 写密钥、JSON 写模型/超时），IPC 增补 `config:get-provider`，preload/共享类型同步 `hasKey` 标记。

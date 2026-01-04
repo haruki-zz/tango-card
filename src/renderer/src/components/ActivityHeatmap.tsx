@@ -5,20 +5,14 @@ import { useAppStore } from '../store/useAppStore';
 const DAYS_SHOWN = 35;
 
 const COLOR_BY_LEVEL = [
-  'bg-slate-100 border-slate-200',
-  'bg-accent-50 border-accent-100',
-  'bg-accent-100 border-accent-200',
-  'bg-accent-200 border-accent-300',
-  'bg-accent-400 border-accent-500',
+  'bg-panel border-border',
+  'bg-leaf-50 border-leaf-100',
+  'bg-leaf-100 border-leaf-200',
+  'bg-leaf-200 border-leaf-300',
+  'bg-leaf-400 border-leaf-500',
 ] as const;
 
-const TEXT_BY_LEVEL = [
-  'text-muted',
-  'text-ink',
-  'text-ink',
-  'text-ink',
-  'text-white',
-] as const;
+const TEXT_BY_LEVEL = ['text-muted', 'text-ink', 'text-ink', 'text-ink', 'text-white'] as const;
 
 type DayActivity = {
   date: string;
@@ -88,13 +82,13 @@ const ActivityHeatmap = () => {
             绿色越深表示当天的新增词条与复习 session 总和越多，悬停查看具体数字。
           </p>
         </div>
-        <div className="rounded-xl bg-slate-50 px-4 py-3 text-right text-sm text-ink shadow-inner">
+        <div className="rounded-xl border border-border bg-panel px-4 py-3 text-right text-sm text-ink shadow-inner">
           <div className="flex items-center gap-4">
             <div className="flex flex-col">
               <span className="text-xs text-muted">新增词条</span>
               <span className="text-lg font-semibold text-ink">{totals.added}</span>
             </div>
-            <div className="h-10 w-px bg-slate-200" />
+            <div className="h-10 w-px bg-border" />
             <div className="flex flex-col">
               <span className="text-xs text-muted">复习 session</span>
               <span className="text-lg font-semibold text-ink">{totals.sessions}</span>

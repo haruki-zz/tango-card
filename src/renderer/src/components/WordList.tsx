@@ -33,7 +33,7 @@ const WordList = ({ words, loading = false }: WordListProps) => {
           {ordered.map((word) => (
             <li
               key={word.id}
-              className="rounded-xl border border-slate-100 bg-white px-4 py-3 shadow-sm"
+              className="rounded-xl border border-border bg-panel px-4 py-3 shadow-sm"
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex flex-col gap-1">
@@ -42,7 +42,7 @@ const WordList = ({ words, loading = false }: WordListProps) => {
                     {word.hiragana}
                   </p>
                 </div>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium uppercase tracking-[0.08em] text-muted">
+                <span className="rounded-full bg-accent-50 px-3 py-1 text-xs font-medium uppercase tracking-[0.08em] text-ink">
                   {formatDay(word.created_at)}
                 </span>
               </div>

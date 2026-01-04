@@ -101,14 +101,14 @@ const ImportExportPanel = () => {
             支持 JSON/JSONL 导入，导出会同时生成 JSON 与 CSV。重复词条会用最新数据覆盖。
           </p>
         </div>
-        <div className="rounded-xl bg-slate-50 px-4 py-3 text-right text-xs text-muted shadow-inner">
+        <div className="rounded-xl border border-accent-100 bg-accent-50 px-4 py-3 text-right text-xs text-muted shadow-inner">
           <p>导入会校验字段并跳过非法记录</p>
           <p className="mt-1">导出文件保存在应用数据目录的 exports/</p>
         </div>
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-2">
-        <div className="flex flex-col gap-3 rounded-xl border border-slate-100 bg-white px-4 py-3 shadow-sm">
+        <div className="flex flex-col gap-3 rounded-xl border border-border bg-panel px-4 py-3 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
               <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
@@ -131,7 +131,7 @@ const ImportExportPanel = () => {
               onChange={handleFileChange}
               disabled={isBusy}
             />
-            <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-accent-700 shadow-inner">
+            <span className="rounded-full bg-panel px-3 py-1 text-xs font-semibold text-accent-700 shadow-inner">
               JSON / JSONL
             </span>
           </label>
@@ -140,7 +140,7 @@ const ImportExportPanel = () => {
           </p>
         </div>
 
-        <div className="flex flex-col gap-3 rounded-xl border border-slate-100 bg-white px-4 py-3 shadow-sm">
+        <div className="flex flex-col gap-3 rounded-xl border border-border bg-panel px-4 py-3 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
               <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
@@ -154,7 +154,7 @@ const ImportExportPanel = () => {
           </div>
           <button
             type="button"
-            className="rounded-lg bg-ink px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+            className="btn btn-primary"
             onClick={handleExport}
             disabled={isBusy}
           >
