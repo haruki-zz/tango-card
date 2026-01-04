@@ -18,10 +18,10 @@ const rendererIndexFile = path.join(__dirname, '..', '..', 'dist', 'index.html')
 
 const createMainWindow = () => {
   const mainWindow = new BrowserWindow({
-    width: 1024,
-    height: 768,
-    minWidth: 960,
-    minHeight: 640,
+    width: 1280,
+    height: 900,
+    minWidth: 1200,
+    minHeight: 850,
     webPreferences: {
       preload: preloadScript,
       contextIsolation: true,
