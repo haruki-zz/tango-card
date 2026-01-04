@@ -1,7 +1,7 @@
 # 架构记录
 
 ## 阶段状态
-- 已完成实施计划第 17 步：UI 设计规范落地，主题色板/字体/阴影抽象为全局变量并接入 Tailwind/全局样式，组件改用统一按钮与输入基底，活跃度热力图切换绿阶映射。
+- 已完成实施计划第 18 步：主界面重构为 24%/46%/30% 三列布局并加入顶部工具区占位，新增区视觉重写（描边按钮、Noto Serif JP 结果卡、浅橙提示条）。
 
 ## 文件作用
 - package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖，前端状态管理依赖 Zustand，样式链路使用 Tailwind + Autoprefixer；新增 keytar 供密钥安全存储；scripts 含 electron-vite dev/preview、lint/lint:fix、format/format:fix、test，`build:dist` 产出 dist 与 dist-electron，`build` 调用 electron-builder 生成安装包，`pack` 用 electron-builder --dir 生成未压缩目录便于快速烟测。
@@ -35,8 +35,8 @@
 - src/preload/index.ts：预加载脚本，通过 contextBridge 暴露平台与版本信息，以及受控 `window.api` IPC 调用集合（词条增/查、AI 生成、复习、活跃度、provider 读取/设置、导入/导出）。
 - src/renderer/index.html：渲染进程 HTML 入口。
 - src/renderer/src：
-  - App.tsx：前端主界面，初始化词库与活跃度，在双列布局中并列新增表单与复习队列，展示活跃度方格、导入导出面板与最近新增列表。
-  - components/AddWordForm.tsx：新增流程组件，支持单词输入、AI 生成预填、手动编辑与保存后刷新词库与活跃度摘要，采用全局按钮/输入样式与琥珀提示卡片。
+  - App.tsx：前端主界面，初始化词库、活跃度与 provider，顶部含设置/全屏/明暗占位工具栏；主体为 24%/46%/30% 三列（左：新增+最近词条，中：复习，右：活跃度/导入导出/设置），列间使用浅色虚线分割。
+  - components/AddWordForm.tsx：新增流程组件，单词输入改为日文占位与描边生成按钮，生成结果卡片采用 Noto Serif JP 字体与虚线描边，成功/错误提示使用浅橙背景条，保存后刷新词库与活跃度摘要。
   - components/ReviewSession.tsx：复习队列组件，拉取待复习词条、翻面查看释义/例句、0-5 评分后提交 IPC，完成整轮时计入 session，可重置队列或重试计数，统一按钮与面板风格。
   - components/ActivityHeatmap.tsx：按最近 35 天的新增与复习 session 总和渲染绿阶方格，使用 leaf 色板映射深浅，提供每日汇总与 tooltip。
   - components/ImportExportPanel.tsx：导入/导出组件，选择 JSON/JSONL 文件导入（显示新增/跳过计数与重复覆盖说明），导出时提示 JSON/CSV 保存路径与记录数，并显示忙碌和错误状态，使用统一面板与按钮。

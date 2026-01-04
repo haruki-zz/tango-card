@@ -111,8 +111,12 @@ const AddWordForm = () => {
   };
 
   return (
-    <form className="surface-card" onSubmit={handleSubmit} aria-label="新增单词">
-      <div className="flex items-center justify-between gap-4">
+    <form
+      className="surface-card"
+      onSubmit={handleSubmit}
+      aria-label="新增单词"
+    >
+      <div className="flex items-start justify-between gap-4 border-b border-dashed border-accent-100 pb-4">
         <div className="flex flex-col gap-2">
           <span className="pill w-fit">新增</span>
           <h2 className="text-xl font-semibold text-ink">生成并保存单词</h2>
@@ -130,80 +134,116 @@ const AddWordForm = () => {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4">
+      <div className="mt-5 space-y-4">
         <label className="flex flex-col gap-2">
           <span className="text-sm font-medium text-ink">单词</span>
-          <div className="flex items-center gap-3">
-            <input
-              id="word"
-              aria-label="单词"
-              className="field-input"
-              placeholder="例如：勉強"
-              value={wordInput}
-              onChange={(event) => setWordInput(event.target.value)}
-              disabled={isBusy}
-            />
-            <button
-              type="button"
-              className="btn"
-              onClick={handleGenerate}
-              disabled={isBusy}
-            >
-              {isGenerating ? '生成中…' : '生成'}
-            </button>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-3">
+              <input
+                id="word"
+                aria-label="单词"
+                className="field-input"
+                placeholder="単語を入力…"
+                value={wordInput}
+                onChange={(event) => setWordInput(event.target.value)}
+                disabled={isBusy}
+              />
+              <button
+                type="button"
+                className="btn btn-ghost border-dashed border-accent-200"
+                onClick={handleGenerate}
+                disabled={isBusy}
+              >
+                {isGenerating ? '生成中…' : '生成'}
+              </button>
+            </div>
+            <p className="text-xs text-muted">
+              生成后可手动修订，留空会提示补全。
+            </p>
           </div>
         </label>
 
-        <label className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-ink">平假名读音</span>
-          <input
-            aria-label="读音"
-            className="field-input"
-            placeholder="生成后可在此调整"
-            value={hiragana}
-            onChange={(event) => setHiragana(event.target.value)}
-            disabled={isBusy}
-          />
-        </label>
+        <div className="rounded-2xl border border-dashed border-accent-100 bg-white/80 p-4 shadow-inner">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <span className="pill">生成結果</span>
+              <span className="rounded-full border border-accent-100 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
+                Noto Serif JP
+              </span>
+            </div>
+            <span className="text-xs font-medium text-muted">
+              {isBusy ? '処理中…' : '編集可'}
+            </span>
+          </div>
 
-        <label className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-ink">日文释义</span>
-          <textarea
-            aria-label="释义"
-            className="field-textarea h-24"
-            placeholder="简要说明含义与语境"
-            value={definition}
-            onChange={(event) => setDefinition(event.target.value)}
-            disabled={isBusy}
-          />
-        </label>
+          <div className="mt-3 space-y-3 font-serif text-[15px] leading-relaxed text-ink">
+            <label className="flex flex-col gap-1">
+              <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+                かな
+              </span>
+              <input
+                aria-label="读音"
+                className="field-input bg-white/90 font-serif"
+                placeholder="生成后可在此调整"
+                value={hiragana}
+                onChange={(event) => setHiragana(event.target.value)}
+                disabled={isBusy}
+              />
+            </label>
 
-        <label className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-ink">日文例句</span>
-          <textarea
-            aria-label="例句"
-            className="field-textarea h-24"
-            placeholder="生成后可自由修改"
-            value={example}
-            onChange={(event) => setExample(event.target.value)}
-            disabled={isBusy}
-          />
-        </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+                意味
+              </span>
+              <textarea
+                aria-label="释义"
+                className="field-textarea h-24 bg-white/90 font-serif"
+                placeholder="简要说明含义与语境"
+                value={definition}
+                onChange={(event) => setDefinition(event.target.value)}
+                disabled={isBusy}
+              />
+            </label>
+
+            <label className="flex flex-col gap-1">
+              <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted">
+                例文
+              </span>
+              <textarea
+                aria-label="例句"
+                className="field-textarea h-24 bg-white/90 font-serif"
+                placeholder="生成后可自由修改"
+                value={example}
+                onChange={(event) => setExample(event.target.value)}
+                disabled={isBusy}
+              />
+            </label>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-5 flex items-center gap-3">
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={isBusy}
-        >
-          {isSaving ? '保存中…' : '保存到词库'}
-        </button>
+      <div className="mt-5 flex flex-col gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="submit"
+            className="btn btn-primary border-dashed border-accent-600"
+            disabled={isBusy}
+          >
+            {isSaving ? '保存中…' : '保存到词库'}
+          </button>
+          <span className="text-sm text-muted">
+            状态：{isBusy ? '処理中' : '待機中'}
+          </span>
+        </div>
         {message ? (
-          <span className="text-sm font-medium text-emerald-700">{message}</span>
+          <div className="rounded-xl border border-accent-200 bg-accent-50 px-3 py-2 text-sm font-medium text-ink">
+            {message}
+          </div>
         ) : null}
         {error ? (
-          <span className="text-sm font-medium text-red-600">{error}</span>
+          <div className="rounded-xl border border-accent-300 bg-accent-100 px-3 py-2 text-sm font-medium text-accent-700">
+            {error}
+          </div>
         ) : null}
       </div>
     </form>
