@@ -116,7 +116,7 @@ const AddWordForm = () => {
       onSubmit={handleSubmit}
       aria-label="新增单词"
     >
-      <div className="flex items-start justify-between gap-4 border-b border-dashed border-accent-100 pb-4">
+      <div className="flex flex-col gap-4 border-b border-dashed border-accent-100 pb-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col gap-2">
           <span className="pill w-fit">新增</span>
           <h2 className="text-xl font-semibold text-ink">生成并保存单词</h2>
@@ -124,9 +124,9 @@ const AddWordForm = () => {
             输入日语单词，AI 生成读音、释义与例句后可手动修订再保存。
           </p>
         </div>
-        <div className="rounded-xl border border-accent-100 bg-accent-50 px-4 py-3 text-right text-sm text-ink shadow-inner">
+        <div className="w-full rounded-xl border border-accent-100 bg-accent-50 px-4 py-3 text-sm text-ink shadow-inner lg:w-auto lg:text-right">
           <div className="font-semibold">今日 {todaySummary.label}</div>
-          <div className="mt-1 flex items-center justify-end gap-2">
+          <div className="mt-1 flex items-center justify-between gap-2 text-muted lg:justify-end">
             <span>新增 {todaySummary.added}</span>
             <span className="text-muted">·</span>
             <span>复习 {todaySummary.sessions}</span>
@@ -138,7 +138,7 @@ const AddWordForm = () => {
         <label className="flex flex-col gap-2">
           <span className="text-sm font-medium text-ink">单词</span>
           <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
               <input
                 id="word"
                 aria-label="单词"
@@ -222,7 +222,7 @@ const AddWordForm = () => {
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col gap-3">
+      <div className="mt-5 flex flex-col gap-3" aria-live="polite">
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="submit"
@@ -236,12 +236,18 @@ const AddWordForm = () => {
           </span>
         </div>
         {message ? (
-          <div className="rounded-xl border border-accent-200 bg-accent-50 px-3 py-2 text-sm font-medium text-ink">
+          <div
+            className="rounded-xl border border-accent-200 bg-accent-50 px-3 py-2 text-sm font-medium text-ink"
+            role="status"
+          >
             {message}
           </div>
         ) : null}
         {error ? (
-          <div className="rounded-xl border border-accent-300 bg-accent-100 px-3 py-2 text-sm font-medium text-accent-700">
+          <div
+            className="rounded-xl border border-accent-300 bg-accent-100 px-3 py-2 text-sm font-medium text-accent-700"
+            role="alert"
+          >
             {error}
           </div>
         ) : null}

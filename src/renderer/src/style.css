@@ -367,6 +367,12 @@
     background: rgba(var(--color-primary-100), 0.95);
   }
 
+  .score-button:focus-visible {
+    outline: 2px solid rgb(var(--color-focus));
+    outline-offset: 2px;
+    box-shadow: var(--shadow-focus);
+  }
+
   .score-button:active:not(:disabled) {
     transform: translateY(0);
     background: rgb(var(--color-primary-200));

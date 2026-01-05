@@ -9,6 +9,13 @@ const withOpacity = (variable) => ({ opacityValue }) => {
 module.exports = {
   content: ['./src/renderer/index.html', './src/renderer/src/**/*.{ts,tsx,jsx,js}'],
   theme: {
+    screens: {
+      sm: '640px',
+      md: '768px',
+      lg: '960px',
+      xl: '1200px',
+      '2xl': '1536px',
+    },
     extend: {
       colors: {
         accent: {

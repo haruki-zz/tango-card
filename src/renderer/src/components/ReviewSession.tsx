@@ -414,7 +414,7 @@ const ReviewSession = () => {
           </div>
           <span className="text-xs text-muted">剩余 {stats.remaining} 张</span>
         </div>
-        <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-6">
+        <div className="mt-3 grid grid-cols-3 gap-2 lg:grid-cols-6">
           {SCORE_OPTIONS.map((option) => (
             <button
               key={option.value}
@@ -431,7 +431,7 @@ const ReviewSession = () => {
         </div>
       </div>
 
-      <div className="mt-4 space-y-2">
+      <div className="mt-4 space-y-2" aria-live="polite">
         {message ? (
           <p className="message success" role="status">
             {message}

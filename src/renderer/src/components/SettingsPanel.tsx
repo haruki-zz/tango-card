@@ -152,7 +152,10 @@ const SettingsPanel = () => {
         </label>
       </div>
 
-      <div className="mt-5 flex items-center gap-3">
+      <div
+        className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3"
+        aria-live="polite"
+      >
         <button
           type="submit"
           className="btn btn-primary"
@@ -161,12 +164,14 @@ const SettingsPanel = () => {
           {isSaving ? '保存中…' : '保存设置'}
         </button>
         {message ? (
-          <span className="text-sm font-medium text-emerald-700">
+          <span className="text-sm font-medium text-emerald-700" role="status">
             {message}
           </span>
         ) : null}
         {error ? (
-          <span className="text-sm font-medium text-red-600">{error}</span>
+          <span className="text-sm font-medium text-red-600" role="alert">
+            {error}
+          </span>
         ) : null}
       </div>
     </form>

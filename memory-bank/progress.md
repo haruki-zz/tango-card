@@ -1,3 +1,13 @@
+## 2026-01-05T00:48:17Z
+- 完成实施计划第 21 步：响应式与可访问性验收，定义 4 档断点并补足焦点/提示的可达性。
+- `tailwind.config.cjs`：显式配置 640/768/960/1200/1536 断点，对齐设计断点区间。
+- `src/renderer/src/App.tsx`：不同宽度下三列→两列→单列的布局切换，右侧面板在中等视口堆叠到底部，工具栏按钮禁用退出 Tab 流。
+- `src/renderer/src/components/AddWordForm.tsx`：表头与输入区在窄屏堆叠，今日摘要块全宽显示，状态提示添加 aria-live/role。
+- `src/renderer/src/components/ReviewSession.tsx` + `src/renderer/src/style.css`：评分按钮在 ≥960px 单行、窄屏双行，焦点态描边强化，消息区域 aria-live。
+- `src/renderer/src/components/ImportExportPanel.tsx`：导入触发改为可聚焦的伪按钮，支持回车/空格触发并在忙碌时阻断交互与添加焦点描边。
+- `src/renderer/src/components/SettingsPanel.tsx`：底部操作区窄屏换行，提示文本补充 aria-live/alert。
+- 测试由用户执行并确认通过。
+
 ## 2026-01-04T10:26:19Z
 - 完成实施计划第 20 步：右侧活跃度与数据面板重构，热力图改为 5x7 方格并按 0/1–3/4–6/7–14/15+ 固定绿阶映射，新增今日合计/新增/復習分栏与日文 tooltip 文案。
 - `src/renderer/src/components/ActivityHeatmap.tsx`：移除动态 max 归一化，使用分档色阶，追加今日摘要卡片并调整 hover/aria 描述。

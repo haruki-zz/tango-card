@@ -87,8 +87,8 @@ const ToolbarButton = ({ label, icon: Icon }: ToolbarButtonProps) => (
     type="button"
     className="btn btn-ghost h-10 px-3"
     aria-label={label}
-    aria-disabled="true"
     title={`${label}（占位）`}
+    disabled
   >
     <Icon />
   </button>
@@ -133,11 +133,11 @@ const App = () => {
   }, [loadWords, refreshActivity, loadProvider]);
 
   return (
-    <div className="min-h-screen px-6 py-10">
+    <div className="min-h-screen px-4 py-10 sm:px-5 lg:px-3 xl:px-6">
       <div className="mx-auto flex w-full max-w-[1280px] flex-col gap-6">
         <header className="surface-card">
           <div className="flex flex-col gap-4">
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
                   <span className="pill">Tango Card</span>
@@ -154,14 +154,17 @@ const App = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 border-l border-dashed border-accent-100 pl-4">
+              <div className="mt-2 flex items-center gap-2 border-t border-dashed border-accent-100 pt-3 lg:mt-0 lg:border-t-0 lg:border-l lg:pl-4 lg:pt-0">
                 <ToolbarButton label="設定" icon={SettingsIcon} />
                 <ToolbarButton label="全画面" icon={ExpandIcon} />
                 <ToolbarButton label="明暗" icon={ThemeIcon} />
               </div>
             </div>
             {initError ? (
-              <div className="rounded-xl border border-accent-200 bg-accent-50 px-3 py-2 text-sm font-medium text-accent-700">
+              <div
+                className="rounded-xl border border-accent-200 bg-accent-50 px-3 py-2 text-sm font-medium text-accent-700"
+                role="alert"
+              >
                 {initError}
               </div>
             ) : (
@@ -173,15 +176,15 @@ const App = () => {
           </div>
         </header>
 
-        <main className="grid grid-cols-1 gap-6 xl:grid-cols-[24%_46%_30%] xl:divide-x xl:divide-dashed xl:divide-accent-100">
-          <div className="flex flex-col gap-5 xl:pr-6">
+        <main className="grid grid-cols-1 gap-5 lg:auto-rows-min lg:grid-cols-[45%_55%] lg:items-start xl:grid-cols-[24%_46%_30%] xl:gap-6">
+          <div className="flex flex-col gap-5 lg:pr-4 xl:pr-6">
             <AddWordForm />
             <WordList words={words} loading={initializing} />
           </div>
-          <div className="xl:px-6">
+          <div className="lg:border-l lg:border-dashed lg:border-accent-100 lg:pl-4 xl:px-6">
             <ReviewSession />
           </div>
-          <div className="flex flex-col gap-5 xl:pl-6">
+          <div className="flex flex-col gap-5 lg:col-span-2 lg:border-t lg:border-dashed lg:border-accent-100 lg:pt-4 xl:col-span-1 xl:border-t-0 xl:border-l xl:border-dashed xl:border-accent-100 xl:pl-6 xl:pt-0">
             <ActivityHeatmap />
             <ImportExportPanel />
             <SettingsPanel />

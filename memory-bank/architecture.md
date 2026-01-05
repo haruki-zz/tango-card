@@ -1,7 +1,7 @@
 # 架构记录
 
 ## 阶段状态
-- 已完成实施计划第 20 步：右侧活跃度与数据面板重构，活跃度方格改为 5x7 固定绿阶映射并展示今日摘要，导入/导出描边按钮与提示更新，LLM 设置支持已保存密钥标签与遮蔽占位。
+- 已完成实施计划第 21 步：响应式与可访问性验收，定义 4 档断点，三列/双列/单列布局自适应，按钮与提示补充 aria-live/alert 与焦点可视样式。
 
 ## 文件作用
 - package.json：项目元数据，使用 ESM，声明 Node >=18 要求与 Electron/React/Vite/TypeScript 依赖，前端状态管理依赖 Zustand，样式链路使用 Tailwind + Autoprefixer；新增 keytar 供密钥安全存储；scripts 含 electron-vite dev/preview、lint/lint:fix、format/format:fix、test，`build:dist` 产出 dist 与 dist-electron，`build` 调用 electron-builder 生成安装包，`pack` 用 electron-builder --dir 生成未压缩目录便于快速烟测。
@@ -14,7 +14,7 @@
 - electron.vite.config.ts：electron-vite 配置，定义 main/preload 输出目录与 React 插件、渲染端别名。
 - electron-builder.yml：electron-builder 打包配置，指定 appId/productName、输出目录（release）、macOS/Windows/Linux 目标与主入口。
 - tsconfig.json：TypeScript 编译配置，启用 strict，路径别名覆盖 main/preload/renderer。
-- tailwind.config.cjs：Tailwind 配置，扫描渲染端 HTML/TSX，色板由 CSS 变量驱动的琥珀主色 `accent` 与绿阶 `leaf`，定义 ink/muted/panel/border 色，Noto Sans/Serif JP 与等宽字体栈，并暴露卡片/柔和阴影与 gentle 过渡曲线。
+- tailwind.config.cjs：Tailwind 配置，扫描渲染端 HTML/TSX，自定义断点（640/768/960/1200/1536）支撑四档布局，色板由 CSS 变量驱动的琥珀主色 `accent` 与绿阶 `leaf`，定义 ink/muted/panel/border 色，Noto Sans/Serif JP 与等宽字体栈，并暴露卡片/柔和阴影与 gentle 过渡曲线。
 - resources/icon.png：占位应用图标（512x512 PNG），供 electron-builder 使用。
 - src/main/index.ts：主进程入口，创建 BrowserWindow、绑定 preload、处理 URL/文件加载与生命周期；开发模式走 `ELECTRON_RENDERER_URL`，生产模式直接加载 `dist/index.html`，确保打包后渲染入口正确。
 - src/main/storage.ts：基于 `app.getPath('userData')` 的存储层，管理 `words.jsonl`/`reviews.jsonl`/`activity.json`，读写使用临时文件写入再替换；新增词条补全时间与 SM-2 默认值并更新活跃度，复习日志写入与 session 计数累加；支持全量保存、JSON/JSONL 导入（按 `word` 去重覆盖、跳过非法记录计数）、导出 JSON+CSV（写入 `exports/` 子目录）。
@@ -35,12 +35,12 @@
 - src/preload/index.ts：预加载脚本，通过 contextBridge 暴露平台与版本信息，以及受控 `window.api` IPC 调用集合（词条增/查、AI 生成、复习、活跃度、provider 读取/设置、导入/导出）。
 - src/renderer/index.html：渲染进程 HTML 入口。
 - src/renderer/src：
-  - App.tsx：前端主界面，初始化词库、活跃度与 provider，顶部含设置/全屏/明暗占位工具栏；主体为 24%/46%/30% 三列（左：新增+最近词条，中：复习，右：活跃度/导入导出/设置），列间使用浅色虚线分割。
-  - components/AddWordForm.tsx：新增流程组件，单词输入改为日文占位与描边生成按钮，生成结果卡片采用 Noto Serif JP 字体与虚线描边，成功/错误提示使用浅橙背景条，保存后刷新词库与活跃度摘要。
-  - components/ReviewSession.tsx：复习队列组件，支持立体描边卡片的 Y 轴翻转动画、长词字号自适应、进度条与百分比展示、左右箭头/按钮切换卡片，空格/Enter/数字键快捷键操作，0-5 评分后提交 IPC 并完成整轮计入 session，可重置或重试计数。
+  - App.tsx：前端主界面，初始化词库、活跃度与 provider，顶部含设置/全屏/明暗占位工具栏（禁用退出 Tab 流）；主体在 ≥1200px 为 24%/46%/30% 三列，960–1199px 双列（右列下移堆叠），<960px 单列，列间/区块按断点添加虚线分割。
+  - components/AddWordForm.tsx：新增流程组件，单词输入改为日文占位与描边生成按钮，生成结果卡片采用 Noto Serif JP 字体与虚线描边，成功/错误提示使用浅橙背景条并带 aria-live/alert，窄屏头部与输入区堆叠、今日摘要全宽，保存后刷新词库与活跃度摘要。
+  - components/ReviewSession.tsx：复习队列组件，支持立体描边卡片的 Y 轴翻转动画、长词字号自适应、进度条与百分比展示、左右箭头/按钮切换卡片，空格/Enter/数字键快捷键操作，0-5 评分后提交 IPC 并完成整轮计入 session，可重置或重试计数；评分按钮在 ≥960px 单行、窄屏双行，消息区 aria-live。
   - components/ActivityHeatmap.tsx：按最近 35 天的新增与复习 session 总和渲染 5x7 方格，固定区间 0/1–3/4–6/7–14/15+ 绿阶映射，提供今日合计/新增/復習分栏与日文 tooltip/aria 提示。
-  - components/ImportExportPanel.tsx：导入/导出组件，选择 JSON/JSONL 文件导入（显示新增/跳过计数与重复覆盖说明），导出时提示 JSON/CSV 保存路径与记录数，描边状态标签与描边提示块强化忙碌/结果可见性，使用统一面板与按钮。
-  - components/SettingsPanel.tsx：LLM 设置面板，选择 openai/gemini/mock，输入密钥后调用 IPC 持久化至 keychain，已保存密钥显示标签与遮蔽占位，可重新输入覆盖，复用全局表单控件样式。
+  - components/ImportExportPanel.tsx：导入/导出组件，选择 JSON/JSONL 文件导入（显示新增/跳过计数与重复覆盖说明），导出时提示 JSON/CSV 保存路径与记录数，描边状态标签与描边提示块强化忙碌/结果可见性，可聚焦伪按钮支持键盘触发并在忙碌时阻断交互，使用统一面板与按钮。
+  - components/SettingsPanel.tsx：LLM 设置面板，选择 openai/gemini/mock，输入密钥后调用 IPC 持久化至 keychain，已保存密钥显示标签与遮蔽占位，可重新输入覆盖，复用全局表单控件样式；操作区窄屏换行并带 aria-live/alert 提示。
   - components/WordList.tsx：按创建时间倒序展示最新词条列表，面板与日期标记应用全局配色。
   - store/useAppStore.ts：Zustand 全局 store 封装 IPC 动作（词库、复习队列/session、活跃度、provider 读取/设置、导入/导出），`__tests__/useAppStore.test.ts` mock window.api 校验状态更新与错误路径。
   - __tests__/AddWordFlow.test.tsx：React Testing Library 覆盖空输入校验、生成填充、保存后刷新列表/活跃度；适配默认复习队列刷新。
@@ -49,7 +49,7 @@
   - __tests__/ImportExportPanel.test.tsx：组件测试覆盖导入成功（计数与覆盖提示）、不支持格式报错、后端失败提示与导出路径展示，验证提示文案。
   - __tests__/SettingsPanel.test.tsx：组件测试覆盖 provider 选择/密钥必填校验与保存后提示、输入清空与“已保存”遮蔽提示。
   - main.tsx：渲染入口挂载 React。
-  - style.css：全局样式层与复用类，包含颜色/阴影/间距/动效 CSS 变量、米色纸纹理背景、按钮/输入/选择器/图标尺寸的统一外观，并提供进度条、立体翻转卡片、描边虚线、评分按钮与提示消息/键盘提示徽标的样式。
+  - style.css：全局样式层与复用类，包含颜色/阴影/间距/动效 CSS 变量、米色纸纹理背景、按钮/输入/选择器/图标尺寸的统一外观，并提供进度条、立体翻转卡片、描边虚线、评分按钮与提示消息/键盘提示徽标的样式；评分按钮新增显式 focus 样式。
   - global.d.ts：声明 `window.platformInfo` 与受控 `window.api`。
 - src/shared：
   - types.ts：词条、复习日志、活跃度类型定义，SM-2 常量（EF 下限、默认值、间隔基线）。
@@ -62,7 +62,7 @@
 - prompts/coding-style.md：代码风格与开发流程约定。
 - prompts/system-prompt.md：系统级工作规范与思考模式。
 - memory-bank/design-document.md：产品功能与数据设计说明。
-- memory-bank/implementation-plan.md：分步实施计划，当前执行至第 17 步。
+- memory-bank/implementation-plan.md：分步实施计划，当前执行至第 21 步。
 - memory-bank/tech-stack.md：技术栈清单与选型理由。
 - memory-bank/progress.md：阶段性变更记录，便于交接。
 - memory-bank/architecture.md：架构与文件职责记录（本文件），持续更新各阶段的结构洞察。

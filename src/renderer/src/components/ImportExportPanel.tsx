@@ -120,7 +120,26 @@ const ImportExportPanel = () => {
               {isImporting ? '导入中…' : '已就绪'}
             </span>
           </div>
-          <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-dashed border-accent-200 bg-accent-50 px-3 py-2 text-sm font-semibold text-accent-800 shadow-sm transition hover:border-accent-300">
+          <label
+            role="button"
+            tabIndex={0}
+            className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-dashed border-accent-200 bg-accent-50 px-3 py-2 text-sm font-semibold text-accent-800 shadow-sm transition hover:border-accent-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-300"
+            aria-disabled={isBusy}
+            onClick={(event) => {
+              if (isBusy) {
+                event.preventDefault();
+              }
+            }}
+            onKeyDown={(event) => {
+              if (isBusy) {
+                return;
+              }
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                fileInputRef.current?.click();
+              }
+            }}
+          >
             <span>选择文件</span>
             <input
               ref={fileInputRef}
