@@ -90,7 +90,8 @@ describe('LLM 设置面板', () => {
     });
     expect(screen.getByLabelText('API 密钥')).toHaveValue('');
     expect(
-      screen.getByText('已检测到保存的密钥，重启后依然可用。'),
+      screen.getByText('已检测到保存的密钥，已遮蔽展示，重新输入会覆盖。'),
     ).toBeInTheDocument();
+    expect(screen.getAllByText('已保存')).not.toHaveLength(0);
   });
 });

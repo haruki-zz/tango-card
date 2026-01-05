@@ -116,8 +116,8 @@ const ImportExportPanel = () => {
               </span>
               <span className="text-sm font-semibold text-ink">选择 JSON / JSONL 文件</span>
             </div>
-            <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
-              {isImporting ? '导入中…' : '准备就绪'}
+            <span className="rounded-full border border-dashed border-accent-200 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-accent-800">
+              {isImporting ? '导入中…' : '已就绪'}
             </span>
           </div>
           <label className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-dashed border-accent-200 bg-accent-50 px-3 py-2 text-sm font-semibold text-accent-800 shadow-sm transition hover:border-accent-300">
@@ -148,13 +148,13 @@ const ImportExportPanel = () => {
               </span>
               <span className="text-sm font-semibold text-ink">生成 JSON + CSV 备份</span>
             </div>
-            <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted">
-              {isExporting ? '导出中…' : '随时可用'}
+            <span className="rounded-full border border-dashed border-accent-200 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-accent-800">
+              {isExporting ? '导出中…' : '已就绪'}
             </span>
           </div>
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn"
             onClick={handleExport}
             disabled={isBusy}
           >
@@ -164,9 +164,17 @@ const ImportExportPanel = () => {
         </div>
       </div>
 
-      <div className="mt-4 space-y-2">
-        {message ? <p className="text-sm font-semibold text-emerald-700">{message}</p> : null}
-        {error ? <p className="text-sm font-semibold text-red-600">{error}</p> : null}
+      <div className="mt-4 space-y-2" aria-live="polite">
+        {message ? (
+          <div className="rounded-lg border border-accent-200 bg-accent-50 px-3 py-2 text-sm font-semibold text-accent-800 shadow-inner">
+            {message}
+          </div>
+        ) : null}
+        {error ? (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 shadow-inner">
+            {error}
+          </div>
+        ) : null}
       </div>
     </section>
   );

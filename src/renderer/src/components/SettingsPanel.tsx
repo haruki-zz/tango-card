@@ -41,6 +41,8 @@ const SettingsPanel = () => {
     }
   }, [provider]);
 
+  const hasSavedForSelection =
+    provider?.provider === selectedProvider && provider.hasKey;
   const needsKey = selectedProvider !== 'mock';
   const isSaving = status === 'saving';
 
@@ -48,11 +50,17 @@ const SettingsPanel = () => {
     if (selectedProvider === 'mock') {
       return 'Mock 提供固定响应，无需密钥即可使用。';
     }
-    if (provider?.provider === selectedProvider && provider.hasKey) {
-      return '已检测到保存的密钥，重启后依然可用。';
+    if (hasSavedForSelection) {
+      return '已检测到保存的密钥，已遮蔽展示，重新输入会覆盖。';
     }
     return '未检测到密钥，请填写后保存。';
-  }, [provider, selectedProvider]);
+  }, [hasSavedForSelection, selectedProvider]);
+
+  const keyPlaceholder = hasSavedForSelection
+    ? '••••••••（已保存，重新输入覆盖）'
+    : needsKey
+      ? 'sk-...'
+      : 'mock 模式无需密钥，留空即可';
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -93,7 +101,14 @@ const SettingsPanel = () => {
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-ink">Provider</span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-medium text-ink">Provider</span>
+            {hasSavedForSelection ? (
+              <span className="rounded-full border border-accent-200 bg-accent-50 px-2 py-0.5 text-[11px] font-semibold text-accent-800">
+                已保存
+              </span>
+            ) : null}
+          </div>
           <select
             aria-label="LLM 提供商"
             className="field-select"
@@ -116,14 +131,19 @@ const SettingsPanel = () => {
         </label>
 
         <label className="flex flex-col gap-2">
-          <span className="text-sm font-medium text-ink">API 密钥</span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-sm font-medium text-ink">API 密钥</span>
+            {hasSavedForSelection ? (
+              <span className="rounded-full border border-accent-200 bg-accent-50 px-2 py-0.5 text-[11px] font-semibold text-accent-800">
+                已保存
+              </span>
+            ) : null}
+          </div>
           <input
             aria-label="API 密钥"
             type="password"
             className="field-input"
-            placeholder={
-              needsKey ? 'sk-...' : 'mock 模式无需密钥，留空即可'
-            }
+            placeholder={keyPlaceholder}
             value={apiKey}
             onChange={(event) => setApiKey(event.target.value)}
             disabled={isSaving || !needsKey}

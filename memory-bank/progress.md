@@ -1,3 +1,10 @@
+## 2026-01-04T10:26:19Z
+- 完成实施计划第 20 步：右侧活跃度与数据面板重构，热力图改为 5x7 方格并按 0/1–3/4–6/7–14/15+ 固定绿阶映射，新增今日合计/新增/復習分栏与日文 tooltip 文案。
+- `src/renderer/src/components/ActivityHeatmap.tsx`：移除动态 max 归一化，使用分档色阶，追加今日摘要卡片并调整 hover/aria 描述。
+- `src/renderer/src/components/ImportExportPanel.tsx`：描边按钮状态标签改为“已就绪/导出中”，成功与错误提示改为描边块强化可见性。
+- `src/renderer/src/components/SettingsPanel.tsx`：已保存密钥显示标记与遮蔽占位，提示覆盖逻辑，保持 mock 免密钥分支。
+- 测试由用户执行并确认通过。
+
 ## 2026-01-04T01:17:06Z
 - 完成实施计划第 19 步：复习卡片立体描边风格、Y 轴翻转动效与进度条/百分比展示，补齐 0–5 评分按钮、左右箭头切换与键盘快捷键提示（空格/Enter 翻面、数字键评分、方向键导航）。
 - `src/renderer/src/components/ReviewSession.tsx`：支持多卡片导航、长词字号自适应、进度条 aria 属性与快捷键监听，评分后自动推进队列并保持 session 计数逻辑。

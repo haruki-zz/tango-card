@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 
 import { useAppStore } from '../store/useAppStore';
 
-const DAYS_SHOWN = 35;
+const WEEKS_SHOWN = 5;
+const DAYS_SHOWN = WEEKS_SHOWN * 7; // 可将周数改为 6 支持 42 天显示
 
 const COLOR_BY_LEVEL = [
   'bg-panel border-border',
@@ -30,7 +31,7 @@ const startOfTodayUtc = () => {
 const ActivityHeatmap = () => {
   const activity = useAppStore((state) => state.activity);
 
-  const { days, totals, maxValue } = useMemo(() => {
+  const { days, totals } = useMemo(() => {
     const baseDate = startOfTodayUtc();
     const days: DayActivity[] = Array.from({ length: DAYS_SHOWN }, (_, index) => {
       const cursor = new Date(baseDate);
@@ -42,7 +43,6 @@ const ActivityHeatmap = () => {
       return { date: key, added: summary.added, sessions: summary.sessions, total, level: 0 };
     });
 
-    const maxValue = days.reduce((max, day) => Math.max(max, day.total), 0);
     const totals = days.reduce(
       (acc, day) => {
         acc.added += day.added;
@@ -52,15 +52,23 @@ const ActivityHeatmap = () => {
       { added: 0, sessions: 0 },
     );
 
-    return { days, totals, maxValue };
+    return { days, totals };
   }, [activity]);
 
   const resolveLevel = (value: number) => {
-    if (maxValue === 0 || value === 0) {
+    if (value === 0) {
       return 0;
     }
-    const scaled = Math.ceil((value / maxValue) * 4);
-    return Math.max(1, Math.min(scaled, 4));
+    if (value <= 3) {
+      return 1;
+    }
+    if (value <= 6) {
+      return 2;
+    }
+    if (value <= 14) {
+      return 3;
+    }
+    return 4;
   };
 
   const decoratedDays = useMemo<DayActivity[]>(
@@ -69,8 +77,16 @@ const ActivityHeatmap = () => {
         ...day,
         level: resolveLevel(day.total),
       })),
-    [days, maxValue],
+    [days],
   );
+
+  const today = decoratedDays[decoratedDays.length - 1] ?? {
+    date: new Date().toISOString().slice(0, 10),
+    added: 0,
+    sessions: 0,
+    total: 0,
+    level: 0,
+  };
 
   return (
     <section className="surface-card" aria-label="活跃度">
@@ -79,22 +95,28 @@ const ActivityHeatmap = () => {
           <span className="pill w-fit">活跃度</span>
           <h2 className="text-xl font-semibold text-ink">过去 {DAYS_SHOWN} 天的新增与复习</h2>
           <p className="text-sm text-muted">
-            绿色越深表示当天的新增词条与复习 session 总和越多，悬停查看具体数字。
+            绿色梯度：0、1–3、4–6、7–14、15+，悬停查看详细数据。
           </p>
         </div>
-        <div className="rounded-xl border border-border bg-panel px-4 py-3 text-right text-sm text-ink shadow-inner">
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col">
-              <span className="text-xs text-muted">新增词条</span>
-              <span className="text-lg font-semibold text-ink">{totals.added}</span>
-            </div>
-            <div className="h-10 w-px bg-border" />
-            <div className="flex flex-col">
-              <span className="text-xs text-muted">复习 session</span>
-              <span className="text-lg font-semibold text-ink">{totals.sessions}</span>
-            </div>
-          </div>
-          <p className="mt-2 text-xs text-muted">统计区间：最近 {DAYS_SHOWN} 天</p>
+        <div className="rounded-xl border border-accent-100 bg-accent-50 px-4 py-3 text-right text-xs text-muted shadow-inner">
+          <p>统计区间：最近 {DAYS_SHOWN} 天</p>
+          <p className="mt-1">合计新增 {totals.added} · session {totals.sessions}</p>
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        <div className="rounded-lg border border-dashed border-accent-200 bg-panel px-3 py-2 shadow-inner">
+          <p className="text-xs text-muted">今日合计</p>
+          <p className="mt-1 text-2xl font-semibold text-ink">{today.total}</p>
+          <p className="text-[11px] text-muted">{today.date}</p>
+        </div>
+        <div className="rounded-lg border border-border bg-panel px-3 py-2 shadow-sm">
+          <p className="text-xs text-muted">今日新增</p>
+          <p className="mt-1 text-xl font-semibold text-ink">{today.added}</p>
+        </div>
+        <div className="rounded-lg border border-border bg-panel px-3 py-2 shadow-sm">
+          <p className="text-xs text-muted">今日復習 session</p>
+          <p className="mt-1 text-xl font-semibold text-ink">{today.sessions}</p>
         </div>
       </div>
 
@@ -113,8 +135,8 @@ const ActivityHeatmap = () => {
                 key={day.date}
                 role="gridcell"
                 className={`flex h-14 flex-col items-center justify-center rounded-lg border text-center text-[11px] font-semibold shadow-sm transition ${colorClass} ${textClass}`}
-                title={`${day.date} 新增 ${day.added} · 复习 ${day.sessions}`}
-                aria-label={`${day.date} 新增 ${day.added} 条 · 复习 ${day.sessions} 次`}
+                title={`${day.date}｜新增 ${day.added}｜復習 ${day.sessions} sessions`}
+                aria-label={`${day.date} 新增 ${day.added} 条 · 復習 ${day.sessions} 次`}
                 data-level={day.level}
                 data-testid={`activity-${day.date}`}
               >

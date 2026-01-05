@@ -84,9 +84,10 @@ describe('活跃度方格', () => {
     const yesterdayCell = screen.getByTestId(`activity-${yesterday}`);
     const earlierCell = screen.getByTestId(`activity-${earlier}`);
 
-    expect(todayCell.getAttribute('data-level')).toBe('4');
+    expect(todayCell.getAttribute('data-level')).toBe('2');
     expect(yesterdayCell.getAttribute('data-level')).toBe('1');
     expect(earlierCell.getAttribute('data-level')).toBe('0');
+    expect(screen.getByText('今日合计')).toBeInTheDocument();
   });
 
   it('悬停提示包含新增与复习详情', async () => {
@@ -100,7 +101,7 @@ describe('活跃度方格', () => {
 
     const todayCell = await screen.findByTestId(`activity-${today}`);
 
-    expect(todayCell).toHaveAttribute('title', `${today} 新增 2 · 复习 1`);
-    expect(todayCell).toHaveAttribute('aria-label', `${today} 新增 2 条 · 复习 1 次`);
+    expect(todayCell).toHaveAttribute('title', `${today}｜新增 2｜復習 1 sessions`);
+    expect(todayCell).toHaveAttribute('aria-label', `${today} 新增 2 条 · 復習 1 次`);
   });
 });
