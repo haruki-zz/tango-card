@@ -7,7 +7,7 @@ import { normalizeGeneratedContent } from './utils';
 
 const DEFAULT_RESPONSE: GeneratedWordContent = {
   hiragana: 'てすと',
-  definition_ja: 'テスト用の固定応答です。',
+  definition_ja: '試験',
   example_ja: '図書館で静かにテストを受けた。',
 };
 
